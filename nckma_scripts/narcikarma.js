@@ -16,7 +16,7 @@ if ( typeof(nckma) != 'object' ) {
 		, nkDataFirst = null
 		, nkDataLast = null
 		, nkManifest = null
-		, nkTesting = true
+		, nkTesting = false
 		, nkDebug = true;
 
 	/*
@@ -586,8 +586,8 @@ return nckma.opts; })() && (function () {
 			, draw = false
 			, comp = null
 			, cChar = '';
-		if ( bpmv.obj(cx) && bpmv.str(ch) ) {
-			cChar = ''+ch.toUpperCase();
+		if ( bpmv.obj(cx) && bpmv.str(ch, true) ) {
+			cChar = cChar.length === 1 ? ''+ch.toUpperCase() : ''+ch;
 			comp = cx.globalCompositeOperation;
 			if ( bpmv.str(nckma.px.chars[cChar]) ) {
 				x = parseInt( x, 10 );
@@ -662,11 +662,16 @@ return nckma.opts; })() && (function () {
 			nckma.warn( 'Line must be wither 1 or 2!', line );
 		}
 		if ( dL ) {
-			dS = ''+str;
-			while ( dS.length < 4 ) {
-				dS = ' '+dS;
+			if ( bpmv.arr(str) ) {
+				dS = $.extend( [], str );
+				dS.reverse();
+			} else {
+				dS = ''+str;
+				while ( dS.length < 4 ) {
+					dS = ' '+dS;
+				}
+				dS = dS.split( '' ).reverse();
 			}
-			dS = dS.split( '' ).reverse().join( '' );
 			for ( var aC = 0; aC < dS.length; aC++ ) {
 				if ( dX >= 0 ) {
 					nckma.px.draw_char( dS[aC], dX, dY, color );

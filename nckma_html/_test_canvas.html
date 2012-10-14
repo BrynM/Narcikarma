@@ -8,11 +8,12 @@
 
 	<div class="nckContent">
 
-		<canvas id="nck_canvas_icon_16" height="16" width="16"></canvas>
+		<div>
+			<canvas id="nck_canvas_icon_16" height="16" width="16" style="vertical-align: top;"></canvas>
+			&nbsp;<button id="run_test" style="font-size: 10px; height: 16px; line-height: 12px;">Run Icon Test</button>
+		</div>
 
-		<pre><code>
-
-0000111100001111
+		<pre><code>0000111100001111
 1111000011110000
 0000111100001111
 1111000011110000
@@ -487,45 +488,50 @@
 1110
 1110
 
-111011101110111011101110
+111011101110111011101110</code></pre>
 
-</code></pre>
 	</div>
 	<script src="../nckma_scripts/jquery-1.8.2.min.js"></script>
 	<script src="../nckma_scripts/bpmv.js"></script>
 	<script src="../nckma_scripts/narcikarma.js"></script>
 
 	<script>
-function test_line ( line ) {
-	line = ( !bpmv.num(line) || line < 1 || line > 2 ) ? 1 : line;
-	var tStr = ''
-		, lets = bpmv.keys( nckma.px.chars )
-		, last = [];
-	for ( var aC in nckma.px.fallbackColors ) {
-		if ( nckma.px.fallbackColors.hasOwnProperty( aC ) ) {
-console.log( 'aC', aC );
-			last = [];
-			for ( var aL = 0; aL < lets.length; aL++ ) {
-console.log( 'aL', aL );
-				last.push( aL );
-				while ( last.length > 4 ) {
-					last.shift()
+		var last = [];
+		function print_the_bugger () {
+			var pr = '';
+			if ( bpmv.arr(last) ) {
+				pr = last.shift();
+				if ( bpmv.arr(pr) && ( pr.length == 3 ) ) {
+					nckma.px.draw_line( pr[0], pr[1], nckma.px.color( pr[2] ) );
+					setTimeout( print_the_bugger, 100 );
 				}
-				for ( var ll = 0; ll < last.length; ll++ ) {
-function ( ch, x, y, color )
-					nckma.px.draw_char( last[ll], line, aC );
-
-				}
-				for ( var waste = 0; waste < 1000000; waste++ ) {
-
-				}
+			} else {
+				$('#run_test').removeAttr( 'disabled' );
 			}
 		}
-	}
-console.log( 'lets', lets );
-}
+
+		function nk_test () {
+			var tStr = []
+				, lets = bpmv.keys( nckma.px.chars );
+			for ( var aC in nckma.px.fallbackColors ) {
+				if ( nckma.px.fallbackColors.hasOwnProperty( aC ) ) {
+					tStr = [];
+					for ( var aL = 0; aL < lets.length; aL++ ) {
+						tStr.push( lets[aL] );
+						while ( tStr.length > 4 ) {
+							tStr.shift();
+						}
+						last.push( [ $.extend( [], tStr ), 1, ''+aC ] );
+						last.push( [ $.extend( [], tStr ), 2, ''+aC ] );
+					}
+				}
+			}
+			$('#run_test').attr( 'disabled', 'disabled' );
+			setTimeout( print_the_bugger, 100 );
+		}
+
 		$(document).ready( function () {
-			test_line( 1 ) && test_line( 2 );
+			$('#run_test').click( nk_test );
 		} );
 	</script>
 </body>
