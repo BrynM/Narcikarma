@@ -3,7 +3,7 @@ var bgP = chrome.extension.getBackgroundPage();
 function reset_stats () {
 	if ( confirm( 'Reset starting stats?\n\n(This will erase all gains and losses until the next polling period.)') ) {
 		nckma.track( 'func', 'reset_stats', 'nkExec' );
-		bgP.nckma.reset();
+		bgP.nckma.reset( true );
 		window.close();
 	}
 }
@@ -53,22 +53,19 @@ function populate () {
 				pChar = '+';
 				pClass = 'color: rgba( ' + localStorage['posChange'] + ' );';
 			} else if ( lDelt < 0 ) { // negative
-				pChar = '-';
 				pClass = 'color: rgba( ' + localStorage['negChange'] + ' );';
 			} else { // zero
-				pChar = '';
 				pClass = 'color: rgba( ' + localStorage['noChange'] + ' );';
 			}
 			$('#nck_curr_lkarma').html( ( bpmv.num(sD.current.link_karma, true) ? nckma.str_num( sD.current.link_karma ) : 'unknown' ) + ' (<span style="'+pClass+'">' + pChar + nckma.str_num( lDelt ) + '</span>)' );
 			cDelt = parseInt( sD.current.comment_karma, 10 ) - parseInt( sD.start.comment_karma, 10 );
+			pChar = '';
 			if ( cDelt > 0 ) { // positive
 				pChar = '+';
 				pClass = 'color: rgba( ' + localStorage['posChange'] + ' );';
 			} else if ( cDelt < 0 ) { // negative
-				pChar = '-';
 				pClass = 'color: rgba( ' + localStorage['negChange'] + ' );';
 			} else { // zero
-				pChar = '';
 				pClass = 'color: rgba( ' + localStorage['noChange'] + ' );';
 			}
 			$('#nck_curr_ckarma').html( ( bpmv.num(sD.current.comment_karma, true) ? nckma.str_num( sD.current.comment_karma ) : 'unknown' ) + ' (<span style="'+pClass+'">' + pChar + nckma.str_num( cDelt ) + '</span>)' );

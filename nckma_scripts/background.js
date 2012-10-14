@@ -1,13 +1,21 @@
 // background.js
 
 if ( typeof(nckma) != 'object' ) {
-	var nckma = {};
+	var nckma = {}
+	  , nkBgScrs = []
+		, lE = null
+		, sc = document.getElementsByTagName('script');
 	nckma._bgTask = true;
+//	$(document).ready( function () {
+		lE = nkBgScrs.length > 0 ? nkBgScrs.length + 1 : 0;
+		nkBgScrs[lE] = document.createElement('script');
+		nkBgScrs[lE].async = true;
+		nkBgScrs[lE].src = '../nckma_scripts/narcikarma.js';
+		sc[sc.length - 1].parentNode.appendChild( nkBgScrs[lE] );
+//	});
 } else {
 	throw( 'background.js needs to load before narcikarma.js!!!');
 }
-
-// chrome.browserAction.setIcon( {}, function callback)
 
 /*
 // http://developer.chrome.com/extensions/notifications.html
