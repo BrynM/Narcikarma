@@ -299,15 +299,6 @@ if ( typeof(nckma) != 'object' ) {
 				nI = nI.replace( nRx, '$1'+','+'$2' );
 			}
 			return nI+nD;
-/*
-			if ( num < 0 ) {
-				neg = '-';
-				uNum = 0 - num;
-			} else {
-				uNum = 0 + num;
-			}
-			return neg + (''+uNum).split( '' ).reverse().join( '' ).match( /.{1,3}/g ).reverse().join( ',' );
-*/
 		}
 		return  ''+num;
 	}
