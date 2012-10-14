@@ -1,0 +1,91 @@
+<html>
+<head>
+	<title>Narcikarma Options</title>
+	<link href="../nckma_assets/narcikarma.css" rel="stylesheet" type="text/css">
+	<script src="../nckma_scripts/ga.js"></script>
+</head>
+<body class="nckOptions">
+	<div class="nckContent">
+		<h1 id="nck_title">Narcikarma Options</h1>
+
+
+		<!-- div class="nckOptionsContainer" title="When your comment karma has increased by this amount, an alert will be shown.">
+			<label for="opt_alertCommentGain">Alert Comment Karma Threshold</label>
+			<input type="text" id="opt_alertCommentGain">&nbsp;<span id="opt_alertCommentGain_status"></span>
+		</div-->
+
+		<!--div class="nckOptionsContainer" title="When your link karma has increased by this amount, an alert will be shown.">
+			<label for="opt_alertLinkGain">Alert Link Karma Threshold</label>
+			<input type="text" id="opt_alertLinkGain">&nbsp;<span id="opt_alertLinkGain_status"></span>
+		</div-->
+
+		<div class="nckOptionsContainer" title="Interval that your karma stats will be checked.">
+			<label for="opt_interval">Refresh Interval</label>
+			<select id="opt_interval">
+				<option value="120">2 minutes</option>
+				<option value="300">5 minutes</option>
+				<option value="600">10 minutes</option>
+				<option value="1200">20 minutes</option>
+				<option value="1800">30 minutes</option>
+				<option value="2700">45 minutes</option>
+				<option value="3600">1 Hour</option>
+				<option value="0">disabled</option>
+			</select>&nbsp;<span id="opt_interval_status"></span>
+		</div>
+
+		<div class="nckOptionsContainer" title="Format for dates.">
+			<label for="opt_dateFormat">Date Format</label>
+			<select id="opt_dateFormat">
+				<option value="US">US</option>
+				<option value="UK">UK</option>
+				<option value="*">Other</option>
+			</select>&nbsp;<span id="opt_dateFormat_status"></span>
+		</div>
+
+		<div class="nckOptionsContainer" title="Contents of top icon row.">
+			<label for="opt_row0">Top Row</label>
+			<select id="opt_row0">
+				<option value="cKarma">Comment Karma</option>
+				<option value="lKarma">Link Karma</option>
+				<option value="flags">Status Flags</option>
+			</select>&nbsp;<span id="opt_row0_status"></span>
+		</div>
+
+		<div class="nckOptionsContainer" title="Contents of second icon row.">
+			<label for="opt_row1">Second Row</label>
+			<select id="opt_row1">
+				<option value="cKarma">Comment Karma</option>
+				<option value="lKarma">Link Karma</option>
+				<option value="flags">Status Flags</option>
+			</select>&nbsp;<span id="opt_row1_status"></span>
+		</div>
+
+		<h3>Colors</h3>
+
+		<div class="nckOptionsContainer" title="Positive Votes">
+			<label for="opt_posChange">Positive Change (rgba)</label>
+			<input id="opt_posChange" type="text" />&nbsp;<span id="opt_posChange_status"></span>
+		</div>
+		<div class="nckOptionsContainer" title="No Change In Votes">
+			<label for="opt_noChange">No Change (rgba)</label>
+			<input id="opt_noChange" type="text" />&nbsp;<span id="opt_noChange_status"></span>
+		</div>
+		<div class="nckOptionsContainer" title="Negative Votes">
+			<label for="opt_negChange">Negative Change (rgba)</label>
+			<input id="opt_negChange" type="text" />&nbsp;<span id="opt_negChange_status"></span>
+		</div>
+
+		<div class="nckOptionsButtons">
+			<button id="nckma_save">Save Options</button>
+			<button id="nckma_default">Default Options</button>
+		</div>
+
+	</div>
+
+	<script src="../nckma_scripts/jquery-1.8.2.min.js"></script>
+	<script src="../nckma_scripts/bpmv.js"></script>
+	<script src="../nckma_scripts/narcikarma.js"></script>
+	<script src="../nckma_scripts/options.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+	"kind" : "t2",
+	"data": {
+		"has_mail": false,
+		"name": "badmonkey",
+		"created": 1286020403.0,
+		"modhash": "f1xm",
+		"created_utc": 1286020403.0,
+		"link_karma": 124,
+		"comment_karma": 3320,
+		"is_gold": true,
+		"is_mod": true,
+		"id": "aaaaaa",
+		"has_mod_mail": false
+	}
+}

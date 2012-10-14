@@ -1,0 +1,91 @@
+body {
+	font-family: Arial, sans-serif;
+	line-height: 14px;
+	font-size: 12px;
+	margin: 0;
+	padding: 0;
+	background: -webkit-linear-gradient(top,  rgba( 255, 139, 96, 0.2 ) 0%, rgba( 148, 148, 255, 0.2 ) 100%);
+	background: linear-gradient(to bottom,  #rgba( 255, 139, 96, 0.2 ) 0%, rgba( 148, 148, 255, 0.2 ) 100%);
+}
+.nckContent {
+	margin: 10px;
+}
+.nckOptionsContainer {
+
+}
+.nckOptionsContainer span {
+	color: green;
+	font-size: 10px;
+	line-height: 12px;
+	vertical-align: middle;
+}
+
+.nckOptionsContainer span.nckOptionsError {
+	color: red;
+	font-weight: bold;
+}
+
+.nckOptionsContainer label {
+	display: inline-block;
+	width: 200px;
+	text-align: right;
+}
+
+.nckOptionsContainer input[type=text] {
+	padding: 0 5px;
+}
+
+.nckOptionsButtons {
+	margin-left: 200px;
+	text-align: left;
+}
+
+.nckContent canvas {
+	border: 2px solid red;
+}
+
+.nckPopup {
+	width: 350px;
+	font-size: 80%;
+}
+
+.nckPopUserStats {
+	font-family: Arial, sans-serif;
+	font-size: 11px;
+}
+
+.nckPopUserStats tr td:first-child {
+	color: #666666;
+	text-align: right;
+	font-style: italic;
+}
+
+.nckKarmaDown {
+	color: red;
+}
+
+.nckKarmaUp {
+	color: green;
+}
+
+.nckButtonRow {
+	text-align: left;
+}
+
+#nck_name {
+	margin: 0;
+}
+
+#nck_close_x {
+	position: fixed;
+	top: 0;
+	right: 0;
+	height: 14px;
+	width: 14px;
+	font-size: 8px;
+	line-height: 9px;
+	text-align: center;
+	padding: 0;
+	margin: 0;
+}
+

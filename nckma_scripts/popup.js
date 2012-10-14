@@ -1,0 +1,108 @@
+var bgP = chrome.extension.getBackgroundPage();
+
+function reset_stats () {
+	if ( confirm( 'Reset starting stats?\n\n(This will erase all gains and losses until the next polling period.)') ) {
+		nckma.track( 'func', 'reset_stats', 'nkExec' );
+		bgP.nckma.reset();
+		window.close();
+	}
+}
+
+function populate () {
+	var sD = null
+		, cDelt = 0
+		, lDelt = 0
+		, pClass = ''
+		, pChar = ''
+		, cDay = null
+		, cdDelt = 0
+		, info = null
+		, inf = '';
+	status = bgP.nckma.get( true );
+	if ( bpmv.str(status) ) {
+		sD = JSON.parse( status );
+		if ( bpmv.obj(sD.start, true) ) {
+			$('#nck_user').text(  sD.start.name );
+			cdDelt = new Date().getTimezoneOffset() * 60;
+			cDay = new Date( sD.start.created_utc * 1000 );
+			$('#nck_cakeday').text( nckma.str_date( cDay ), localStorage['dateFormat'] );
+			$('#nck_start_lkarma').text( bpmv.num(sD.start.link_karma, true) ? nckma.str_num( sD.start.link_karma ) : 'unknown' );
+			$('#nck_start_ckarma').text( bpmv.num(sD.start.comment_karma, true) ? nckma.str_num( sD.start.comment_karma ) : 'unknown' );
+			if ( bpmv.num(sD.start.nkTimeStamp) ) {
+				cDay = new Date( sD.start.nkTimeStamp );
+				$('#nck_start_timestamp').text( nckma.str_date( cDay ), localStorage['dateFormat'] );
+			} else {
+				$('#nck_start_timestamp').text( 'unknown' );
+			}
+		} else {
+			$('#nck_user').text( 'unknown' );
+			$('#nck_cakeday').text( 'unknown' );
+			$('#nck_start_lkarma').text( 'unknown' );
+			$('#nck_start_ckarma').text( 'unknown' );
+		}
+		if ( bpmv.obj(sD.current, true) ) {
+			if ( bpmv.num(sD.current.nkTimeStamp) ) {
+				cDay = new Date( sD.current.nkTimeStamp );
+				$('#nck_curr_timestamp').text( nckma.str_date( cDay ), localStorage['dateFormat'] );
+			} else {
+				$('#nck_curr_timestamp').text( 'unknown' );
+			}
+
+			lDelt = parseInt( sD.current.link_karma, 10 ) - parseInt( sD.start.link_karma, 10 );
+			if ( lDelt > 0 ) { // positive
+				pChar = '+';
+				pClass = 'color: rgba( ' + localStorage['posChange'] + ' );';
+			} else if ( lDelt < 0 ) { // negative
+				pChar = '-';
+				pClass = 'color: rgba( ' + localStorage['negChange'] + ' );';
+			} else { // zero
+				pChar = '';
+				pClass = 'color: rgba( ' + localStorage['noChange'] + ' );';
+			}
+			$('#nck_curr_lkarma').html( ( bpmv.num(sD.current.link_karma, true) ? nckma.str_num( sD.current.link_karma ) : 'unknown' ) + ' (<span style="'+pClass+'">' + pChar + nckma.str_num( lDelt ) + '</span>)' );
+			cDelt = parseInt( sD.current.comment_karma, 10 ) - parseInt( sD.start.comment_karma, 10 );
+			if ( cDelt > 0 ) { // positive
+				pChar = '+';
+				pClass = 'color: rgba( ' + localStorage['posChange'] + ' );';
+			} else if ( cDelt < 0 ) { // negative
+				pChar = '-';
+				pClass = 'color: rgba( ' + localStorage['negChange'] + ' );';
+			} else { // zero
+				pChar = '';
+				pClass = 'color: rgba( ' + localStorage['noChange'] + ' );';
+			}
+			$('#nck_curr_ckarma').html( ( bpmv.num(sD.current.comment_karma, true) ? nckma.str_num( sD.current.comment_karma ) : 'unknown' ) + ' (<span style="'+pClass+'">' + pChar + nckma.str_num( cDelt ) + '</span>)' );
+		} else {
+			$('#nck_curr_lkarma').text( 'unknown' );
+			$('#nck_curr_ckarma').text( 'unknown' );
+		}
+		info = bgP.nckma.info( true );
+		if ( bpmv.str(info) ) {
+			inf = JSON.parse( info );
+			$('#nck_name').text( '' + inf.name + ' v' + inf.version );
+			$('#nck_desc').text( '' + inf.description );
+		}
+
+	}
+}
+
+function go_to_user () {
+	status = bgP.nckma.get( true );
+	if ( bpmv.str(status) ) {
+		var sD = JSON.parse( status );
+		if ( bpmv.obj(sD.start, true) && bpmv.str(sD.start.name) ) {
+			window.open( 'http://www.reddit.com/user/'+sD.start.name+'/' );
+			nckma.track( 'func', 'go_to_user', 'nkExec' );
+		}
+	}
+}
+
+$(document).ready( function () {
+	$('#nck_close_x').click( function () { window.close(); } );
+	$('#nck_pop_btn_options').click( function () { window.open( '/nckma_html/options.html' ); } );
+	$('#nck_pop_btn_close').click( function () { window.close(); } );
+	$('#nck_pop_btn_reset').click( reset_stats );
+	$('#nck_pop_btn_user').click( go_to_user );
+	populate();
+
+} );
