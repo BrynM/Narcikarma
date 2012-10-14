@@ -304,6 +304,16 @@ if ( typeof(nckma) != 'object' ) {
 		}
 	}
 
+	nckma.track = function ( label, val, cat ) {
+		var category = bpmv.str(cat) ? ''+cat : 'nkRuntime';
+		if ( !bpmv.str(label) || !bpmv.obj(_gaq) ) {
+			return;
+		}
+		if ( bpmv.obj(_gaq) || bpmv.arr(_gaq) ) {
+			return _gaq.push( [ '_trackEvent', category + ( nkTesting || nkDebug ? ' -'+(nkTesting ? 'T' : '')+(nkDebug ? 'D' : '')+'-' : '' ), label, val ] );
+		}
+	}
+
 	nckma.warn = function () {
 		if ( nkDebug ) {
 			if ( bpmv.num(bpmv.count(arguments)) && bpmv.str(arguments[0]) ) {
@@ -457,13 +467,6 @@ return nckma; })() && (function () {
 		nckma.track( 'saved', '', 'nkOptions' );
 	};
 
-	nckma.track = function ( label, val, cat ) {
-		var category = bpmv.str(cat) ? ''+cat : 'nkRuntime';
-		if ( !bpmv.str(label) || !bpmv.obj(_gaq) ) {
-			return;
-		}
-		return _gaq.push( [ '_trackEvent', category, label, val ] );
-	}
 return nckma.opts; })() && (function () {
 
 	/*
