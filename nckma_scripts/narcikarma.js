@@ -20,8 +20,10 @@ if ( typeof(nckma) != 'object' ) {
 		, nkDebug = true
 		, nkSetInterval = null
 		, nkUrls = {
-		 	  'user'     : 'http://www.reddit.com/api/me.json'
-			, 'userTest' : 'http://narcikarma.net/test/me.php'
+		 	  'user'       : 'http://www.reddit.com/api/me.json'
+			, 'userTest'   : 'http://narcikarma.net/test/me.php'
+			, 'cakeYay'    : 'http://www.reddit.com/r/cakeday/'
+			, 'cakeNuthin' : 'http://www.google.com/search?q=karma+machine&tbm=isch'
 		}
 		, nkDefaults = {
 			  'alertCommentGain' : 50
@@ -166,7 +168,7 @@ if ( typeof(nckma) != 'object' ) {
 			if ( bpmv.str(d.name) ) {
 				d.nkTimeStamp = new Date().getTime();
 				if ( !bpmv.obj(nkDataFirst) || ( nkDataFirst.name != d.name ) ) {
-					nckma.track( 'func', 'nckma.parse reset nkDataFirst' + ( nkDataFirst.name != d.name ? 'newlogin' : '' ), 'nkExec' );
+					nckma.track( 'func', 'nckma.parse reset nkDataFirst newlogin', 'nkExec' );
 					nkDataFirst = d;
 				}
 				nkDataLast = d;
@@ -282,9 +284,22 @@ if ( typeof(nckma) != 'object' ) {
 	};
 
 	nckma.str_num = function ( num ) {
-		var neg = '',
-			uNum = 0;
+		var neg = ''
+			, uNum = ''
+			, n = null
+			, nI = null
+			, nD = null
+			, nRx = /(\d+)(\d{3})/;
 		if ( bpmv.num(num, true) && ( (''+num).length > 3 ) ) {
+			uNum = ''+num;
+			n = uNum.split( '.' );
+			nI = n[0];
+			nD = n.length > 1 ? '.'+nD : '';
+			while ( nRx.test( nI ) ) {
+				nI = nI.replace( nRx, '$1'+','+'$2' );
+			}
+			return nI+nD;
+/*
 			if ( num < 0 ) {
 				neg = '-';
 				uNum = 0 - num;
@@ -292,6 +307,7 @@ if ( typeof(nckma) != 'object' ) {
 				uNum = 0 + num;
 			}
 			return neg + (''+uNum).split( '' ).reverse().join( '' ).match( /.{1,3}/g ).reverse().join( ',' );
+*/
 		}
 		return  ''+num;
 	}
