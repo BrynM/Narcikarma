@@ -69,13 +69,20 @@ body {
 }
 
 .nckButtonRow {
+	margin: 5px 0;
 	text-align: left;
+}
+.nckButtonRowHelp {
+	padding-top: 5px;
+	border-top: 1px solid #646AAA;
 }
 
 #nck_name {
 	margin: 0;
 }
-
+#nck_desc {
+	border-bottom: 1px solid #646AAA;
+}
 #nck_close_x {
 	position: fixed;
 	top: 0;
@@ -89,3 +96,40 @@ body {
 	margin: 0;
 }
 
+input[type="button"],
+button {
+	-webkit-appearance: none !important;
+	background: #e8e8ff;
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e8e8ff));
+	background: -webkit-linear-gradient(top, #fff, #e8e8ff);
+	background: -moz-linear-gradient(top, #fff, #e8e8ff);
+	background: -ms-linear-gradient(top, #fff, #e8e8ff);
+	background: -o-linear-gradient(top, #fff, #e8e8ff);
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	border: 1px solid #646AAA;
+	color: #000;
+	font-size: 12px;
+	font-family: Arial, sans-serif;
+	text-decoration: none;
+	padding: 2px 4px;
+	vertical-align: middle;
+}
+input[type="button"]:hover,
+button:hover,
+input[type="button"]:active,
+button:active {
+	background: #fff;
+	background: -webkit-gradient(linear, left top, left bottom, from(#e8e8ff), to(#fff));
+	background: -webkit-linear-gradient(top, #e8e8ff, #fff);
+	background: -moz-linear-gradient(top, #e8e8ff, #fff);
+	background: -ms-linear-gradient(top, #e8e8ff, #fff);
+	background: -o-linear-gradient(top, #e8e8ff, #fff);
+	color: #b25f43;
+	border: 1px solid #B25F43;
+}
+input[type="button"]:active,
+button:active {
+	border: 1px solid #FF8B60;
+}

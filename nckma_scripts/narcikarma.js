@@ -28,12 +28,18 @@ if ( typeof(nckma) != 'object' ) {
 		, nkDefaults = {
 			  'alertCommentGain' : 50
 			, 'alertLinkGain'    : 50
+			, 'alternateTime'    : 2 // in seconds
 			, 'dateFormat'       : 'US'
-			, 'interval'         : 600
+			, 'interval'         : 600 // in seconds
 			, 'row0'             : 'lKarma' // one of cKarma, lKarma, flags
 			, 'row1'             : 'cKarma'
 			, 'black'            : '0, 0, 0, 1'
 			, 'blue'             : '0, 0, 235, 1'
+			, 'flag0'            : 'has_mail'
+			, 'flag1'            : 'is_mod'
+			, 'flag2'            : 'has_mod_mail'
+			, 'flag3'            : 'is_gold'
+			, 'gold'             : '176, 176, 21, 1'
 			, 'gray'             : '128, 128, 128, 1'
 			, 'green'            : '0, 190, 0, 1'
 			, 'purple'           : '215, 0, 215, 1'
@@ -47,6 +53,13 @@ if ( typeof(nckma) != 'object' ) {
 			, 'notification' : 'nckma_html/notification.html'
 			, 'options'      : 'nckma_html/options.html'
 		};
+
+	/*
+	* load GA
+	*/
+	if ( !nkTesting && bpmv.func(load_nckma_ga) ) {
+		load_nckma_ga();
+	}
 
 	/*
 	* settings
@@ -117,15 +130,43 @@ if ( typeof(nckma) != 'object' ) {
 		if ( bpmv.obj(dat) ) {
 			if ( bpmv.obj(dat.start) && bpmv.str(dat.start.name) ) {
 				hasCurr = ( bpmv.obj(dat.current) && bpmv.str(dat.current.name) );
-				ret += 'User: '+ dat.start.name + '\n';
-				ret += 'Start Link Karma: '+ nckma.str_num( dat.start.link_karma ) + '\n';
+				ret += 'User: '+ dat.start.name + ( dat.current.has_mail ? ' (MAIL)' : '' ) + ( dat.current.has_mod_mail ? ' (MOD MAIL)' : '' ) + '\n';
 				delt = hasCurr ? dat.current.link_karma - dat.start.link_karma : 0;
 				delt = hasCurr ? ( delt > 0 ? '+' : '' ) + nckma.str_num( delt ) : '0';
-				ret += 'Current Link Karma: '+ ( hasCurr ? nckma.str_num( dat.current.link_karma ) + ' (' + delt + ')' : 'unknown' ) + '\n';
-				ret += 'Start Comment Karma: '+ nckma.str_num( dat.start.comment_karma ) + '\n';
+				ret += 'Link Karma: '+ nckma.str_num( dat.start.link_karma ) + ' to ' + ( hasCurr ? nckma.str_num( dat.current.link_karma ) + ' (' + delt + ')' : 'unknown' ) + '\n';
 				delt = hasCurr ? dat.current.comment_karma - dat.start.comment_karma : 0;
 				delt = hasCurr ? ( delt > 0 ? '+' : '' ) + nckma.str_num( delt ) : '0';
-				ret += 'Current Comment Karma: '+ ( hasCurr ? nckma.str_num( dat.current.comment_karma ) + ' (' + delt + ')'  : 'unknown' ) + '\n';
+				ret += 'Comment Karma: '+ nckma.str_num( dat.start.comment_karma ) + ' to ' + ( hasCurr ? nckma.str_num( dat.current.comment_karma ) + ' (' + delt + ')' : 'unknown' ) + '\n';
+				ret += 'Last Check: '+ ( hasCurr ? nckma.str_date( new Date( dat.current.nkTimeStamp ), localStorage['dateFormat'] ) : 'unknown' ) + '\n';
+				if ( ( localStorage['row0'] == 'flags' ) || ( localStorage['row1'] == 'flags' ) || ( localStorage['row0'] == 'flagsAndC' ) || ( localStorage['row1'] == 'flagsAndC' ) || ( localStorage['row0'] == 'flagsAndL' ) || ( localStorage['row1'] == 'flagsAndL' ) ) {
+					ret += 'Flags: ';
+					for ( var f = 0; f < 4; f++ ) {
+						switch( localStorage['flag'+f] ) {
+							case 'has_mail':
+								ret += 'Mail';
+								break;
+							case 'has_mod_mail':
+								ret += 'Mod Mail';
+								break;
+							case 'is_gold':
+								ret += 'Gold';
+								break;
+							case 'is_mod':
+								ret += 'Mod';
+								break;
+							case 'has_mail_both':
+								ret += 'Mail/Mod Mail';
+								break;
+							default:
+								ret += '(blank)';
+								break;
+						}
+						if ( f < 3 ) {
+							ret += ', ';
+						}
+					}
+					ret += '\n';
+				}
 			}
 		}
 		return ret;
@@ -159,7 +200,7 @@ if ( typeof(nckma) != 'object' ) {
 		nkIsPolling = false;
 		nckma.px.draw_status( 'parse' );
 		if ( stat != 'success' ) {
-			nckma.px.draw_line( 'ERR', 1, nckma.px.color( 'red' ) );
+			nckma.px.draw_line( 'CON', 1, nckma.px.color( 'red' ) );
 			nckma.px.draw_line( 'ERR', 2, nckma.px.color( 'red' ) );
 			nckma.px.draw_status( 'err' );
 			return;
@@ -173,24 +214,33 @@ if ( typeof(nckma) != 'object' ) {
 				}
 				nkDataLast = d;
 				localStorage['_lastCached'] = JSON.stringify( nkDataLast );
-				cDelt = parseInt( nkDataLast.comment_karma, 10 ) - parseInt( nkDataFirst.comment_karma, 10 );
-				lDelt = parseInt( nkDataLast.link_karma, 10 ) - parseInt( nkDataFirst.link_karma, 10 );
-				if ( cDelt === 0 ) {
-					nckma.px.draw_line( ''+cDelt, 2, nckma.px.color( 'noChange' ) );
-				} else if ( cDelt > 0 ) {
-					nckma.px.draw_line( ''+cDelt, 2, nckma.px.color( 'posChange' ) );
-				} else {
-					nckma.px.draw_line( ''+(0-cDelt), 2, nckma.px.color( 'negChange' ) );
+				switch ( localStorage['row0'] ) {
+					case 'flags':
+						nckma.draw_change_flags( 1 );
+						break
+					case 'cKarma':
+						nckma.draw_change_comment( 1 );
+						break
+					case 'lKarma':
+					default:
+						nckma.draw_change_link( 1 );
+						break
 				}
-				if ( lDelt === 0 ) {
-					nckma.px.draw_line( ''+lDelt, 1, nckma.px.color( 'noChange' ) );
-				} else if ( lDelt > 0 ) {
-					nckma.px.draw_line( ''+lDelt, 1, nckma.px.color( 'posChange' ) );
-				} else {
-					nckma.px.draw_line( ''+(0-lDelt), 1, nckma.px.color( 'negChange' ) );
+				switch ( localStorage['row1'] ) {
+					case 'flags':
+						nckma.draw_change_flags( 2 );
+						break
+					case 'cKarma':
+						nckma.draw_change_comment( 2 );
+						break
+					case 'lKarma':
+					default:
+						nckma.draw_change_link( 2 );
+						break
 				}
 			}
 			nckma.px.draw_status( 'idle' );
+			chrome.browserAction.setTitle( { 'title' : 'Narcikarma\n' + nckma.get_text_status() } );
 		} else {
 			nckma.px.draw_line( 'LOG', 1, nckma.px.color( 'blue' ) );
 			nckma.px.draw_line( 'IN', 2, nckma.px.color( 'blue' ) );
@@ -253,19 +303,23 @@ if ( typeof(nckma) != 'object' ) {
 	};
 
 	nckma.str_date = function ( dObj, loc ) {
-		var hours = '';
-		loc = !bpmv.str(loc) ? '' : loc;
+		var hours = ''
+			, mins = ''
+			, secs = ''
+			, dFmt = !bpmv.str(loc) ? ''+localStorage['dateFormat'] : ''+loc;
 		if ( bpmv.typeis( dObj, 'Date' ) ) {
 			hours = dObj.getHours();
-			switch ( loc.toLowerCase() ) {
+			mins = bpmv.pad( dObj.getMinutes(), 2 );
+			secs = bpmv.pad( dObj.getSeconds(), 2 );
+			switch ( dFmt.toLowerCase() ) {
 				case 'uk':
 					return '' +
 						dObj.getFullYear() +
 						'.' + bpmv.pad( (dObj.getMonth()+1), 2 ) +
 						'.' + bpmv.pad( dObj.getDate(), 2 ) +
-						' ' + bpmv.pad( dObj.getHours(), 2 ) +
-						':' + bpmv.pad( dObj.getMinutes(), 2 ) +
-						':' + bpmv.pad( dObj.getSeconds(), 2 );
+						' ' + bpmv.pad( hours, 2 ) +
+						':' + ( bpmv.str(mins) ? mins : '00') +
+						':' + ( bpmv.str(secs) ? secs : '00');
 					break;
 				case 'us':
 				default:
@@ -274,8 +328,8 @@ if ( typeof(nckma) != 'object' ) {
 						'/' + bpmv.pad( dObj.getDate(), 2 ) +
 						'/' + dObj.getFullYear() +
 						' ' + bpmv.pad( (hours > 12 ? hours - 12 : hours), 2, '0' ) +
-						':' + bpmv.pad( dObj.getMinutes(), 2 ) +
-						':' + bpmv.pad( dObj.getSeconds(), 2 ) +
+						':' + ( bpmv.str(mins) ? mins : '00') +
+						':' + ( bpmv.str(secs) ? secs : '00') +
 						' ' + (hours > 12 ? 'PM' : 'AM');
 					break;
 
@@ -313,10 +367,10 @@ if ( typeof(nckma) != 'object' ) {
 
 	nckma.track = function ( label, val, cat ) {
 		var category = bpmv.str(cat) ? ''+cat : 'nkRuntime';
-		if ( !bpmv.str(label) || !bpmv.obj(_gaq) ) {
+		if ( !bpmv.str(label) || typeof(_gaq) === 'undefined' || !bpmv.obj(_gaq) ) {
 			return;
 		}
-		if ( bpmv.obj(_gaq) || bpmv.arr(_gaq) ) {
+		if ( bpmv.obj(_gaq) || typeof(_gaq) === 'undefined' || bpmv.arr(_gaq) ) {
 			return _gaq.push( [ '_trackEvent', category + ( nkTesting || nkDebug ? ' -'+(nkTesting ? 'T' : '')+(nkDebug ? 'D' : '')+'-' : '' ), label, val ] );
 		}
 	}
@@ -481,7 +535,9 @@ return nckma.opts; })() && (function () {
 	*/
 
 	var nkCanvas = null
-		, nkCx = null;
+		, nkCx = null
+		, line0y = 0
+		, line1y = 9;
 
 	/*
 	* create
@@ -498,8 +554,8 @@ return nckma.opts; })() && (function () {
 		 'p0' : '010110100101101001011010' // test pattern
 		,'p1' : '111111011011110110111111' // test pattern
 		,'p2' : '010111110101111101011111' // test pattern
-		,'f0' : '111010100000000010101110' // flag off
-		,'f1' : '111011101110111011101110' // flag on
+		,'f0' : '000000001100110000000000' // flag off
+		,'f1' : '110011001110111011001100' // flag on
 		, ' ' : '000000000000000000000000'
 		, '1' : '010001000100010001000100'
 		, '2' : '010010100010010010001110'
@@ -515,6 +571,7 @@ return nckma.opts; })() && (function () {
 		, '-' : '000000001110000000000000'
 		, '>' : '100001000010001001001000'
 		, 'k' : '100010101100101010011001'
+		, 'm' : '000000000000111111111001'
 		, 'A' : '010010101010111010101010'
 		, 'B' : '111010101100101010101110'
 		, 'C' : '111010001000100010001110'
@@ -546,6 +603,7 @@ return nckma.opts; })() && (function () {
 	nckma.px.fallbackColors = {
 		  'black'     : [   0,   0,   0,   1 ]
 		, 'blue'      : [   0,   0, 235,   1 ]
+		, 'gold'      : [ 176, 176,  21,   1 ]
 		, 'gray'      : [ 128, 128, 128,   1 ]
 		, 'green'     : [   0, 190,   0,   1 ]
 		, 'purple'    : [ 215,   0, 215,   1 ]
@@ -623,6 +681,132 @@ return nckma.opts; })() && (function () {
 		return nkCx;
 	};
 
+	nckma.draw_change_comment = function ( line ) {
+		var dat = null
+			, delt = 0
+			, col = 'noChange';
+		if ( ( line != 1 ) && ( line != 2 ) ) {
+			nckma.warn( 'Bad line for nckma.draw_change_comment()', line );
+			return;
+		}
+		dat = nckma.get();
+		if ( bpmv.obj(dat, true) && bpmv.obj(dat.start, true) && bpmv.obj(dat.current, true) ) {
+			if ( bpmv.num(dat.start.comment_karma, true) && bpmv.num(dat.current.comment_karma, true) ) {
+				delt = parseInt( dat.current.comment_karma, 10 ) - parseInt( dat.start.comment_karma, 10 );
+				if ( delt < -999999 ) {
+					delt = Math.round( delt / 1000000 ) + 'm';
+					col = 'negChange';
+				} else if ( delt < -999 ) {
+					delt = Math.round( delt / 1000 ) + 'k';
+					col = 'negChange';
+				} else if ( delt > 999999 ) {
+					delt = Math.round( delt / 1000000 ) + 'm';
+					col = 'posChange';
+				} else if ( delt > 9999 ) {
+					delt = Math.round( delt / 1000 ) + 'k';
+					col = 'posChange';
+				} else if ( delt > 0 ) {
+					col = 'posChange';
+				}
+				nckma.px.draw_line( ''+delt, line, nckma.px.color( col ) );
+			}
+
+		}
+	};
+
+	nckma.draw_change_flags = function ( line ) {
+		var dat = null
+			, flag = 0
+			, ch = ''
+			, x = 0
+			, y = line > 1 ? line1y : line0y;
+		if ( ( line != 1 ) && ( line != 2 ) ) {
+			nckma.warn( 'Bad line for nckma.draw_change_link()', line );
+			return;
+		}
+		dat = nckma.get();
+		if ( bpmv.obj(dat, true) && bpmv.obj(dat.current, true) ) {
+			while ( flag < 4 ) {
+				switch ( localStorage['flag'+flag] ) {
+					case 'has_mail_both':
+						if ( dat.current.has_mail || dat.current.has_mod_mail ) {
+							nckma.px.draw_char( 'f1', x, y, nckma.px.color( 'red' ) );
+						} else {
+							nckma.px.draw_char( 'f0', x, y, nckma.px.color( 'red' ) );
+						}
+						break;
+					case 'has_mail':
+						if ( dat.current.has_mail ) {
+							nckma.px.draw_char( 'f1', x, y, nckma.px.color( 'red' ) );
+						} else {
+							nckma.px.draw_char( 'f0', x, y, nckma.px.color( 'red' ) );
+						}
+						break;
+					case 'has_mod_mail':
+						if ( dat.current.has_mail ) {
+							nckma.px.draw_char( 'f1', x, y, nckma.px.color( 'blue' ) );
+						} else {
+							nckma.px.draw_char( 'f0', x, y, nckma.px.color( 'blue' ) );
+						}
+						break;
+					case 'is_mod':
+						if ( dat.current.is_gold ) {
+							nckma.px.draw_char( 'f1', x, y, nckma.px.color( 'purple' ) );
+						} else {
+							nckma.px.draw_char( 'f0', x, y, nckma.px.color( 'purple' ) );
+						}
+						break;
+					case 'is_gold':
+						if ( dat.current.is_gold ) {
+							nckma.px.draw_char( 'f1', x, y, nckma.px.color( 'gold' ) );
+						} else {
+							nckma.px.draw_char( 'f0', x, y, nckma.px.color( 'gold' ) );
+						}
+						break;
+					default:
+						nckma.px.draw_char( ' ', x, y, nckma.px.color( 'black' ) );
+						break;
+				}
+				x += 4;
+				flag++;
+			}
+			nckma.px.read();
+		}
+	};
+
+	nckma.draw_change_link = function ( line ) {
+		var dat = null
+			, delt = 0
+			, col = 'noChange';
+		if ( ( line != 1 ) && ( line != 2 ) ) {
+			nckma.warn( 'Bad line for nckma.draw_change_link()', line );
+			return;
+		}
+		dat = nckma.get();
+		if ( bpmv.obj(dat, true) && bpmv.obj(dat.start, true) && bpmv.obj(dat.current, true) ) {
+			if ( bpmv.num(dat.start.link_karma, true) && bpmv.num(dat.current.link_karma, true) ) {
+				delt = parseInt( dat.current.link_karma, 10 ) - parseInt( dat.start.link_karma, 10 );
+				if ( delt < -999999 ) {
+					delt = '-' + Math.round( delt / 1000000 ) + 'm';
+					col = 'negChange';
+				} else if ( delt < -999 ) {
+					delt = '-' + Math.round( delt / 1000 ) + 'k';
+					col = 'negChange';
+				} else if ( delt > 999999 ) {
+					delt = Math.round( delt / 1000000 ) + 'm';
+					col = 'posChange';
+				} else if ( delt > 9999 ) {
+					delt = Math.round( delt / 1000 ) + 'k';
+					col = 'posChange';
+				} else if ( delt > 0 ) {
+					col = 'posChange';
+				}
+				nckma.px.draw_line( ''+delt, line, nckma.px.color( col ) );
+			}
+
+		}
+	};
+
 	nckma.px.draw_char = function ( ch, x, y, color ) {
 		var cx = nckma.px.cx()
 			, st = ''
@@ -645,6 +829,9 @@ return nckma.opts; })() && (function () {
 					nckma.warn( 'Y is not an integer between 0 and 15!', y );
 				} else {
 					st += nckma.px.chars[cChar];
+					if ( bpmv.str(color) ) {
+						var color = nckma.px.color( color );
+					}
 					if ( !bpmv.arr(color) || ( color.length != 4 ) ) {
 						nckma.debug( 'Substituting color for black.', color );
 						phil = 'rgba( 0, 0, 0, 1 )';
@@ -659,7 +846,7 @@ return nckma.opts; })() && (function () {
 						if ( st[aC] === '1' ) {
 							cx.fillStyle = phil;
 							draw = true;
-						} else if ( st[aC] === '0' ) {
+						} else if ( ( st[aC] === '0' ) || ( ch === ' ' ) ) {
 							cx.globalCompositeOperation = 'destination-out';
 							cx.fillStyle = 'rgba( 0, 0, 0, 1 )';
 							draw = true;
@@ -688,14 +875,11 @@ return nckma.opts; })() && (function () {
 		}
 	};
 
-	nckma.px.draw_flag = function ( flag, row, onOff ) {
-	}
-
 	nckma.px.draw_line = function ( str, line, color ) {
 		var cL = parseInt( line, 10 )
 			, dL = false
 			, dX = 12
-			, dY = 0
+			, dY = line0y
 			, dS = ''; // last char first
 		if ( typeof(line) === 'undefined' ) {
 			line = 1;
@@ -704,7 +888,7 @@ return nckma.opts; })() && (function () {
 			dL = true;
 		} else if ( line === 2 ) {
 			dL = true;
-			dY = 9;
+			dY = line1y;
 		} else {
 			nckma.warn( 'Line must be wither 1 or 2!', line );
 		}
@@ -775,16 +959,10 @@ return nckma.opts; })() && (function () {
 	nckma.px.read = function () {
 		var cx = nckma.px.cx()
 			, dat = null
-			, bP = chrome.extension.getBackgroundPage()
 			, tT = '';
 		if ( bpmv.obj(cx) ) {
 			dat = cx.getImageData( 0, 0, nkCanvas.width(), nkCanvas.height() );
 			chrome.browserAction.setIcon( { imageData : dat } );
-			if ( bpmv.obj(bP) ) {
-				tT += 'Narcikarma\n';
-				tT += bP.nckma.get_text_status();
-				chrome.browserAction.setTitle( { title : tT } );
-			}
 			return dat;
 		}
 	};

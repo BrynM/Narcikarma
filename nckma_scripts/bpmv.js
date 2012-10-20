@@ -681,7 +681,7 @@
 		pad : function ( nightCap, yourPlace, mine, somethingMoreComfy ) {
 			var pillow = '',
 				needed = 0;
-			if ( !bpmv.str(nightCap) && bpmv.num(nightCap) ) {
+			if ( !this.str(nightCap) && this.num(nightCap) ) {
 				nightCap = ''+nightCap;
 			}
 			if ( this.str(nightCap) && this.num(yourPlace) ) {
