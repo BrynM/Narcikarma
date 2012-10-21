@@ -6,6 +6,12 @@ if ( typeof(nckma) != 'object' ) {
 
 (function () {
 
+// http://www.reddit.com/r/Narcikarma/about.json
+// http://www.reddit.com/reddits/mine.json
+// http://www.reddit.com/reddits/mine/subscriber.json
+//http://www.reddit.com/reddits/mine/moderator.json
+
+
 	/*
 	* "Local" vars
 	*/
@@ -16,7 +22,7 @@ if ( typeof(nckma) != 'object' ) {
 		, nkDataFirst = bpmv.str(localStorage['_lastCached']) ? JSON.parse( localStorage['_lastCached'] ) : null
 		, nkDataLast = null
 		, nkManifest = null
-		, nkTesting = false
+		, nkTesting = true
 		, nkDebug = true
 		, nkSetInterval = null
 		, nkUrls = {
@@ -694,10 +700,13 @@ return nckma.opts; })() && (function () {
 			if ( bpmv.num(dat.start.comment_karma, true) && bpmv.num(dat.current.comment_karma, true) ) {
 				delt = parseInt( dat.current.comment_karma, 10 ) - parseInt( dat.start.comment_karma, 10 );
 				if ( delt < -999999 ) {
-					delt = Math.round( delt / 1000000 ) + 'm';
+					delt = Math.round( (0 - delt) / 1000000 ) + 'm';
 					col = 'negChange';
 				} else if ( delt < -999 ) {
-					delt = Math.round( delt / 1000 ) + 'k';
+					delt = Math.round( (0 - delt) / 1000 ) + 'k';
+					col = 'negChange';
+				} else if ( delt < 0 ) {
+					delt = (0 - delt);
 					col = 'negChange';
 				} else if ( delt > 999999 ) {
 					delt = Math.round( delt / 1000000 ) + 'm';
@@ -709,6 +718,7 @@ return nckma.opts; })() && (function () {
 					col = 'posChange';
 				}
 				nckma.px.draw_line( ''+delt, line, nckma.px.color( col ) );
+console.log( 'col', col );
 			}
 
 		}
@@ -787,10 +797,13 @@ return nckma.opts; })() && (function () {
 			if ( bpmv.num(dat.start.link_karma, true) && bpmv.num(dat.current.link_karma, true) ) {
 				delt = parseInt( dat.current.link_karma, 10 ) - parseInt( dat.start.link_karma, 10 );
 				if ( delt < -999999 ) {
-					delt = '-' + Math.round( delt / 1000000 ) + 'm';
+					delt = Math.round( (0 - delt) / 1000000 ) + 'm';
 					col = 'negChange';
 				} else if ( delt < -999 ) {
-					delt = '-' + Math.round( delt / 1000 ) + 'k';
+					delt = Math.round( (0 - delt) / 1000 ) + 'k';
+					col = 'negChange';
+				} else if ( delt < 0 ) {
+					delt = (0 - delt);
 					col = 'negChange';
 				} else if ( delt > 999999 ) {
 					delt = Math.round( delt / 1000000 ) + 'm';
