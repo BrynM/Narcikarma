@@ -22,7 +22,7 @@ if ( typeof(nckma) != 'object' ) {
 		, nkDataFirst = bpmv.str(localStorage['_lastCached']) ? JSON.parse( localStorage['_lastCached'] ) : null
 		, nkDataLast = null
 		, nkManifest = null
-		, nkTesting = true
+		, nkTesting = false
 		, nkDebug = true
 		, nkSetInterval = null
 		, nkUrls = {
@@ -702,7 +702,7 @@ return nckma.opts; })() && (function () {
 				if ( delt < -999999 ) {
 					delt = Math.round( (0 - delt) / 1000000 ) + 'm';
 					col = 'negChange';
-				} else if ( delt < -999 ) {
+				} else if ( delt < -9999 ) {
 					delt = Math.round( (0 - delt) / 1000 ) + 'k';
 					col = 'negChange';
 				} else if ( delt < 0 ) {
@@ -718,7 +718,6 @@ return nckma.opts; })() && (function () {
 					col = 'posChange';
 				}
 				nckma.px.draw_line( ''+delt, line, nckma.px.color( col ) );
-console.log( 'col', col );
 			}
 
 		}
@@ -799,7 +798,7 @@ console.log( 'col', col );
 				if ( delt < -999999 ) {
 					delt = Math.round( (0 - delt) / 1000000 ) + 'm';
 					col = 'negChange';
-				} else if ( delt < -999 ) {
+				} else if ( delt < -9999 ) {
 					delt = Math.round( (0 - delt) / 1000 ) + 'k';
 					col = 'negChange';
 				} else if ( delt < 0 ) {
