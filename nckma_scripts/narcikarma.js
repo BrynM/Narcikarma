@@ -22,7 +22,7 @@ if ( typeof(nckma) != 'object' ) {
 		, nkDataFirst = bpmv.str(localStorage['_lastCached']) ? JSON.parse( localStorage['_lastCached'] ) : null
 		, nkDataLast = null
 		, nkManifest = null
-		, nkTesting = false
+		, nkTesting = true
 		, nkDebug = true
 		, nkSetInterval = null
 		, nkUrls = {
@@ -71,17 +71,10 @@ if ( typeof(nckma) != 'object' ) {
 	* settings
 	*/
 
-	if ( !bpmv.obj(localStorage['conf']) ) {
-		localStorage['conf'] = {};
-	}
-
 	nckma.conf = {};
 
 	// selector cache
 	nckma.conf.cache = {};
-
-	nckma.conf.pages = {
-	};
 
 	/*
 	* functions
@@ -399,6 +392,7 @@ return nckma; })() && (function () {
 	* vars
 	*/
 
+	// here because it's needed for the next var
 	nckma.opts.valid_color = function ( val ) {
 		return nckma.px.color_test( val ) ? true : 'Color needs to be in the format "0-255, 0-255, 0-255, 0.0-1.0".';
 	};
@@ -409,6 +403,7 @@ return nckma; })() && (function () {
 		, 'interval'         : function ( val ) { return ( parseInt(val) > ( nckma.testing() ? 14 : 119 ) ) || ( parseInt(val) === 0 ) ? true : 'Refresh Interval must be 1 minute or more.'; }
 		, 'black'            : nckma.opts.valid_color
 		, 'blue'             : nckma.opts.valid_color
+		, 'gold'             : nckma.opts.valid_color
 		, 'gray'             : nckma.opts.valid_color
 		, 'green'            : nckma.opts.valid_color
 		, 'purple'           : nckma.opts.valid_color
@@ -543,7 +538,69 @@ return nckma.opts; })() && (function () {
 	var nkCanvas = null
 		, nkCx = null
 		, line0y = 0
-		, line1y = 9;
+		, line1y = 9
+		, nkChars = {
+			/* each char is a 4x6 grid of on/off */
+			 'p0' : '010110100101101001011010' // test pattern
+			,'p1' : '111111011011110110111111' // test pattern
+			,'p2' : '010111110101111101011111' // test pattern
+			,'f0' : '000000001100110000000000' // flag off
+			,'f1' : '110011001110111011001100' // flag on
+			, ' ' : '000000000000000000000000'
+			, '1' : '010001000100010001000100'
+			, '2' : '010010100010010010001110'
+			, '3' : '110000100100001000101100'
+			, '4' : '001010101110001000100010'
+			, '5' : '111010001100001000101110'
+			, '6' : '011010001100101010100100'
+			, '7' : '111000100010010010001000'
+			, '8' : '010010100100101010100100'
+			, '9' : '010010100110001000101100'
+			, '0' : '010010101010101010100100'
+			, '+' : '000001001110010000000000'
+			, '-' : '000000001110000000000000'
+			, '>' : '100001000010001001001000'
+			, 'k' : '100010101100101010011001'
+			, 'm' : '000000000000111111111001'
+			, 'A' : '010010101010111010101010'
+			, 'B' : '111010101100101010101110'
+			, 'C' : '111010001000100010001110'
+			, 'D' : '110010101010101010101100'
+			, 'E' : '111010001100100010001110'
+			, 'F' : '111010001100100010001000'
+			, 'G' : '111010001000101010101110'
+			, 'H' : '101010101010111010101010'
+			, 'I' : '111001000100010001001110'
+			, 'J' : '001000100010001010100100'
+			, 'K' : '101010101100101010101010'
+			, 'L' : '100010001000100010001110'
+			, 'M' : '101011101010101010101010'
+			, 'N' : '101010101110111010101010'
+			, 'O' : '111010101010101010101110'
+			, 'P' : '111010101110100010001000'
+			, 'Q' : '111010101010101011101110'
+			, 'R' : '110010101100110010101010'
+			, 'S' : '111010000100001000101110'
+			, 'T' : '111001000100010001000100'
+			, 'U' : '101010101010101010100100'
+			, 'V' : '101010101010101001000100'
+			, 'W' : '101010101010101011101010'
+			, 'X' : '101010101110111010101010'
+			, 'Y' : '101010100100010001000100'
+			, 'Z' : '111000100100100010001110'
+		}
+		, nkFallbackColors = {
+			  'black'     : [   0,   0,   0,   1 ]
+			, 'blue'      : [   0,   0, 235,   1 ]
+			, 'gold'      : [ 176, 176,  21,   1 ]
+			, 'gray'      : [ 128, 128, 128,   1 ]
+			, 'green'     : [   0, 190,   0,   1 ]
+			, 'purple'    : [ 215,   0, 215,   1 ]
+			, 'red'       : [ 235,   0,   0,   1 ]
+			, 'negChange' : [ 235,   0,   0,   1 ]
+			, 'noChange'  : [   0,   0,   0,   1 ]
+			, 'posChange' : [   0, 190,   0,   1 ]
+		};
 
 	/*
 	* create
@@ -554,70 +611,6 @@ return nckma.opts; })() && (function () {
 	/*
 	* vars
 	*/
-
-	nckma.px.chars = {
-		/* each char is a 4x6 grid of on/off */
-		 'p0' : '010110100101101001011010' // test pattern
-		,'p1' : '111111011011110110111111' // test pattern
-		,'p2' : '010111110101111101011111' // test pattern
-		,'f0' : '000000001100110000000000' // flag off
-		,'f1' : '110011001110111011001100' // flag on
-		, ' ' : '000000000000000000000000'
-		, '1' : '010001000100010001000100'
-		, '2' : '010010100010010010001110'
-		, '3' : '110000100100001000101100'
-		, '4' : '001010101110001000100010'
-		, '5' : '111010001100001000101110'
-		, '6' : '011010001100101010100100'
-		, '7' : '111000100010010010001000'
-		, '8' : '010010100100101010100100'
-		, '9' : '010010100110001000101100'
-		, '0' : '010010101010101010100100'
-		, '+' : '000001001110010000000000'
-		, '-' : '000000001110000000000000'
-		, '>' : '100001000010001001001000'
-		, 'k' : '100010101100101010011001'
-		, 'm' : '000000000000111111111001'
-		, 'A' : '010010101010111010101010'
-		, 'B' : '111010101100101010101110'
-		, 'C' : '111010001000100010001110'
-		, 'D' : '110010101010101010101100'
-		, 'E' : '111010001100100010001110'
-		, 'F' : '111010001100100010001000'
-		, 'G' : '111010001000101010101110'
-		, 'H' : '101010101010111010101010'
-		, 'I' : '111001000100010001001110'
-		, 'J' : '001000100010001010100100'
-		, 'K' : '101010101100101010101010'
-		, 'L' : '100010001000100010001110'
-		, 'M' : '101011101010101010101010'
-		, 'N' : '101010101110111010101010'
-		, 'O' : '111010101010101010101110'
-		, 'P' : '111010101110100010001000'
-		, 'Q' : '111010101010101011101110'
-		, 'R' : '110010101100110010101010'
-		, 'S' : '111010000100001000101110'
-		, 'T' : '111001000100010001000100'
-		, 'U' : '101010101010101010100100'
-		, 'V' : '101010101010101001000100'
-		, 'W' : '101010101010101011101010'
-		, 'X' : '101010101110111010101010'
-		, 'Y' : '101010100100010001000100'
-		, 'Z' : '111000100100100010001110'
-	};
-
-	nckma.px.fallbackColors = {
-		  'black'     : [   0,   0,   0,   1 ]
-		, 'blue'      : [   0,   0, 235,   1 ]
-		, 'gold'      : [ 176, 176,  21,   1 ]
-		, 'gray'      : [ 128, 128, 128,   1 ]
-		, 'green'     : [   0, 190,   0,   1 ]
-		, 'purple'    : [ 215,   0, 215,   1 ]
-		, 'red'       : [ 235,   0,   0,   1 ]
-		, 'negChange' : [ 235,   0,   0,   1 ]
-		, 'noChange'  : [   0,   0,   0,   1 ]
-		, 'posChange' : [   0, 190,   0,   1 ]
-	};
 
 	/*
 	* functions
@@ -665,9 +658,9 @@ return nckma.opts; })() && (function () {
 		}
 		if ( cont && bpmv.arr(cA) && ( cA.length === 4 ) ) {
 			return cA;
-		} else if ( bpmv.arr(nckma.px.fallbackColors[color]) ) {
-			nckma.warn( 'Used fallback color!', { 'color' : color, 'val' : nckma.px.fallbackColors[color] } );
-			return nckma.px.fallbackColors[color];
+		} else if ( bpmv.arr(nkFallbackColors[color]) ) {
+			nckma.warn( 'Used fallback color!', { 'color' : color, 'val' : nkFallbackColors[color] } );
+			return nkFallbackColors[color];
 		} else {
 			nckma.warn( 'Used fallback black!', { 'color' : color, 'val' : [ 0, 0, 0, 1 ] } );
 			return [ 0, 0, 0, 1 ];
@@ -832,7 +825,7 @@ return nckma.opts; })() && (function () {
 		if ( bpmv.obj(cx) && bpmv.str(ch, true) ) {
 			cChar = cChar.length === 1 ? ''+ch.toUpperCase() : ''+ch;
 			comp = cx.globalCompositeOperation;
-			if ( bpmv.str(nckma.px.chars[cChar]) ) {
+			if ( bpmv.str(nkChars[cChar]) ) {
 				x = parseInt( x, 10 );
 				y = parseInt( y, 10 );
 				if ( !bpmv.num(x, true) || ( x < 0 ) || ( x > 15 ) ) {
@@ -840,7 +833,7 @@ return nckma.opts; })() && (function () {
 				} else if ( !bpmv.num(y, true) || ( y < 0 ) || ( y > 15 ) ) {
 					nckma.warn( 'Y is not an integer between 0 and 15!', y );
 				} else {
-					st += nckma.px.chars[cChar];
+					st += nkChars[cChar];
 					if ( bpmv.str(color) ) {
 						var color = nckma.px.color( color );
 					}
@@ -863,7 +856,7 @@ return nckma.opts; })() && (function () {
 							cx.fillStyle = 'rgba( 0, 0, 0, 1 )';
 							draw = true;
 						} else {
-							nckma.warn( 'Current character is not a flag!',  { 'char' : cChar, 'set' : nckma.px.chars, 'val' : st[aC] } );
+							nckma.warn( 'Current character is not a flag!',  { 'char' : cChar, 'set' : nkChars, 'val' : st[aC] } );
 						}
 						if ( draw ) {
 							cx.fillRect( posX, posY, 1, 1 );
@@ -880,7 +873,7 @@ return nckma.opts; })() && (function () {
 				}
 				cx.globalCompositeOperation = comp;
 			} else {
-				nckma.warn( 'Character is not in set!', { 'char' : cChar, 'set' : nckma.px.chars } );
+				nckma.warn( 'Character is not in set!', { 'char' : cChar, 'set' : nkChars } );
 			}
 		} else {
 			nckma.warn( 'Context failed!', cx );
@@ -981,10 +974,51 @@ return nckma.opts; })() && (function () {
 
 return nckma.px; })() && (function () {
 
+	var nkCredits = { // the order here controls appearance order
+		'creator' : [
+			{ 'name' : 'badmonkey0001', 'link' : 'http://www.reddit.com/u/badmonkey0001' }
+		]
+		, 'tools' : [
+			  { 'name' : 'bpmv',           'link' : 'https://github.com/BrynM/bpmv' }
+			, { 'name' : 'Google Chrome',  'link' : 'http://www.google.com/chrome' }
+			, { 'name' : 'jQuery',         'link' : 'http://jquery.com' }
+			, { 'name' : 'Reddit',         'link' : 'http://www.reddit.com/' }
+			, { 'name' : 'Sublime Text 2', 'link' : 'http://www.sublimetext.com/2' }
+		]
+		, 'developers' : [
+			{ 'name' : 'badmonkey0001', 'link' : 'http://www.reddit.com/u/badmonkey0001' }
+		]
+		, 'alpha testers' : [
+			  { 'name' : 'evilmarc',        'link' : '' }
+			, { 'name' : 'jengo',           'link' : '' }
+			, { 'name' : 'jnickers',        'link' : '' }
+			, { 'name' : 'KerrickLong',     'link' : '' }
+			, { 'name' : 'lenoat702',       'link' : '' }
+			, { 'name' : 'MobsterMonkey21', 'link' : '' }
+			, { 'name' : 'The_Boudzter',    'link' : '' }
+			, { 'name' : 'tomswartz07',     'link' : '' }
+			, { 'name' : 'Zagorath',        'link' : '' }
+		]
+	};
+
+	nckma.credits = {};
+
+	nckma.credits.to_html = function () {
+	};
+
+	nckma.credits.to_markdown = function () {
+	};
+
+	nckma.credits.to_text = function () {
+	};
+
+return nckma.credits; })() && (function () {
+
 	if ( nckma._bgTask ) {
 		nckma.debug( 'running background task' );
 		nckma.debug( 'storage interval', localStorage['interval'] );
 		$(document).ready( nckma.begin );
 	}
+
 
 })();

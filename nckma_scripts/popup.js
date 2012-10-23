@@ -8,7 +8,6 @@ function reset_stats () {
 	}
 }
 
-// tons of wrapping up things - flags work; shoeing "13k" instead of "13000" works; new options added; popup enhanced with links and new buttons
 function populate () {
 	var sD = null
 		, cDelt = 0

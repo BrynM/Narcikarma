@@ -6,6 +6,10 @@ B25F43 dark upvote orange
 e8e8ff light downvote blue
 646AAA dark downvote blue
 800080 purple
+D3D33D yellow
+F0F015 light yellow
+ABAB15 gold
+
 */
 /* page stuff */
 body {
@@ -31,10 +35,69 @@ body {
 	background-position: 0 0;
 	opacity: 0.25;
 }
+.pagename a {
+	color: #800080;
+	font-size: 20px;
+}
+
+/*
+.side .titlebox .usertext-body a[href$="#nkma"] {
+	display: block;
+	font-size: 24px;
+	height: 128px;
+	width: 128px;
+	font-variant: small-caps;
+	font-family: verdana, arial, helvetica, sans-serif;
+	text-align: center;
+	cursor: default;
+	color: black;
+	text-decoration: none;
+	background-image: url( %%icon128%% );
+	background-repeat: no-repeat;
+	background-position: center center;
+	text-indent: -1000px;
+	margin: 0 auto;
+	opacity: 0.25;
+}
+*/
+.side .titlebox .usertext-body a[href$="#nkma"] {
+	display: block;
+	font-size: 24px;
+	height: 250px;
+	width: 250px;
+	margin: 12px auto;
+	font-variant: small-caps;
+	font-family: verdana, arial, helvetica, sans-serif;
+	text-align: center;
+	color: black;
+	text-decoration: none;
+	background-image: url( %%nk-small-shot-250x250%% );
+	background-repeat: no-repeat;
+	background-position: center center;
+	text-indent: -1000px;
+	opacity: 0.75;
+	-webkit-box-shadow:  1px 1px 4px 2px #999;
+	box-shadow:  1px 1px 4px 2px #999;
+}
+
+.side .titlebox h1.redditname {
+	display: block;
+	font-size: 24px;
+	font-variant: small-caps;
+	font-family: verdana, arial, helvetica, sans-serif;
+	text-align: center;
+	color: black;
+}
 
 /* tabmenu */
-.tabmenu li.selected a {
+.tabmenu li a {
 	color: #B25F43;
+	border: 1px solid #B25F43;
+	border-bottom: none;
+}
+
+.tabmenu li.selected a {
+	color: #000;
 	background-color: #e8e8ff;
 	border-bottom: 1px solid #e8e8ff;
 }
@@ -71,6 +134,16 @@ body {
 /* posts */
 .author.submitter {
 }
+.author.moderator[href$="/badmonkey0001"] {
+	color: #800080 !important;
+	border-color: #800080;
+	font-weight: bold;
+	padding: 2px 4px;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	background-color: #FF8B60 !important;
+}
 
 /* creator */
 .author[href$="/badmonkey0001"], .author.submitter[href$="/badmonkey0001"]
@@ -84,13 +157,25 @@ body {
 	-webkit-border-radius: 4px;
 	border: 1px solid #FF8B60;
 	padding: 2px;
-	text-transform: uppercase;
-	font-size: 75%;
+	font-size: 85%;
 }
 .author[href$="/badmonkey0001"]:after
 {
-	padding: 0 2px;
-	content: " (Original Creator)";
+	display: inline-block;
+	margin-left: 8px;
+	color: #800080 !important;
+	background-color: #ffeae2 !important;
+	font-weight: bold;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border: 1px solid #646AAA;
+	padding: 0 3px;
+	margin: 1px 0;
+	content: "Alpha Tester";
+	text-transform: uppercase;
+	font-size: 80%;
+	content: "Original Creator";
 }
 
 /* closed alpha testers */
@@ -105,13 +190,13 @@ body {
 .author[href$="/KerrickLong"], .author.submitter[href$="/KerrickLong"]
 {
 	background-color: #B25F43 !important;
-	color: #e8e8ff !important;
+	color: #F0F015 !important;
 	padding: 0 2px;
 	border-radius: 4px;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border: 1px solid #B25F43;
-	font-size: 75%;
+	font-size: 85%;
 }
 .author[href$="/jengo"]:after,
 .author[href$="/jnickers"]:after,
@@ -124,13 +209,16 @@ body {
 .author[href$="/KerrickLong"]:after
 {
 	display: inline-block;
-	color: #646AAA !important;
-	background-color: #FF8B60 !important;
+	margin-left: 8px;
+	color: #800080 !important;
+	background-color: #ffeae2 !important;
 	font-weight: bold;
 	border-radius: 4px;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border: 1px solid #646AAA;
-	padding: 0 2px;
-	content: " (Alpha Tester)";
+	padding: 0 3px;
+	content: "Alpha Tester";
+	text-transform: uppercase;
+	font-size: 80%;
 }
