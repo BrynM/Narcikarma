@@ -61,6 +61,7 @@ At a glance you can check your narcissistic progress, meaning you can stop using
 
 * Is Narcikarma Open Source?
     * Yes. It's [GPLv3](https://github.com/BrynM/Narcikarma/blob/master/gplv3.txt)
+    * The other tools used by Narcikarma have their own licenses. They are listed in the credits.
 * Can you add a(nother) icon/textbox/image/graph/readout?
     * No. For good reason, Chrome limits each extension to a single 16x16 toolbar icon as far as the main window goes. This helps them avoid the malware toolbar hell that other browsers are prone to.
 * Can you report what links/comments got upvoted?
@@ -69,3 +70,29 @@ At a glance you can check your narcissistic progress, meaning you can stop using
     * I'm not gathering any private information. I don't want to know anything about you. I don't log your username. I don't log what you look at, where you go, what you comment or anything like that.
     * I do gather usage stats to aid me in development. For example, I log that someone (I know not who) changes a default setting to some other option. I log when some errors occur. I log how many people upgraded to the latest version.
     * Please feel free to examine the [source code](https://github.com/BrynM/Narcikarma "The actual source code on Github...") or the console to verify this.
+
+*****
+
+**Credits**
+
+* Creator
+    * badmonkey0001 (Bryn Mosher)
+* Tools
+    * [bpmv](https://github.com/BrynM/bpmv)
+    * [Google Chrome](http://www.google.com/chrome)
+    * [jQuery](http://jquery.com)
+    * [Reddit](http://www.reddit.com/)
+    * [Sublime Text 2](http://www.sublimetext.com/2)
+* Developers
+    * badmonkey0001 (Bryn Mosher)
+* Alpha Testers
+    * evilmarc
+    * jengo
+    * jnickers
+    * KerrickLong
+    * lenoat702
+    * MobsterMonkey21
+    * The_Boudzter
+    * tomswartz07
+    * Zagorath
+
