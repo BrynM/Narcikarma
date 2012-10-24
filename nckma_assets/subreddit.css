@@ -17,9 +17,6 @@ ABAB15 gold
 body {
 	background: #e8e8ff;
 }
-.side {
-	background: #e8e8ff;
-}
 #header {
 	background: #ffeae2;
 }
@@ -56,9 +53,17 @@ body {
 
 /* sidebar */
 
+.side {
+	background: #e8e8ff;
+}
+
 .side h2 {
 	margin: 5px 0;
 	color: #000;
+}
+
+.side .usertext-body a:hover {
+	color: #B25F43 !important;
 }
 
 .side .titlebox .usertext-body a[href$="#nkma"] {

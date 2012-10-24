@@ -19,9 +19,9 @@ if ( typeof(nckma) != 'object' ) {
 	var nkDebugLvl = 3
 		, nkFlags = {
 			  'debug'   : true
-			, 'ga'      : false
-			, 'testing' : true
-			, 'aConfFB' : true // read configuration fallbacks...
+			, 'ga'      : true
+			, 'testing' : false
+			, 'aConfFB' : false // read configuration fallbacks...
 		}
 		, nkLastPoll = null
 		, nkPollInterval = 2 * 1000
