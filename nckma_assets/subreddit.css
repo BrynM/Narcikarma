@@ -40,6 +40,27 @@ body {
 	font-size: 20px;
 }
 
+/* tabmenu */
+
+.tabmenu li a {
+	color: #B25F43;
+	border: 1px solid #B25F43;
+	border-bottom: none;
+}
+
+.tabmenu li.selected a {
+	color: #000;
+	background-color: #e8e8ff;
+	border-bottom: 1px solid #e8e8ff;
+}
+
+/* sidebar */
+
+.side h2 {
+	margin: 5px 0;
+	color: #000;
+}
+
 .side .titlebox .usertext-body a[href$="#nkma"] {
 	display: block;
 	font-size: 24px;
@@ -69,21 +90,6 @@ body {
 	color: black;
 }
 
-/* tabmenu */
-
-.tabmenu li a {
-	color: #B25F43;
-	border: 1px solid #B25F43;
-	border-bottom: none;
-}
-
-.tabmenu li.selected a {
-	color: #000;
-	background-color: #e8e8ff;
-	border-bottom: 1px solid #e8e8ff;
-}
-
-/* sidebar */
 
 #moderation_tools .content {
 	background-color: white;

@@ -10,7 +10,7 @@ At a glance you can check your narcissistic progress, meaning you can stop using
 
 *****
 
-**Features**
+## Features
 
 * Simple, out-of-the-way, and easy to use.
 * Doesn't conflict with RES or any other Reddit-centric extensions.
@@ -22,20 +22,26 @@ At a glance you can check your narcissistic progress, meaning you can stop using
 
 *****
 
+## Get It
+
 [Get Narcikarma for Google Chrome](https://chrome.google.com/webstore/detail/narcikarma/mogaeafejjipmngijfhdjkmjomgdicdg)
 
 ^^link ^^only ^^works ^^for ^^testers ^^ATM
 
-**Latest Version** [0.241](http://www.reddit.com/r/Narcikarma/comments/11tqcs/v024_up_for_testing/)
+**Latest Version:** [0.241](http://www.reddit.com/r/Narcikarma/comments/11tqcs/v024_up_for_testing/)
 
-**Release Status** Closed Alpha
+**Release Status:** Closed Alpha
 
-**Known Issues**
+*****
+
+## Known Issues
 
 * If you can't connect to Reddit (down, lost network, etc.) "ERR/ERR" or "CON/ERR" will show on the icon
 * Bug: now the undefined issue crept up to the hour readout. grrrrrr...
 
-**Todo:**
+*****
+
+## Todo
 
 * Decide on some color pickers for the preferences
 * Get icon rows that alternate between flags and karma working
@@ -52,13 +58,13 @@ At a glance you can check your narcissistic progress, meaning you can stop using
 
 *****
 
-**Disclaimer**
+## Disclaimer
 
 /r/Narcikarma is a text-only subreddit, so please keep the fact that you won't be getting karma for posting there in mind. Official posts have an [orange user tag](http://www.reddit.com/r/Narcikarma/#nkOfficialPosts).
 
 *****
 
-**FAQ**
+## FAQ
 
 * Where can I get help?
     * Go post in [/r/Narcikarma](http://www.reddit.com/r/Narcikarma)!
@@ -80,7 +86,7 @@ At a glance you can check your narcissistic progress, meaning you can stop using
 
 *****
 
-**Credits**
+## Credits
 
 * Creator
     * badmonkey0001 (Bryn Mosher)
