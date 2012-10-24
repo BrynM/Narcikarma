@@ -54,6 +54,7 @@ At a glance you can check your narcissistic progress, meaning you can stop using
 * Add default and revert buttons for individual options
 * Whip up import and export for options
 * Sparklines! (good idea KerrickLong!) 
+* Differentiate between Reddit being down and the network connection being lost by pinging a third-party URL (thanks KerrickLong & Zagorath!)
 * Dox. Dox. Dox.
 
 *****
