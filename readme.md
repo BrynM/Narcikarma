@@ -32,6 +32,10 @@ At a glance you can check your narcissistic progress, meaning you can stop using
 
 **Release Status:** Closed Alpha
 
+[FAQ](https://github.com/BrynM/Narcikarma#faq)
+
+[Credits](https://github.com/BrynM/Narcikarma#credits)
+
 *****
 
 ## Known Issues
