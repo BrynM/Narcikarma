@@ -47,18 +47,25 @@ At a glance you can check your narcissistic progress, meaning you can stop using
 * Add option to persist gains until manual reset
 * Add default and revert buttons for individual options
 * Whip up import and export for options
+* Sparklines! (good idea KerrickLong!) 
 * Dox. Dox. Dox.
 
 *****
 
 **Disclaimer**
 
-/r/Narcikarma is a text-only subreddit, so please keep the fact that you won't be getting karma for posting there in mind.
+/r/Narcikarma is a text-only subreddit, so please keep the fact that you won't be getting karma for posting there in mind. Official posts have an [orange user tag](http://www.reddit.com/r/Narcikarma/#nkOfficialPosts).
 
 *****
 
 **FAQ**
 
+* Where can I get help?
+    * Go post in [/r/Narcikarma](http://www.reddit.com/r/Narcikarma)!
+* Where can report a problem?
+    * Go post in [/r/Narcikarma](http://www.reddit.com/r/Narcikarma)!
+* Where can suggest a feature?
+    * Go post in [/r/Narcikarma](http://www.reddit.com/r/Narcikarma)!
 * Is Narcikarma Open Source?
     * Yes. It's [GPLv3](https://github.com/BrynM/Narcikarma/blob/master/gplv3.txt)
     * The other tools used by Narcikarma have their own licenses. They are listed in the credits.

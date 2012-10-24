@@ -16,14 +16,19 @@ if ( typeof(nckma) != 'object' ) {
 	* "Local" vars
 	*/
 
-	var nkLastPoll = null
+	var nkDebugLvl = 3
+		, nkFlags = {
+			  'debug'   : true
+			, 'ga'      : false
+			, 'testing' : true
+			, 'aConfFB' : true // read configuration fallbacks...
+		}
+		, nkLastPoll = null
 		, nkPollInterval = 2 * 1000
 		, nkIsPolling = false
 		, nkDataFirst = bpmv.str(localStorage['_lastCached']) ? JSON.parse( localStorage['_lastCached'] ) : null
 		, nkDataLast = null
 		, nkManifest = null
-		, nkTesting = true
-		, nkDebug = true
 		, nkSetInterval = null
 		, nkUrls = {
 		 	  'user'       : 'http://www.reddit.com/api/me.json'
@@ -63,7 +68,8 @@ if ( typeof(nckma) != 'object' ) {
 	/*
 	* load GA
 	*/
-	if ( !nkTesting && bpmv.func(load_nckma_ga) ) {
+	if ( nkFlags['ga'] && bpmv.func(load_nckma_ga) ) {
+		nkFlags['debug'] && console.log( '[Narcikarma Debug] loading GA' );
 		load_nckma_ga();
 	}
 
@@ -71,7 +77,23 @@ if ( typeof(nckma) != 'object' ) {
 	* settings
 	*/
 
-	nckma.conf = {};
+	nckma.conf = function ( vr, vl ) {
+		var pre = 'conf_option_';
+		if ( bpmv.str(vr) && bpmv.str(nkDefaults[vr]) ) {
+			if ( nkFlags['aConfFB'] ) {
+				if ( !bpmv.str(localStorage[pre+vr]) && bpmv.str(localStorage[vr]) ) {
+					localStorage[pre+vr] = ''+localStorage[vr];
+					localStorage.removeItem( vr );
+					nckma.debug( 0, 'migrated alpha option '+vr, localStorage[pre+vr] );
+				}
+			}
+			if ( bpmv.str(vl) ) {
+				localStorage[pre+vr] = ''+vl;
+				nckma.debug( 5, 'set option '+vr, localStorage[pre+vr] );
+			}
+			return localStorage[pre+vr];
+		}
+	};
 
 	// selector cache
 	nckma.conf.cache = {};
@@ -81,7 +103,17 @@ if ( typeof(nckma) != 'object' ) {
 	*/
 
 	nckma.begin = function () {
+		nckma.debug( 0, 'Narcikarma v'+nckma.version().str );
+		nckma.debug( 0, 'running background task' );
 		nckma.opts.defaults( true );
+		if ( !bpmv.str(localStorage['nkCurrentVer']) ) {
+
+		}
+		nckma.debug( 0, 'active flags', nkFlags );
+		if ( nkFlags['debug'] ) {
+			nckma.debug( 0, 'debug level', nkDebugLvl );
+		}
+		nckma.debug( 0, 'storage interval', localStorage['interval'] );
 		nckma.reset();
 		if ( !bpmv.num(nkSetInterval) ) {
 			nkSetInterval = setInterval( nckma.poll, nkPollInterval );
@@ -89,8 +121,28 @@ if ( typeof(nckma) != 'object' ) {
 		nckma.track( 'func', 'nckma.begin', 'nkExec' );
 	};
 
-	nckma.debug = function () {
-		if ( nkDebug ) {
+	nckma.debug = function ( lvl, msg, etc ) {
+		var args = $.extend( [], arguments );
+		if ( nkFlags['debug'] ) {
+			nkDebugLvl = parseInt(nkDebugLvl, 10);
+			if ( !(/^[0-9]+$/).test( ''+lvl ) || ( parseInt(lvl, 10) > parseInt(nkDebugLvl, 10) ) ) {
+				nckma.warn( 'nkma.debug() requires the first parameter to be the debug level', arguments );
+				console.trace();
+				return;
+			}
+			args.shift();
+			if ( bpmv.num(bpmv.count(args)) && bpmv.str(args[0]) ) {
+				args[0] = '[Narcikarma Debug] '+args[0];
+				console.log.apply( console, args );
+			} else {
+				nckma.warn( 'nkma.debug() does not have enough arguments', arguments );
+				console.trace();
+			}
+		}
+	}
+
+	nckma.d = function () {
+		if ( nkFlags['debug'] ) {
 			if ( bpmv.num(bpmv.count(arguments)) && bpmv.str(arguments[0]) ) {
 				arguments[0] = '[Narcikarma Debug] '+arguments[0];
 			}
@@ -246,7 +298,7 @@ if ( typeof(nckma) != 'object' ) {
 			nckma.px.draw_status( 'err' );
 			return;
 		}
-		nckma.debug( 'nckma.parse()', nckma.get() );
+		nckma.debug( 2, 'nckma.parse()', nckma.get() );
 	};
 
 	nckma.poll = function () {
@@ -266,7 +318,7 @@ if ( typeof(nckma) != 'object' ) {
 					, 'dataType' : 'json'
 					, 'error'    : nckma.parse
 					, 'success'  : nckma.parse
-					, 'url'      : nkTesting ? nkUrls.userTest + '?bust='+(new Date).getTime() : nkUrls.user
+					, 'url'      : nkFlags['testing'] ? nkUrls.userTest + '?bust='+(new Date).getTime() : nkUrls.user
 				} );
 			}
 		}
@@ -294,8 +346,8 @@ if ( typeof(nckma) != 'object' ) {
 				user = '"' + encodeURI( nkDataFirst.name ) + '"';
 				uId = '' + encodeURI( nkDataFirst.id );
 			}
-			uA = info.name + ' v' + info.version + (nkTesting || nkDebug ? '.' : '') + (nkTesting ? 'T' : '') + (nkDebug ? 'D' : '') + ' - ' + info.description + '; User: ' + user + '(id:' + uId + ')';
-			nckma.debug( 'Narcikarma [nckma.set_headers()] Setting X-User-Agent.', uA );
+			uA = info.name + ' v' + nckma.version().str + ' - ' + info.description + '; User: ' + user + '(id:' + uId + ')';
+			nckma.debug( 2, 'Narcikarma [nckma.set_headers()] Setting X-User-Agent.', uA );
 			// trying to set the user agent proper results in "Refused to set unsafe header 'User-Agent'" :(
 			req.setRequestHeader( 'X-User-Agent', uA );
 		}
@@ -358,24 +410,50 @@ if ( typeof(nckma) != 'object' ) {
 
 	nckma.testing = function ( checkDebug ) {
 		if ( checkDebug ) {
-			return nkDebug ? true : false;
+			return nkFlags['debug'] ? true : false;
 		} else {
-			return nkTesting ? true : false;
+			return nkFlags['testing'] ? true : false;
 		}
 	}
 
 	nckma.track = function ( label, val, cat ) {
 		var category = bpmv.str(cat) ? ''+cat : 'nkRuntime';
-		if ( !bpmv.str(label) || typeof(_gaq) === 'undefined' || !bpmv.obj(_gaq) ) {
+		if ( !bpmv.str(label) ) {
 			return;
 		}
-		if ( bpmv.obj(_gaq) || typeof(_gaq) === 'undefined' || bpmv.arr(_gaq) ) {
-			return _gaq.push( [ '_trackEvent', category + ( nkTesting || nkDebug ? ' -'+(nkTesting ? 'T' : '')+(nkDebug ? 'D' : '')+'-' : '' ), label, val ] );
+		if ( typeof(_gaq) === 'undefined' || !bpmv.obj(_gaq) ) {
+			window._gaq = [];
+		}
+		if ( bpmv.obj(_gaq) || bpmv.arr(_gaq) ) {
+			return _gaq.push( [ '_trackEvent', category + ' v' + nckma.version().str, label, val ] );
 		}
 	}
 
+	nckma.version = function () {
+		var inf = null
+			, ret = { 'num' : null, 'str' : null };
+		if ( bpmv.obj(nckma.conf.cache.version) ) {
+			return nckma.conf.cache.version;
+		}
+		inf = nckma.info();
+		if ( bpmv.str(inf.version) ) {
+			ret = {
+				  'num' : inf.version.replace( /[^0-9|^\.]+/g, '' ).split( '.' )
+				, 'str' : ''+inf.version + (nkFlags['testing'] || nkFlags['debug'] || nkFlags['ga'] ? '.' : '') + (nkFlags['testing'] ? 'T' : '') + (nkFlags['debug'] ? 'D' : '')
+			};
+			if ( bpmv.arr(ret.num) ) {
+				ret.num = ( ret.num.length < 2 ) ? ''+ret.num[0] : ret.num.shift()+'.'+ret.num.join( '' );
+				ret.num = parseFloat( ret.num );
+			} else {
+				ret.num = null;
+			}
+			nckma.conf.cache.version = ret;
+		}
+		return ret;
+	}
+
 	nckma.warn = function () {
-		if ( nkDebug ) {
+		if ( nkFlags['debug'] ) {
 			if ( bpmv.num(bpmv.count(arguments)) && bpmv.str(arguments[0]) ) {
 				arguments[0] = '[NARCIKARMA WARNING] '+arguments[0];
 			}
@@ -464,19 +542,19 @@ return nckma; })() && (function () {
 
 	// Restores select box state to saved value from localStorage.
 	nckma.opts.restore = function () {
-		var conf = nckma.conf
+		var cache = nckma.conf.cache
 			, defs = nckma.defaults();
-		if ( bpmv.obj(conf) && bpmv.obj(defs) ) {
+		if ( bpmv.obj(cache) && bpmv.obj(defs) ) {
 			for ( var aC in defs ) {
 				if ( defs.hasOwnProperty( aC ) && bpmv.str(aC) ) {
 					if ( !bpmv.str(localStorage[aC]) ) {
 						localStorage[aC] = defs[aC];
 					}
-					if ( !bpmv.obj(conf.cache[aC]) || !bpmv.num(conf.cache[aC].length) ) {
-						conf.cache[aC] = $('#opt_'+aC);
+					if ( !bpmv.obj(cache[aC]) || !bpmv.num(cache[aC].length) ) {
+						cache[aC] = $('#opt_'+aC);
 					}
-					if ( bpmv.obj(conf.cache[aC]) && bpmv.num(conf.cache[aC].length) ) {
-						conf.cache[aC].val( localStorage[aC] );
+					if ( bpmv.obj(cache[aC]) && bpmv.num(cache[aC].length) ) {
+						cache[aC].val( localStorage[aC] );
 					}
 				}
 			}
@@ -486,7 +564,7 @@ return nckma; })() && (function () {
 
 	// Saves options to localStorage.
 	nckma.opts.save = function () {
-		var conf = nckma.conf
+		var cache = nckma.conf.cache
 			, defs = nckma.defaults()
 			, statText = '';
 		if ( !$('body.nckOptions').is( ':visible' ) ) {
@@ -495,31 +573,31 @@ return nckma; })() && (function () {
 		$('.nckOptionsContainer span').hide();
 		for ( var aC in defs ) {
 			if ( defs.hasOwnProperty( aC ) && bpmv.str(aC) ) {
-				if ( !bpmv.obj(conf.cache[aC]) || !bpmv.num(conf.cache[aC].length) ) {
-					conf.cache[aC] = $('#opt_'+aC);
+				if ( !bpmv.obj(cache[aC]) || !bpmv.num(cache[aC].length) ) {
+					cache[aC] = $('#opt_'+aC);
 				}
-				if ( !bpmv.obj(conf.cache[aC+'_status']) || !bpmv.num(conf.cache[aC+'_status'].length) ) {
-					conf.cache[aC+'_status'] = $('#opt_'+aC+'_status');
+				if ( !bpmv.obj(cache[aC+'_status']) || !bpmv.num(cache[aC+'_status'].length) ) {
+					cache[aC+'_status'] = $('#opt_'+aC+'_status');
 				}
-				statText = bpmv.func(nckma.opts.valid[aC]) ? nckma.opts.valid[aC]( conf.cache[aC].val() ) : false;
-				if ( bpmv.obj(conf.cache[aC]) && bpmv.num(conf.cache[aC].length) ) {
+				statText = bpmv.func(nckma.opts.valid[aC]) ? nckma.opts.valid[aC]( cache[aC].val() ) : false;
+				if ( bpmv.obj(cache[aC]) && bpmv.num(cache[aC].length) ) {
 					if ( bpmv.bool(statText) ) {
-						localStorage[aC] = conf.cache[aC].val();
+						localStorage[aC] = cache[aC].val();
 						if ( localStorage[aC] != defs[aC] ) {
 							nckma.track( aC, localStorage[aC], 'nkOptionsSaved' );
 						}
-						if ( bpmv.obj(conf.cache[aC+'_status']) && bpmv.num(conf.cache[aC+'_status'].length) ) {
-							if ( conf.cache[aC].is( 'select' ) ) {
-								conf.cache[aC+'_status'].text( 'Set to ' + conf.cache[aC].find( 'option:selected' ).text() + '.' );
+						if ( bpmv.obj(cache[aC+'_status']) && bpmv.num(cache[aC+'_status'].length) ) {
+							if ( cache[aC].is( 'select' ) ) {
+								cache[aC+'_status'].text( 'Set to ' + cache[aC].find( 'option:selected' ).text() + '.' );
 							} else {
-								conf.cache[aC+'_status'].text( 'Set to ' + conf.cache[aC].val() + '.' );
+								cache[aC+'_status'].text( 'Set to ' + cache[aC].val() + '.' );
 							}
-							conf.cache[aC+'_status'].stop( true ).fadeIn( 100 ).fadeOut( 1500 );
+							cache[aC+'_status'].stop( true ).fadeIn( 100 ).fadeOut( 1500 );
 						}
 					} else if ( bpmv.str(statText) ) {
-						if ( bpmv.obj(conf.cache[aC+'_status']) && bpmv.num(conf.cache[aC+'_status'].length) ) {
-							conf.cache[aC+'_status'].html( '<span class="nckOptionsError">Error: '+ statText + '</sapn>');
-							conf.cache[aC+'_status'].stop( true ).fadeIn( 100 );
+						if ( bpmv.obj(cache[aC+'_status']) && bpmv.num(cache[aC+'_status'].length) ) {
+							cache[aC+'_status'].html( '<span class="nckOptionsError">Error: '+ statText + '</sapn>');
+							cache[aC+'_status'].stop( true ).fadeIn( 100 );
 						}
 					}
 				}
@@ -838,7 +916,7 @@ return nckma.opts; })() && (function () {
 						var color = nckma.px.color( color );
 					}
 					if ( !bpmv.arr(color) || ( color.length != 4 ) ) {
-						nckma.debug( 'Substituting color for black.', color );
+						nckma.debug( 4, 'Substituting color for black.', color );
 						phil = 'rgba( 0, 0, 0, 1 )';
 					} else {
 						phil = 'rgba( '+color[0]+', '+color[1]+', '+color[2]+', '+color[3]+' )';
@@ -856,7 +934,7 @@ return nckma.opts; })() && (function () {
 							cx.fillStyle = 'rgba( 0, 0, 0, 1 )';
 							draw = true;
 						} else {
-							nckma.warn( 'Current character is not a flag!',  { 'char' : cChar, 'set' : nkChars, 'val' : st[aC] } );
+							nckma.warn( 'Current character is not a flag! ('+cChar+')',  { 'char' : cChar, 'set' : nkChars, 'val' : st[aC] } );
 						}
 						if ( draw ) {
 							cx.fillRect( posX, posY, 1, 1 );
@@ -873,7 +951,7 @@ return nckma.opts; })() && (function () {
 				}
 				cx.globalCompositeOperation = comp;
 			} else {
-				nckma.warn( 'Character is not in set!', { 'char' : cChar, 'set' : nkChars } );
+				nckma.warn( 'Character is not in set! ('+cChar+')', { 'char' : cChar, 'set' : nkChars } );
 			}
 		} else {
 			nckma.warn( 'Context failed!', cx );
@@ -1015,8 +1093,6 @@ return nckma.px; })() && (function () {
 return nckma.credits; })() && (function () {
 
 	if ( nckma._bgTask ) {
-		nckma.debug( 'running background task' );
-		nckma.debug( 'storage interval', localStorage['interval'] );
 		$(document).ready( nckma.begin );
 	}
 
