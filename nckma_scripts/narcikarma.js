@@ -16,11 +16,12 @@ if ( typeof(nckma) != 'object' ) {
 	* "Local" vars
 	*/
 
-	var nkDebugLvl = 3
+	var nkColorRgxHex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i
+		, nkDebugLvl = 3
 		, nkFlags = {
 			  'debug'   : true
 			, 'ga'      : true
-			, 'testing' : false
+			, 'testing' : true
 			, 'aConfFB' : false // read configuration fallbacks...
 		}
 		, nkLastPoll = null
@@ -44,20 +45,20 @@ if ( typeof(nckma) != 'object' ) {
 			, 'interval'         : 600 // in seconds
 			, 'row0'             : 'lKarma' // one of cKarma, lKarma, flags
 			, 'row1'             : 'cKarma'
-			, 'black'            : '0, 0, 0, 1'
-			, 'blue'             : '0, 0, 235, 1'
+			, 'color_black'      : '0, 0, 0, 1'
+			, 'color_blue'       : '0, 0, 235, 1'
 			, 'flag0'            : 'has_mail'
 			, 'flag1'            : 'is_mod'
 			, 'flag2'            : 'has_mod_mail'
 			, 'flag3'            : 'is_gold'
-			, 'gold'             : '176, 176, 21, 1'
-			, 'gray'             : '128, 128, 128, 1'
-			, 'green'            : '0, 190, 0, 1'
-			, 'purple'           : '215, 0, 215, 1'
-			, 'red'              : '235, 0, 0, 1'
-			, 'negChange'        : '235, 0, 0, 1'
-			, 'noChange'         : '0, 0, 0, 1'
-			, 'posChange'        : '0, 190, 0, 1'
+			, 'color_gold'       : '176, 176, 21, 1'
+			, 'color_gray'       : '128, 128, 128, 1'
+			, 'color_green'      : '0, 190, 0, 1'
+			, 'color_purple'     : '215, 0, 215, 1'
+			, 'color_red'        : '235, 0, 0, 1'
+			, 'color_negChange'  : '235, 0, 0, 1'
+			, 'color_noChange'   : '0, 0, 0, 1'
+			, 'color_posChange'  : '0, 190, 0, 1'
 		}
 		, nkPages = {
 			  'background'   : 'nckma_html/background.html'
@@ -222,6 +223,27 @@ if ( typeof(nckma) != 'object' ) {
 		}
 		return ret;
 	};
+
+	nckma.hex2rgb = function ( hex ) {
+		var res = null;
+		if ( bpmv.str(hex) && nkColorRgxHex.test( hex ) ) {
+			res = hex.match( nkColorRgxHex );
+			if ( bpmv.arr(res, 4) ) {
+				return [
+					  parseInt( res[1], 16 )
+					, parseInt( res[2], 16 )
+					, parseInt( res[3], 16 )
+				];
+			}
+		}
+	}
+
+	nckma.rgb2hex = function ( rgb ) {
+		var tC = bpmv.str(rgb) ? rgb.split( /\s?,\s?/ ) : rgb;
+		if ( bpmv.arr(tC, true) && ( ( tC.length === 3 ) || ( tC.length === 4 ) ) ) {
+			return '' + ( (1 << 24) + ( parseInt(tC[0]) << 16 ) + ( parseInt(tC[1]) << 8 ) + parseInt(tC[2]) ).toString(16).slice(1);
+		}
+	}
 
 	nckma.info = function ( asJson ) {
 		var man = null;
@@ -466,6 +488,8 @@ return nckma; })() && (function () {
 
 	nckma.opts = {};
 
+	var nckmaNeedsSave = false;
+
 	/*
 	* vars
 	*/
@@ -479,16 +503,16 @@ return nckma; })() && (function () {
 		  'alertCommentGain' : function ( val ) { return parseInt(val) > 10 ? true : 'Alert Comment Karma Threshold must be greater than 10.'; }
 		, 'alertLinkGain'    : function ( val ) { return parseInt(val) > 10 ? true : 'Alert Link Karma Threshold must be greater than 10.'; }
 		, 'interval'         : function ( val ) { return ( parseInt(val) > ( nckma.testing() ? 14 : 119 ) ) || ( parseInt(val) === 0 ) ? true : 'Refresh Interval must be 1 minute or more.'; }
-		, 'black'            : nckma.opts.valid_color
-		, 'blue'             : nckma.opts.valid_color
-		, 'gold'             : nckma.opts.valid_color
-		, 'gray'             : nckma.opts.valid_color
-		, 'green'            : nckma.opts.valid_color
-		, 'purple'           : nckma.opts.valid_color
-		, 'red'              : nckma.opts.valid_color
-		, 'negChange'        : nckma.opts.valid_color
-		, 'noChange'         : nckma.opts.valid_color
-		, 'posChange'        : nckma.opts.valid_color
+		, 'color_black'      : nckma.opts.valid_color
+		, 'color_blue'       : nckma.opts.valid_color
+		, 'color_gold'       : nckma.opts.valid_color
+		, 'color_gray'       : nckma.opts.valid_color
+		, 'color_green'      : nckma.opts.valid_color
+		, 'color_purple'     : nckma.opts.valid_color
+		, 'color_red'        : nckma.opts.valid_color
+		, 'color_negChange'  : nckma.opts.valid_color
+		, 'color_noChange'   : nckma.opts.valid_color
+		, 'color_posChange'  : nckma.opts.valid_color
 	};
 
 	/*
@@ -540,10 +564,54 @@ return nckma; })() && (function () {
 		}
 	};
 
+	nckma.opts.change = function () {
+		var tJ = null
+			, defs = nckma.defaults()
+			, ego = null
+			, changed = 0
+			, jT = $(this);
+		if ( (/^(alpha|picker)_opt_color_/).test( jT.attr( 'id' ) ) ) {
+			return;
+		}
+		for ( var aC in defs ) {
+			tJ = $('#opt_'+aC);
+			if ( defs.hasOwnProperty( aC ) && bpmv.str(aC) && bpmv.obj(tJ) && bpmv.num(tJ.length) ) {
+				if ( tJ.val() != localStorage[aC] ) {
+					changed++;
+				}
+			}
+		}
+		if ( changed > 0 ) {
+			nckmaNeedsSave = true;
+			$('.optSaveToggle').removeAttr( 'disabled' );
+		} else {
+			nckmaNeedsSave = false;
+			$('.optSaveToggle').attr( 'disabled', 'disabled' );
+		}
+	}
+
+	nckma.opts.change_color = function () {
+		var ego = $(this).attr( 'id' )
+			, cN = ego.replace( /^[^_]+_opt_color_/, '' )
+			, tA = $('#alpha_opt_color_'+cN)
+			, tJ = $('#opt_color_'+cN)
+			, tP = $('#picker_opt_color_'+cN)
+			, opa = 1;
+		if ( (/^alpha_opt_color_/).test( ego ) || (/^pipcker_opt_color_/).test( ego ) ) {
+			opa = ($('#alpha_opt_color_'+cN).val()/1000);
+			if ( (/^alpha_opt_color_/).test( ego ) ) {
+				$('#picker_opt_color_'+cN).css( { 'opacity' : opa } );
+			}
+			tJ.val( nckma.hex2rgb( $('#picker_opt_color_'+cN).val() ).join( ', ' ) + ', ' + opa );
+			tJ.change();
+		}
+	}
+
 	// Restores select box state to saved value from localStorage.
 	nckma.opts.restore = function () {
 		var cache = nckma.conf.cache
-			, defs = nckma.defaults();
+			, defs = nckma.defaults()
+			, tColor = null;
 		if ( bpmv.obj(cache) && bpmv.obj(defs) ) {
 			for ( var aC in defs ) {
 				if ( defs.hasOwnProperty( aC ) && bpmv.str(aC) ) {
@@ -555,9 +623,20 @@ return nckma; })() && (function () {
 					}
 					if ( bpmv.obj(cache[aC]) && bpmv.num(cache[aC].length) ) {
 						cache[aC].val( localStorage[aC] );
+						if ( cache[aC].is( 'input[id^="opt_color_"]' ) ) {
+							tColor = localStorage[aC].split( /\s?,\s?/ );
+							$('#picker_opt_'+aC).val( '#'+nckma.rgb2hex( localStorage[aC] ) );
+							if ( tColor.length === 4 ) {
+								$('#picker_opt_'+aC).css( { 'opacity' : tColor[3] } );
+								$('#alpha_opt_'+aC).val( parseFloat(tColor[3]) * 1000 );
+							} else {
+								$('#alpha_opt_'+aC).val( 1000 );
+							}
+						}
 					}
 				}
 			}
+			nckma.opts.change();
 			return true;
 		}
 	};
@@ -720,14 +799,15 @@ return nckma.opts; })() && (function () {
 
 	nckma.px.color = function ( color ) {
 		var cA = null
-			, cont = true;
+			, cont = true
+			, locColor = 'color_' + color;
 		nckma.opts.defaults( true );
-		if ( bpmv.str(color) && bpmv.str(localStorage[color]) && /^\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9\.]+/.test( localStorage[color] ) ) {
-			cA = localStorage[color].split( /\s*,\s*/ );
+		if ( bpmv.str(color) && bpmv.str(localStorage[locColor]) && /^\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9\.]+/.test( localStorage[locColor] ) ) {
+			cA = localStorage[locColor].split( /\s*,\s*/ );
 			for ( var aI = 0; aI < 4; aI++ ) {
 				cA[aI] = aI < 3 ? parseInt(cA[aI]) : parseFloat(cA[aI]);
 				if ( !bpmv.num(cA[aI], true) || ( cA[aI] < 0 ) || ( cA[aI] > ( aI < 3 ? 255 : 1 ) ) ) {
-					nckma.warn( 'Bad color!', { 'color' : color, 'val' : localStorage[color] } );
+					nckma.warn( 'Bad color!', { 'color' : color, 'val' : localStorage[locColor] } );
 					cont = false;
 				}
 			}

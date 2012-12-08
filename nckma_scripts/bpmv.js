@@ -108,11 +108,18 @@
 		/**
 		* tests if something is not just an object, but is an Array and is not empty
 		* @param {mixed} dIsArr The value you'd like to test
-		* @param {boolean} okEmpty Will return true even if the array is empty
+		* @param {mixed} okEmpty If Boolean, is a flag for whether the array will be tested for emptiness.
+		* If an integer, will test the array for that exact length.
 		* @return {boolean} Will return true if an array
 		*/
 		arr : function ( dIsArr, okEmpty ) {
-			return this.obj( dIsArr ) && ( Object.prototype.toString.call(dIsArr) === '[object Array]' ) && ( okEmpty || (dIsArr.length > 0) );
+			if ( this.bool(okEmpty) ) {
+				return Boolean( this.obj( dIsArr ) && ( Object.prototype.toString.call( dIsArr ) === '[object Array]' ) && ( okEmpty || (dIsArr.length > 0) ) );
+			} else if ( !isNaN( okEmpty ) && ( okEmpty > -1 ) ) {
+				return Boolean( this.obj( dIsArr ) && ( Object.prototype.toString.call( dIsArr ) === '[object Array]' ) && ( dIsArr.length == parseInt(okEmpty, 10) ) );
+			} else {
+				return Boolean( this.obj( dIsArr ) && ( Object.prototype.toString.call( dIsArr ) === '[object Array]' ) && ( dIsArr.length > 0 ) );
+			}
 		},
 		/**
 		* Get the basename of a path

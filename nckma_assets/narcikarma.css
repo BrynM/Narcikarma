@@ -95,16 +95,22 @@ body {
 	padding: 0;
 	margin: 0;
 }
+.nckOptionsColor {
+	margin-bottom: 5px;
+}
+.nckHidden {
+/*
+	display: none !important;
+*/
+}
 
 input[type="button"],
+input[type="color"],
 button {
 	-webkit-appearance: none !important;
 	background: #e8e8ff;
 	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e8e8ff));
 	background: -webkit-linear-gradient(top, #fff, #e8e8ff);
-	background: -moz-linear-gradient(top, #fff, #e8e8ff);
-	background: -ms-linear-gradient(top, #fff, #e8e8ff);
-	background: -o-linear-gradient(top, #fff, #e8e8ff);
 	-webkit-border-radius: 8px;
 	-moz-border-radius: 8px;
 	border-radius: 8px;
@@ -117,19 +123,45 @@ button {
 	vertical-align: middle;
 }
 input[type="button"]:hover,
+input[type="color"]:hover,
 button:hover,
 input[type="button"]:active,
+input[type="color"]:active,
 button:active {
 	background: #fff;
 	background: -webkit-gradient(linear, left top, left bottom, from(#e8e8ff), to(#fff));
 	background: -webkit-linear-gradient(top, #e8e8ff, #fff);
-	background: -moz-linear-gradient(top, #e8e8ff, #fff);
-	background: -ms-linear-gradient(top, #e8e8ff, #fff);
-	background: -o-linear-gradient(top, #e8e8ff, #fff);
 	color: #b25f43;
 	border: 1px solid #B25F43;
 }
 input[type="button"]:active,
+input[type="color"]:active,
 button:active {
 	border: 1px solid #FF8B60;
 }
+input[type="color"]{
+	height: 20px;
+	padding: 0;
+	width: 20px;
+	border: none;
+	background: transparent;
+}
+
+input[type="range"]{
+	vertical-align: middle;
+	height: 10px;
+	width: 50px;
+}
+input[type="button"]:disabled,
+input[type="color"]:disabled,
+button:disabled {
+	background: #fff;
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#888));
+	background: -webkit-linear-gradient(top, #fff, #888);
+	border: 1px solid #333;
+	color: #555;
+	opacity: 0.25;
+}
+
+
+

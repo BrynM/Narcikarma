@@ -134,25 +134,38 @@
 
 		<h3>Colors</h3>
 
-		<div class="nckOptionsContainer" title="Positive Votes">
-			<label for="opt_posChange">Positive Change (rgba)</label>
-			<input id="opt_posChange" type="text" />&nbsp;<span id="opt_posChange_status"></span>
+		<div class="nckOptionsContainer nckOptionsColor" title="Positive Votes">
+			<label for="picker_opt_color_posChange">Positive Change</label>
+			<input id="opt_color_posChange" type="text" class="nckHidden" />
+			<input type="color" id="picker_opt_color_posChange" title="Pick a &quot;Positive Votes&quot; color" />
+			<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_posChange" title="Change &quot;Positive Change&quot; color tranparency (alpha)" />
+			&nbsp;<span id="opt_color_posChange_status"></span>
 		</div>
-		<div class="nckOptionsContainer" title="No Change In Votes">
-			<label for="opt_noChange">No Change (rgba)</label>
-			<input id="opt_noChange" type="text" />&nbsp;<span id="opt_noChange_status"></span>
+		<div class="nckOptionsContainer nckOptionsColor" title="No Change In Votes">
+			<label for="picker_opt_color_noChange">No Change</label>
+			<input id="opt_color_noChange" type="text" class="nckHidden" />
+			<input type="color" id="picker_opt_color_noChange" title="Pick a &quot;No Change&quot; color" />
+			<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_noChange" title="Change &quot;No Change&quot; color tranparency (alpha)" />
+			&nbsp;<span id="opt_color_noChange_status"></span>
 		</div>
-		<div class="nckOptionsContainer" title="Negative Votes">
-			<label for="opt_negChange">Negative Change (rgba)</label>
-			<input id="opt_negChange" type="text" />&nbsp;<span id="opt_negChange_status"></span>
+		<div class="nckOptionsContainer nckOptionsColor" title="Negative Votes">
+			<label for="picker_opt_color_negChange">Negative Change</label>
+			<input id="opt_color_negChange" type="text" class="nckHidden" />
+			<input type="color" id="picker_opt_color_negChange" title="Pick a &quot;Negative Votes&quot; color" />
+			<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_negChange" title="Change &quot;Negative Votes&quot; color tranparency (alpha)" />
+			&nbsp;<span id="opt_color_negChange_status"></span>
 		</div>
-		<div class="nckOptionsContainer" title="Gold">
-			<label for="opt_gold">Gold</label>
-			<input id="opt_gold" type="text" />&nbsp;<span id="opt_gold_status"></span>
+		<div class="nckOptionsContainer nckOptionsColor" title="Gold">
+			<label for="picker_opt_color_gold">Gold</label>
+			<input id="opt_color_gold" type="text" class="nckHidden" />
+			<input type="color" id="picker_opt_color_gold" title="Pick a &quot;Gold&quot; color" />
+			<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_gold" title="Change &quot;Gold&quot; color tranparency (alpha)" />
+			&nbsp;<span id="opt_color_gold_status"></span>
 		</div>
 
 		<div class="nckOptionsButtons">
-			<button id="nckma_save">Save Options</button>
+			<button id="nckma_reset" class="optSaveToggle">Reset Options</button>
+			<button id="nckma_save" class="optSaveToggle">Save Options</button>
 			<button id="nckma_default">Default Options</button>
 		</div>
 
