@@ -29,6 +29,7 @@ if ( typeof(nckma) != 'object' ) {
 		, nkIsPolling = false
 		, nkDataFirst = bpmv.str(localStorage['_lastCached']) ? JSON.parse( localStorage['_lastCached'] ) : null
 		, nkDataLast = null
+		, nkDataSet = bpmv.str(localStorage['_dataSet']) ? JSON.parse( localStorage['_dataSet'] ) : []
 		, nkManifest = null
 		, nkSetInterval = null
 		, nkUrls = {
@@ -59,7 +60,7 @@ if ( typeof(nckma) != 'object' ) {
 			, 'interval'         : 600 // in seconds
 			, 'row0'             : 'lKarma' // one of cKarma, lKarma, flags
 			, 'row1'             : 'cKarma'
-			, 'savedRefreshes'   : '50'
+			, 'savedRefreshes'   : '150'
 		}
 		, nkPages = {
 			  'background'   : 'nckma_html/background.html'
@@ -79,6 +80,7 @@ if ( typeof(nckma) != 'object' ) {
 	* settings
 	*/
 
+	// this is still unused...
 	nckma.conf = function ( vr, vl ) {
 		var pre = 'conf_option_';
 		if ( bpmv.str(vr) && bpmv.str(nkDefaults[vr]) ) {
@@ -162,7 +164,7 @@ if ( typeof(nckma) != 'object' ) {
 		for ( var aC in nkDefaults ) {
 			opts[aC] = localStorage[aC];
 		}
-		full = { 'start' : nkDataFirst, 'current' : nkDataLast, 'options' : opts };
+		full = { 'start' : nkDataFirst, 'current' : nkDataLast, 'options' : opts, 'history' : nkDataSet };
 		if ( asJson ) {
 			return JSON.stringify( full );
 		}
@@ -286,6 +288,15 @@ if ( typeof(nckma) != 'object' ) {
 					nckma.track( 'func', 'nckma.parse reset nkDataFirst newlogin', 'nkExec' );
 					nkDataFirst = d;
 				}
+				nkDataSet.push( {
+					  'c' : d.comment_karma
+					, 'l' : d.link_karma
+					, 't' : d.nkTimeStamp
+				} );
+				while ( ( nkDataSet.length > 500 ) || ( nkDataSet.length > localStorage['savedRefreshes'] ) ) {
+					nkDataSet.shift()
+				}
+				localStorage['_dataSet'] = JSON.stringify( nkDataSet );
 				nkDataLast = d;
 				localStorage['_lastCached'] = JSON.stringify( nkDataLast );
 				switch ( localStorage['row0'] ) {
@@ -322,6 +333,9 @@ if ( typeof(nckma) != 'object' ) {
 			return;
 		}
 		nckma.debug( 2, 'nckma.parse()', nckma.get() );
+		if ( nckma.testing() ) {
+			nckma.debug( 2, 'localStorage Remaining in MB', Math.round( ( ( (1024 * 1024 * 5) - unescape( encodeURIComponent( JSON.stringify( localStorage ) ) ).length ) / 1024 / 1024 ) * 100000) / 100000 );
+		}
 	};
 
 	nckma.poll = function () {
@@ -355,6 +369,8 @@ if ( typeof(nckma) != 'object' ) {
 		nkLastPoll = null;
 		if ( full ) {
 			nkDataFirst = null;
+			localStorage['_dataSet'] = '';
+			nkDataSet = [];
 		}
 		setTimeout( nckma.poll, 2000 );
 	};
