@@ -119,12 +119,37 @@ body {
 	padding: 10px;
 }
 .nckCredits h1, .nckCredits h2 {
+	font-size: 40px;
 	text-align: center;
+}
+
+.nckCredits h3 {
+	font-size: 20px;
 }
 
 .nckCredits ul ul li {
 	font-weight: bold;
 	font-style: italic;
+}
+
+.nckCredits > ul > li:last-child ul {
+	-webkit-perspective: 500;
+}
+
+.thanksYouFolksRock {
+	width: 400px;
+	overflow: hidden;
+	margin: 20px auto;
+}
+
+.rocking, .thoseWhoRock {
+	-webkit-transform-style: preserve-3d;
+	-webkit-transition: 0.5s;
+	-webkit-transform: rotateX(720deg);
+}	
+
+.thoseWhoRock {
+	color: #ABAB15;
 }
 
 input[type="button"],

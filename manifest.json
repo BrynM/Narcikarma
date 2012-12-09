@@ -16,7 +16,7 @@
 	"background"       : {
 		"page" : "nckma_html/background.html"
 	},
-	"content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+	"content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self' https://www.youtube.com",
 	"permissions"      : [
 		"http://www.reddit.com/api/",
 		"http://narcikarma.net/",
