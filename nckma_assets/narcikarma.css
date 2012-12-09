@@ -36,8 +36,15 @@ body {
 }
 
 .nckOptionsButtons {
-	margin-left: 200px;
 	text-align: left;
+}
+
+#changed_options_list {
+	opacity: 0.25;
+}
+
+#changed_options_list:hover {
+	opacity: 1;
 }
 
 .nckContent canvas {
@@ -99,9 +106,25 @@ body {
 	margin-bottom: 5px;
 }
 .nckHidden {
-/*
 	display: none !important;
-*/
+}
+
+.nckCredits {
+	width: 500px;
+	background-color: transparent; /* rgba( 255, 255, 255, 0.3 ) */
+	background-image: url( "img/nk_logo_bg_slight.png" );
+	background-repeat: no-repeat;
+	background-position: center right;
+	margin: 0 auto;
+	padding: 10px;
+}
+.nckCredits h1, .nckCredits h2 {
+	text-align: center;
+}
+
+.nckCredits ul ul li {
+	font-weight: bold;
+	font-style: italic;
 }
 
 input[type="button"],
@@ -163,5 +186,55 @@ button:disabled {
 	opacity: 0.25;
 }
 
-
+/*
+simple CSS tab system
+*/
+.tab-group {
+	display: block;
+	clear: both;
+	position: relative;
+	min-height: 300px;
+	margin: 0;
+}
+.tab-single {
+	float: left;
+}
+.tab-single .tab-radio {
+	display: none;
+}
+.tab-label {
+	padding: 2px 5px;
+	margin-left: -1px;
+	position: relative;
+	top: 0;
+	left: 1px;
+	background: rgba( 180, 180, 180, 0.35 );
+	border: 1px solid #ccc;
+}
+input[type="radio"]:checked ~ label {
+	background: rgba( 255, 255, 255, 0.65 );
+	border-bottom: rgba( 255, 255, 255, 0.65 );
+	z-index: 2;
+}
+.tab-contents {
+	position: absolute;
+	top: 15px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding: 20px;
+	border: 1px solid #ccc;
+	display: none;
+	background: rgba( 255, 255, 255, 0.65 );
+	background-image: url( "img/nk_logo_bg.png" );
+	background-repeat: no-repeat;
+	background-position: center right;
+}
+input[type="radio"]:checked ~ label ~ .tab-contents {
+	display: block;
+	z-index: 1;
+}
+.tab-contents p {
+	margin-right: 400px;
+}
 

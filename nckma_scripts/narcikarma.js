@@ -41,24 +41,25 @@ if ( typeof(nckma) != 'object' ) {
 			  'alertCommentGain' : 50
 			, 'alertLinkGain'    : 50
 			, 'alternateTime'    : 2 // in seconds
-			, 'dateFormat'       : 'US'
-			, 'interval'         : 600 // in seconds
-			, 'row0'             : 'lKarma' // one of cKarma, lKarma, flags
-			, 'row1'             : 'cKarma'
 			, 'color_black'      : '0, 0, 0, 1'
 			, 'color_blue'       : '0, 0, 235, 1'
-			, 'flag0'            : 'has_mail'
-			, 'flag1'            : 'is_mod'
-			, 'flag2'            : 'has_mod_mail'
-			, 'flag3'            : 'is_gold'
 			, 'color_gold'       : '176, 176, 21, 1'
 			, 'color_gray'       : '128, 128, 128, 1'
 			, 'color_green'      : '0, 190, 0, 1'
 			, 'color_purple'     : '215, 0, 215, 1'
-			, 'color_red'        : '235, 0, 0, 1'
 			, 'color_negChange'  : '235, 0, 0, 1'
 			, 'color_noChange'   : '0, 0, 0, 1'
 			, 'color_posChange'  : '0, 190, 0, 1'
+			, 'color_red'        : '235, 0, 0, 1'
+			, 'dateFormat'       : 'US'
+			, 'flag0'            : 'has_mail'
+			, 'flag1'            : 'is_mod'
+			, 'flag2'            : 'has_mod_mail'
+			, 'flag3'            : 'is_gold'
+			, 'interval'         : 600 // in seconds
+			, 'row0'             : 'lKarma' // one of cKarma, lKarma, flags
+			, 'row1'             : 'cKarma'
+			, 'savedRefreshes'   : '50'
 		}
 		, nkPages = {
 			  'background'   : 'nckma_html/background.html'
@@ -488,7 +489,31 @@ return nckma; })() && (function () {
 
 	nckma.opts = {};
 
-	var nckmaNeedsSave = false;
+	var nckmaNeedsSave = false
+		, nkOptionNames = {
+			  'alertCommentGain' : 'Alert After Comment Karma Threshold'
+			, 'alertLinkGain'    : 'Alert After Link Karma Threshold'
+			, 'alternateTime'    : 'Flag Alternate Time'
+			, 'color_black'      : 'Black Color'
+			, 'color_blue'       : 'Blue Color'
+			, 'color_gold'       : 'Gold Color'
+			, 'color_gray'       : 'Gray Color'
+			, 'color_green'      : 'Green Color'
+			, 'color_purple'     : 'Purple Color'
+			, 'color_negChange'  : 'Negative Change Color'
+			, 'color_noChange'   : 'No Change Color'
+			, 'color_posChange'  : 'Positive Change Color'
+			, 'color_red'        : 'Red Color'
+			, 'dateFormat'       : 'Date Format'
+			, 'flag0'            : 'First Flag'
+			, 'flag1'            : 'Second Flag'
+			, 'flag2'            : 'Third Flag'
+			, 'flag3'            : 'Fourth Flag'
+			, 'interval'         : 'Refresh Interval'
+			, 'row0'             : 'First Row Contents'
+			, 'row1'             : 'Second Row Contents'
+			, 'savedRefreshes'   : 'Number of Saved Refreshes'
+		};
 
 	/*
 	* vars
@@ -500,9 +525,8 @@ return nckma; })() && (function () {
 	};
 
 	nckma.opts.valid = {
-		  'alertCommentGain' : function ( val ) { return parseInt(val) > 10 ? true : 'Alert Comment Karma Threshold must be greater than 10.'; }
-		, 'alertLinkGain'    : function ( val ) { return parseInt(val) > 10 ? true : 'Alert Link Karma Threshold must be greater than 10.'; }
-		, 'interval'         : function ( val ) { return ( parseInt(val) > ( nckma.testing() ? 14 : 119 ) ) || ( parseInt(val) === 0 ) ? true : 'Refresh Interval must be 1 minute or more.'; }
+		  'alertCommentGain' : function ( val ) { return parseInt(val) > 10 ? true : nkOptionNames['alertCommentGain'] + ' must be greater than 10.'; }
+		, 'alertLinkGain'    : function ( val ) { return parseInt(val) > 10 ? true : nkOptionNames['alertLinkGain'] + ' must be greater than 10.'; }
 		, 'color_black'      : nckma.opts.valid_color
 		, 'color_blue'       : nckma.opts.valid_color
 		, 'color_gold'       : nckma.opts.valid_color
@@ -513,6 +537,8 @@ return nckma; })() && (function () {
 		, 'color_negChange'  : nckma.opts.valid_color
 		, 'color_noChange'   : nckma.opts.valid_color
 		, 'color_posChange'  : nckma.opts.valid_color
+		, 'interval'         : function ( val ) { return ( parseInt(val) > ( nckma.testing() ? 14 : 119 ) ) || ( parseInt(val) === 0 ) ? true : nkOptionNames['interval'] + ' must be 1 minute or more.'; }		
+		, 'savedRefreshes'   : function ( val ) { val = parseInt( val, 10 ); return ( ( val >= 0 ) && ( val <= 100 ) ? true : nkOptionNames['interval'] + ' must be a number between 0 and 100.' ); }
 	};
 
 	/*
@@ -564,20 +590,29 @@ return nckma; })() && (function () {
 		}
 	};
 
-	nckma.opts.change = function () {
+	nckma.opts.change = function ( noList ) {
 		var tJ = null
 			, defs = nckma.defaults()
 			, ego = null
 			, changed = 0
-			, jT = $(this);
+			, jT = $(this)
+			, jL = $('#changed_options_list')
+			, newVal = null;
 		if ( (/^(alpha|picker)_opt_color_/).test( jT.attr( 'id' ) ) ) {
 			return;
+		}
+		if ( bpmv.obj(jL) && bpmv.num(jL.length) && !noList ) {
+			jL.empty();
 		}
 		for ( var aC in defs ) {
 			tJ = $('#opt_'+aC);
 			if ( defs.hasOwnProperty( aC ) && bpmv.str(aC) && bpmv.obj(tJ) && bpmv.num(tJ.length) ) {
-				if ( tJ.val() != localStorage[aC] ) {
+				newVal = ''+tJ.val();
+				if ( newVal != localStorage[aC] ) {
 					changed++;
+					if ( !noList ) {
+						jL.append( '<li>'+nkOptionNames[aC]+' changed from &quot;'+localStorage[aC]+'&quot; to &quot;'+newVal+'&quot;</li>' );
+					}
 				}
 			}
 		}
@@ -597,11 +632,9 @@ return nckma; })() && (function () {
 			, tJ = $('#opt_color_'+cN)
 			, tP = $('#picker_opt_color_'+cN)
 			, opa = 1;
-		if ( (/^alpha_opt_color_/).test( ego ) || (/^pipcker_opt_color_/).test( ego ) ) {
+		if ( (/^alpha_opt_color_/).test( ego ) || (/^picker_opt_color_/).test( ego ) ) {
 			opa = ($('#alpha_opt_color_'+cN).val()/1000);
-			if ( (/^alpha_opt_color_/).test( ego ) ) {
-				$('#picker_opt_color_'+cN).css( { 'opacity' : opa } );
-			}
+			$('#picker_opt_color_'+cN).css( { 'opacity' : opa } );
 			tJ.val( nckma.hex2rgb( $('#picker_opt_color_'+cN).val() ).join( ', ' ) + ', ' + opa );
 			tJ.change();
 		}
@@ -645,11 +678,18 @@ return nckma; })() && (function () {
 	nckma.opts.save = function () {
 		var cache = nckma.conf.cache
 			, defs = nckma.defaults()
-			, statText = '';
+			, jL = $('#changed_options_list')
+			, jlGood = false
+			, statText = ''
+			, newTxt = '';
 		if ( !$('body.nckOptions').is( ':visible' ) ) {
 			return;
 		}
 		$('.nckOptionsContainer span').hide();
+		if ( nckma.testing() && bpmv.obj(jL) && bpmv.num(jL.length) ) {
+			jL.empty();
+			jlGood = true;
+		}
 		for ( var aC in defs ) {
 			if ( defs.hasOwnProperty( aC ) && bpmv.str(aC) ) {
 				if ( !bpmv.obj(cache[aC]) || !bpmv.num(cache[aC].length) ) {
@@ -667,9 +707,17 @@ return nckma; })() && (function () {
 						}
 						if ( bpmv.obj(cache[aC+'_status']) && bpmv.num(cache[aC+'_status'].length) ) {
 							if ( cache[aC].is( 'select' ) ) {
-								cache[aC+'_status'].text( 'Set to ' + cache[aC].find( 'option:selected' ).text() + '.' );
+								newTxt =  cache[aC].find( 'option:selected' ).text();
+								cache[aC+'_status'].text( 'Set to ' + newTxt + '.' );
+								if ( jlGood ) {
+									jL.append( '<li style="color: rgba( ' + localStorage['color_green'] + ' );">'+nkOptionNames[aC]+' set to &quot;'+newTxt+'&quot;</li>' );
+								}
 							} else {
-								cache[aC+'_status'].text( 'Set to ' + cache[aC].val() + '.' );
+								newTxt =  cache[aC].val();
+								cache[aC+'_status'].text( 'Set to ' + newTxt + '.' );
+								if ( jlGood ) {
+									jL.append( '<li style="color: rgba( ' + localStorage['color_green'] + ' );">'+nkOptionNames[aC]+' set to &quot;'+newTxt+'&quot;</li>' );
+								}
 							}
 							cache[aC+'_status'].stop( true ).fadeIn( 100 ).fadeOut( 1500 );
 						}
@@ -677,11 +725,23 @@ return nckma; })() && (function () {
 						if ( bpmv.obj(cache[aC+'_status']) && bpmv.num(cache[aC+'_status'].length) ) {
 							cache[aC+'_status'].html( '<span class="nckOptionsError">Error: '+ statText + '</sapn>');
 							cache[aC+'_status'].stop( true ).fadeIn( 100 );
+							if ( jlGood ) {
+								jL.append( '<li style="color: rgba( ' + localStorage['color_red'] + ' );">'+nkOptionNames[aC]+' failed to save. '+statText+'</li>' );
+							}
 						}
 					}
 				}
 			}
 		}
+		if ( jlGood ) {
+			setTimeout( function () {
+				jL.stop().show().fadeOut( 5000, function () {
+					jL.empty();
+					jL.show();
+				} );
+			}, 8000 );
+		}
+		nckma.opts.change( true );
 		nckma.track( 'func', 'nckma.opts.save', 'nkExec' );
 		nckma.track( 'saved', '', 'nkOptions' );
 	};
@@ -1162,12 +1222,96 @@ return nckma.px; })() && (function () {
 	nckma.credits = {};
 
 	nckma.credits.to_html = function () {
+		var ret = ''
+			, retT = ''
+			, majNum = 0
+			, minNum = 0;
+		for ( var cred in nkCredits ) {
+			retT = '';
+			minNum = 0;
+			if ( nkCredits.hasOwnProperty( cred ) && bpmv.str(cred) && bpmv.obj(nkCredits[cred], true) ) {
+				for ( var aCred in nkCredits[cred] ) {
+					if ( nkCredits[cred].hasOwnProperty( aCred ) && bpmv.str(aCred) && bpmv.obj(nkCredits[cred][aCred], true) && bpmv.str(nkCredits[cred][aCred].name) ) {
+						if ( bpmv.str(nkCredits[cred][aCred].link) ) {
+							retT += '<li><a href="'+nkCredits[cred][aCred].link+'" target="_blank">'+nkCredits[cred][aCred].name+'</a></li>\n';
+						} else {
+							retT += '<li>'+nkCredits[cred][aCred].name+'</li>\n';
+						}
+						minNum++;
+					}
+				}
+				if ( ( minNum > 0 ) && bpmv.str(retT) ) {
+					ret += '<li>\n<h3 style="text-transform: capitalize;" >'+cred+'</h3>\n<ul>\n'+retT+'\n</ul>\n</li>\n';
+					majNum++;
+				}
+			}
+		}
+		if ( bpmv.str(ret) ) {
+			ret = '<div class="nckCredits">\n<h1>Narcikarma Credits</h1>\n<ul>\n'+ret+'\n</ul>\n</div>';
+		}
+		return ret;
 	};
 
 	nckma.credits.to_markdown = function () {
+		var ret = ''
+			, retT = ''
+			, majNum = 0
+			, minNum = 0;
+		for ( var cred in nkCredits ) {
+			retT = '';
+			minNum = 0;
+			if ( nkCredits.hasOwnProperty( cred ) && bpmv.str(cred) && bpmv.obj(nkCredits[cred], true) ) {
+				for ( var aCred in nkCredits[cred] ) {
+					if ( nkCredits[cred].hasOwnProperty( aCred ) && bpmv.str(aCred) && bpmv.obj(nkCredits[cred][aCred], true) && bpmv.str(nkCredits[cred][aCred].name) ) {
+						if ( bpmv.str(nkCredits[cred][aCred].link) ) {
+							retT += '* ['+nkCredits[cred][aCred].name+']('+nkCredits[cred][aCred].link+')\n';
+						} else {
+							retT += '* '+nkCredits[cred][aCred].name+'\n';
+						}
+						minNum++;
+					}
+				}
+				if ( ( minNum > 0 ) && bpmv.str(retT) ) {
+					ret += '## '+cred.replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase(); } )+'\n'+retT+'\n';
+					majNum++;
+				}
+			}
+		}
+		if ( bpmv.str(ret) ) {
+			ret = '# Narcikarma Credits\n'+bpmv.trim( ret )+'\n';
+		}
+		return ret;
 	};
 
 	nckma.credits.to_text = function () {
+		var ret = ''
+			, retT = ''
+			, majNum = 0
+			, minNum = 0;
+		for ( var cred in nkCredits ) {
+			retT = '';
+			minNum = 0;
+			if ( nkCredits.hasOwnProperty( cred ) && bpmv.str(cred) && bpmv.obj(nkCredits[cred], true) ) {
+				for ( var aCred in nkCredits[cred] ) {
+					if ( nkCredits[cred].hasOwnProperty( aCred ) && bpmv.str(aCred) && bpmv.obj(nkCredits[cred][aCred], true) && bpmv.str(nkCredits[cred][aCred].name) ) {
+						if ( bpmv.str(nkCredits[cred][aCred].link) ) {
+							retT += '    - '+nkCredits[cred][aCred].name+' ('+nkCredits[cred][aCred].link+')\n';
+						} else {
+							retT += '    - '+nkCredits[cred][aCred].name+'\n';
+						}
+						minNum++;
+					}
+				}
+				if ( ( minNum > 0 ) && bpmv.str(retT) ) {
+					ret += '  * '+cred.replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase(); } )+'\n'+retT+'\n';
+					majNum++;
+				}
+			}
+		}
+		if ( bpmv.str(ret) ) {
+			ret = 'Narcikarma Credits\n'+bpmv.trim( ret )+'\n';
+		}
+		return ret;
 	};
 
 return nckma.credits; })() && (function () {

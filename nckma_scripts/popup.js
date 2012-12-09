@@ -50,22 +50,22 @@ function populate () {
 			lDelt = parseInt( sD.current.link_karma, 10 ) - parseInt( sD.start.link_karma, 10 );
 			if ( lDelt > 0 ) { // positive
 				pChar = '+';
-				pClass = 'color: rgba( ' + localStorage['posChange'] + ' );';
+				pClass = 'color: rgba( ' + localStorage['color_posChange'] + ' );';
 			} else if ( lDelt < 0 ) { // negative
-				pClass = 'color: rgba( ' + localStorage['negChange'] + ' );';
+				pClass = 'color: rgba( ' + localStorage['color_negChange'] + ' );';
 			} else { // zero
-				pClass = 'color: rgba( ' + localStorage['noChange'] + ' );';
+				pClass = 'color: rgba( ' + localStorage['color_noChange'] + ' );';
 			}
 			$('#nck_curr_lkarma').html( ( bpmv.num(sD.current.link_karma, true) ? nckma.str_num( sD.current.link_karma ) : 'unknown' ) + ' (<span style="'+pClass+'">' + pChar + nckma.str_num( lDelt ) + '</span>)' );
 			cDelt = parseInt( sD.current.comment_karma, 10 ) - parseInt( sD.start.comment_karma, 10 );
 			pChar = '';
 			if ( cDelt > 0 ) { // positive
 				pChar = '+';
-				pClass = 'color: rgba( ' + localStorage['posChange'] + ' );';
+				pClass = 'color: rgba( ' + localStorage['color_posChange'] + ' );';
 			} else if ( cDelt < 0 ) { // negative
-				pClass = 'color: rgba( ' + localStorage['negChange'] + ' );';
+				pClass = 'color: rgba( ' + localStorage['color_negChange'] + ' );';
 			} else { // zero
-				pClass = 'color: rgba( ' + localStorage['noChange'] + ' );';
+				pClass = 'color: rgba( ' + localStorage['color_noChange'] + ' );';
 			}
 			$('#nck_curr_ckarma').html( ( bpmv.num(sD.current.comment_karma, true) ? nckma.str_num( sD.current.comment_karma ) : 'unknown' ) + ' (<span style="'+pClass+'">' + pChar + nckma.str_num( cDelt ) + '</span>)' );
 
@@ -121,6 +121,7 @@ function go_to_cws () {
 $(document).ready( function () {
 	$('#nck_close_x').click( function () { window.close(); } );
 	$('#nck_pop_btn_options').click( function () { window.open( '/nckma_html/options.html' ); } );
+	$('#nck_pop_btn_credits').click( function () { window.open( '/nckma_html/credits.html' ); } );
 	$('#nck_pop_btn_close').click( function () { window.close(); } );
 	$('#nck_pop_btn_reset').click( reset_stats );
 	$('#nck_pop_btn_user').click( go_to_user );

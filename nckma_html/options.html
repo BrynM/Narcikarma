@@ -6,162 +6,187 @@
 </head>
 <body class="nckOptions">
 	<div class="nckContent">
+
 		<h1 id="nck_title">Narcikarma Options</h1>
 
+		<div class="tab-group">
 
+			<div id="main_options_tab" class="tab-single">
+				<input type="radio" class="tab-radio" id="main_options_tab_radio" name="optionsTabs" checked="checked"/>
+				<label for="main_options_tab_radio" class="tab-label">Main Options</label>
+				<div class="tab-contents">
+
+					<p>These are the primary options for Narcikarma. If you change any options, you can revert to your saved options with the &quot;Reset Options&quot; button. Your changes will not take effect until you click the &quot;Save Options&quot; button. Finally, to restore the default Narcikarma options, use the &quot;Default Options&quot; button.</p>
+
+					<div class="nckOptionsContainer" title="Interval that your karma stats will be checked.">
+						<label for="opt_interval">Refresh Interval</label>
+						<select id="opt_interval">
+							<option value="120">2 minutes</option>
+							<option value="300">5 minutes</option>
+							<option value="600">10 minutes</option>
+							<option value="1200">20 minutes</option>
+							<option value="1800">30 minutes</option>
+							<option value="2700">45 minutes</option>
+							<option value="3600">1 Hour</option>
+							<option value="0">disabled</option>
+						</select>&nbsp;<span id="opt_interval_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer" title="Format for dates.">
+						<label for="opt_dateFormat">Date Format</label>
+						<select id="opt_dateFormat">
+							<option value="US">US</option>
+							<option value="UK">UK</option>
+						</select>&nbsp;<span id="opt_dateFormat_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer" title="Contents of top icon row.">
+						<label for="opt_row0">Top Row</label>
+						<select id="opt_row0">
+							<option value="cKarma">Comment Karma</option>
+							<!-- option value="flagsAndC">Alternate Status Flags and Comment Karma</option -->
+							<option value="lKarma">Link Karma</option>
+							<!-- option value="flagsAndL">Alternate Status Flags and Link Karma</option -->
+							<option value="flags">Status Flags</option>
+						</select>&nbsp;<span id="opt_row0_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer" title="Contents of second icon row.">
+						<label for="opt_row1">Second Row</label>
+						<select id="opt_row1">
+							<option value="cKarma">Comment Karma</option>
+							<!-- option value="flagsAndC">Alternate Status Flags and Comment Karma</option -->
+							<option value="lKarma">Link Karma</option>
+							<!-- option value="flagsAndL">Alternate Status Flags and Link Karma</option -->
+							<option value="flags">Status Flags</option>
+						</select>&nbsp;<span id="opt_row1_status"></span>
+					</div>
+					<p>Settings for Status Flags can be found in the <a href="#flags_options_tab_radio">Flag Options</a> tab.</p>
+
+				</div>
+			</div>
+
+			<div id="flags_options_tab" class="tab-single">
+				<input type="radio" class="tab-radio" id="flags_options_tab_radio" name="optionsTabs" />
+				<label for="flags_options_tab_radio" class="tab-label">Flag Options</label>
+				<div class="tab-contents">
+
+					<p>If flags are shown that is... see your &quot;Top Row&quot; and &quot;Second Row&quot; settings in the <a href="#main_options_tab_radio">Main Options</a> tab.</p>
+
+					<!-- div class="nckOptionsContainer" title="First flag shown on flag row.">
+						<label for="opt_alternateTime">Alternate Flags Every</label>
+						<select id="opt_alternateTime">
+							<option value="5">5 Seconds</option>
+							<option value="15">15 Seconds</option>
+							<option value="30">30 Seconds</option>
+							<option value="60">1 minute</option>
+						</select>&nbsp;(if enabled for a row)&nbsp;<span id="opt_alternateTime_status"></span>
+					</div -->
+
+					<div class="nckOptionsContainer" title="First flag shown on flag row.">
+						<label for="opt_flag0">First Flag</label>
+						<select id="opt_flag0">
+							<option value="blank">blank</option>
+							<option value="has_mail_both">Messages or Mod Mail</option>
+							<option value="has_mail">Messages/User Mail</option>
+							<option value="has_mod_mail">Mod Mail</option>
+							<option value="is_mod">Moderator</option>
+							<option value="is_gold">Reddit Gold</option>
+						</select>&nbsp;<span id="opt_flag0_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer" title="Second flag shown on flag row.">
+						<label for="opt_flag1">Second Flag</label>
+						<select id="opt_flag1">
+							<option value="blank">blank</option>
+							<option value="has_mail_both">Messages or Mod Mail</option>
+							<option value="has_mail">Messages/User Mail</option>
+							<option value="has_mod_mail">Mod Mail</option>
+							<option value="is_mod">Moderator</option>
+							<option value="is_gold">Reddit Gold</option>
+						</select>&nbsp;<span id="opt_flag1_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer" title="Third flag shown on flag row.">
+						<label for="opt_flag2">Third Flag</label>
+						<select id="opt_flag2">
+							<option value="blank">blank</option>
+							<option value="has_mail_both">Messages or Mod Mail</option>
+							<option value="has_mail">Messages/User Mail</option>
+							<option value="has_mod_mail">Mod Mail</option>
+							<option value="is_mod">Moderator</option>
+							<option value="is_gold">Reddit Gold</option>
+						</select>&nbsp;<span id="opt_flag2_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer" title="Last flag shown on flag row.">
+						<label for="opt_flag3">Last Flag</label>
+						<select id="opt_flag3">
+							<option value="blank">blank</option>
+							<option value="has_mail_both">Messages or Mod Mail</option>
+							<option value="has_mail">Messages/User Mail</option>
+							<option value="has_mod_mail">Mod Mail</option>
+							<option value="is_mod">Moderator</option>
+							<option value="is_gold">Reddit Gold</option>
+						</select>&nbsp;<span id="opt_flag3_status"></span>
+
+					</div>
+				</div>
+			</div>
+
+			<div id="color_options_tab" class="tab-single">
+				<input type="radio" class="tab-radio" id="color_options_tab_radio" name="optionsTabs" />
+				<label for="color_options_tab_radio" class="tab-label">Color Options</label>
+				<div class="tab-contents">
+
+					<p>You can change the color of each of these by clicking on the color swatch. The slider will change that color's opacity (alpha).</p>
+
+					<div class="nckOptionsContainer nckOptionsColor" title="Positive Votes">
+						<label for="picker_opt_color_posChange">Positive Change</label>
+						<input id="opt_color_posChange" type="text" class="nckHidden" />
+						<input type="color" id="picker_opt_color_posChange" title="Pick a &quot;Positive Votes&quot; color" />
+						<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_posChange" title="Change &quot;Positive Change&quot; color tranparency (alpha)" />
+						&nbsp;<span id="opt_color_posChange_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer nckOptionsColor" title="No Change In Votes">
+						<label for="picker_opt_color_noChange">No Change</label>
+						<input id="opt_color_noChange" type="text" class="nckHidden" />
+						<input type="color" id="picker_opt_color_noChange" title="Pick a &quot;No Change&quot; color" />
+						<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_noChange" title="Change &quot;No Change&quot; color tranparency (alpha)" />
+						&nbsp;<span id="opt_color_noChange_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer nckOptionsColor" title="Negative Votes">
+						<label for="picker_opt_color_negChange">Negative Change</label>
+						<input id="opt_color_negChange" type="text" class="nckHidden" />
+						<input type="color" id="picker_opt_color_negChange" title="Pick a &quot;Negative Votes&quot; color" />
+						<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_negChange" title="Change &quot;Negative Votes&quot; color tranparency (alpha)" />
+						&nbsp;<span id="opt_color_negChange_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer nckOptionsColor" title="Gold">
+						<label for="picker_opt_color_gold">Gold</label>
+						<input id="opt_color_gold" type="text" class="nckHidden" />
+						<input type="color" id="picker_opt_color_gold" title="Pick a &quot;Gold&quot; color" />
+						<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_gold" title="Change &quot;Gold&quot; color tranparency (alpha)" />
+						&nbsp;<span id="opt_color_gold_status"></span>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+
+		<!-- Alerts? -->
 		<!-- div class="nckOptionsContainer" title="When your comment karma has increased by this amount, an alert will be shown.">
 			<label for="opt_alertCommentGain">Alert Comment Karma Threshold</label>
 			<input type="text" id="opt_alertCommentGain">&nbsp;<span id="opt_alertCommentGain_status"></span>
 		</div-->
-
 		<!--div class="nckOptionsContainer" title="When your link karma has increased by this amount, an alert will be shown.">
 			<label for="opt_alertLinkGain">Alert Link Karma Threshold</label>
 			<input type="text" id="opt_alertLinkGain">&nbsp;<span id="opt_alertLinkGain_status"></span>
 		</div-->
-
-		<div class="nckOptionsContainer" title="Interval that your karma stats will be checked.">
-			<label for="opt_interval">Refresh Interval</label>
-			<select id="opt_interval">
-				<option value="120">2 minutes</option>
-				<option value="300">5 minutes</option>
-				<option value="600">10 minutes</option>
-				<option value="1200">20 minutes</option>
-				<option value="1800">30 minutes</option>
-				<option value="2700">45 minutes</option>
-				<option value="3600">1 Hour</option>
-				<option value="0">disabled</option>
-			</select>&nbsp;<span id="opt_interval_status"></span>
-		</div>
-
-		<div class="nckOptionsContainer" title="Format for dates.">
-			<label for="opt_dateFormat">Date Format</label>
-			<select id="opt_dateFormat">
-				<option value="US">US</option>
-				<option value="UK">UK</option>
-				<!-- option value="*">Other</option-->
-			</select>&nbsp;<span id="opt_dateFormat_status"></span>
-		</div>
-
-		<div class="nckOptionsContainer" title="Contents of top icon row.">
-			<label for="opt_row0">Top Row</label>
-			<select id="opt_row0">
-				<option value="cKarma">Comment Karma</option>
-<!-- 
-				<option value="flagsAndC">Alternate Status Flags and Comment Karma</option>
--->
-				<option value="lKarma">Link Karma</option>
-<!-- 
-				<option value="flagsAndL">Alternate Status Flags and Link Karma</option>
--->
-				<option value="flags">Status Flags</option>
-			</select>&nbsp;<span id="opt_row0_status"></span>
-		</div>
-
-		<div class="nckOptionsContainer" title="Contents of second icon row.">
-			<label for="opt_row1">Second Row</label>
-			<select id="opt_row1">
-				<option value="cKarma">Comment Karma</option>
-<!-- 
-				<option value="flagsAndC">Alternate Status Flags and Comment Karma</option>
--->
-				<option value="lKarma">Link Karma</option>
-<!-- 
-				<option value="flagsAndL">Alternate Status Flags and Link Karma</option>
--->
-				<option value="flags">Status Flags</option>
-			</select>&nbsp;<span id="opt_row1_status"></span>
-		</div>
-
-		<h3>Flags</h3>
-		(If shown...)
-<!-- 
-
-		<div class="nckOptionsContainer" title="First flag shown on flag row.">
-			<label for="opt_alternateTime">Alternate Flags Every</label>
-			<select id="opt_alternateTime">
-				<option value="5">5 Seconds</option>
-				<option value="15">15 Seconds</option>
-				<option value="30">30 Seconds</option>
-				<option value="60">1 minute</option>
-			</select>&nbsp;(if enabled for a row)&nbsp;<span id="opt_alternateTime_status"></span>
-		</div>
--->
-
-		<div class="nckOptionsContainer" title="First flag shown on flag row.">
-			<label for="opt_flag0">First Flag</label>
-			<select id="opt_flag0">
-				<option value="blank">blank</option>
-				<option value="has_mail_both">Messages or Mod Mail</option>
-				<option value="has_mail">Messages/User Mail</option>
-				<option value="has_mod_mail">Mod Mail</option>
-				<option value="is_mod">Moderator</option>
-				<option value="is_gold">Reddit Gold</option>
-			</select>&nbsp;<span id="opt_flag0_status"></span>
-		</div>
-		<div class="nckOptionsContainer" title="Second flag shown on flag row.">
-			<label for="opt_flag1">Second Flag</label>
-			<select id="opt_flag1">
-				<option value="blank">blank</option>
-				<option value="has_mail_both">Messages or Mod Mail</option>
-				<option value="has_mail">Messages/User Mail</option>
-				<option value="has_mod_mail">Mod Mail</option>
-				<option value="is_mod">Moderator</option>
-				<option value="is_gold">Reddit Gold</option>
-			</select>&nbsp;<span id="opt_flag1_status"></span>
-		</div>
-		<div class="nckOptionsContainer" title="Third flag shown on flag row.">
-			<label for="opt_flag2">Third Flag</label>
-			<select id="opt_flag2">
-				<option value="blank">blank</option>
-				<option value="has_mail_both">Messages or Mod Mail</option>
-				<option value="has_mail">Messages/User Mail</option>
-				<option value="has_mod_mail">Mod Mail</option>
-				<option value="is_mod">Moderator</option>
-				<option value="is_gold">Reddit Gold</option>
-			</select>&nbsp;<span id="opt_flag2_status"></span>
-		</div>
-		<div class="nckOptionsContainer" title="Last flag shown on flag row.">
-			<label for="opt_flag3">Last Flag</label>
-			<select id="opt_flag3">
-				<option value="blank">blank</option>
-				<option value="has_mail_both">Messages or Mod Mail</option>
-				<option value="has_mail">Messages/User Mail</option>
-				<option value="has_mod_mail">Mod Mail</option>
-				<option value="is_mod">Moderator</option>
-				<option value="is_gold">Reddit Gold</option>
-			</select>&nbsp;<span id="opt_flag3_status"></span>
-		</div>
-
-		<h3>Colors</h3>
-
-		<div class="nckOptionsContainer nckOptionsColor" title="Positive Votes">
-			<label for="picker_opt_color_posChange">Positive Change</label>
-			<input id="opt_color_posChange" type="text" class="nckHidden" />
-			<input type="color" id="picker_opt_color_posChange" title="Pick a &quot;Positive Votes&quot; color" />
-			<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_posChange" title="Change &quot;Positive Change&quot; color tranparency (alpha)" />
-			&nbsp;<span id="opt_color_posChange_status"></span>
-		</div>
-		<div class="nckOptionsContainer nckOptionsColor" title="No Change In Votes">
-			<label for="picker_opt_color_noChange">No Change</label>
-			<input id="opt_color_noChange" type="text" class="nckHidden" />
-			<input type="color" id="picker_opt_color_noChange" title="Pick a &quot;No Change&quot; color" />
-			<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_noChange" title="Change &quot;No Change&quot; color tranparency (alpha)" />
-			&nbsp;<span id="opt_color_noChange_status"></span>
-		</div>
-		<div class="nckOptionsContainer nckOptionsColor" title="Negative Votes">
-			<label for="picker_opt_color_negChange">Negative Change</label>
-			<input id="opt_color_negChange" type="text" class="nckHidden" />
-			<input type="color" id="picker_opt_color_negChange" title="Pick a &quot;Negative Votes&quot; color" />
-			<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_negChange" title="Change &quot;Negative Votes&quot; color tranparency (alpha)" />
-			&nbsp;<span id="opt_color_negChange_status"></span>
-		</div>
-		<div class="nckOptionsContainer nckOptionsColor" title="Gold">
-			<label for="picker_opt_color_gold">Gold</label>
-			<input id="opt_color_gold" type="text" class="nckHidden" />
-			<input type="color" id="picker_opt_color_gold" title="Pick a &quot;Gold&quot; color" />
-			<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_gold" title="Change &quot;Gold&quot; color tranparency (alpha)" />
-			&nbsp;<span id="opt_color_gold_status"></span>
-		</div>
 
 		<div class="nckOptionsButtons">
 			<button id="nckma_reset" class="optSaveToggle">Reset Options</button>
@@ -169,6 +194,8 @@
 			<button id="nckma_default">Default Options</button>
 		</div>
 
+		<ul id="changed_options_list">
+		</ul>
 	</div>
 
 	<script src="../nckma_scripts/jquery-1.8.2.min.js"></script>

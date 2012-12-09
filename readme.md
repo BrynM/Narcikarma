@@ -45,7 +45,7 @@ At a glance you can check your narcissistic progress, meaning you can stop using
 
 ## Todo
 
-* Decide on some color pickers for the preferences
+* Decide on some color pickers for the preferences (DONE!)
 * Get icon rows that alternate between flags and karma working
 * Experiment with scrolling icon text
 * Cakeday notifications
