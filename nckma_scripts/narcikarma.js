@@ -1197,11 +1197,12 @@ return nckma.px; })() && (function () {
 			{ 'name' : 'badmonkey0001', 'link' : 'http://www.reddit.com/u/badmonkey0001' }
 		]
 		, 'tools' : [
-			  { 'name' : 'bpmv',           'link' : 'https://github.com/BrynM/bpmv' }
-			, { 'name' : 'Google Chrome',  'link' : 'http://www.google.com/chrome' }
-			, { 'name' : 'jQuery',         'link' : 'http://jquery.com' }
-			, { 'name' : 'Reddit',         'link' : 'http://www.reddit.com/' }
-			, { 'name' : 'Sublime Text 2', 'link' : 'http://www.sublimetext.com/2' }
+			  { 'name' : 'bpmv',             'link' : 'https://github.com/BrynM/bpmv' }
+			, { 'name' : 'Google Chrome',    'link' : 'http://www.google.com/chrome' }
+			, { 'name' : 'jQuery',           'link' : 'http://jquery.com' }
+			, { 'name' : 'Reddit',           'link' : 'http://www.reddit.com/' }
+			, { 'name' : 'Sublime Text 2',   'link' : 'http://www.sublimetext.com/2' }
+			, { 'name' : 'Simple Fireworks', 'link' : 'http://rainbow.arch.scriptmania.com/scripts/fireworks.html' }
 		]
 		, 'developers' : [
 			{ 'name' : 'badmonkey0001', 'link' : 'http://www.reddit.com/u/badmonkey0001' }
