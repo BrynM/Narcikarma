@@ -34,7 +34,7 @@ function roxit () {
 		, auto = 1;
 	if ( !bpmv.num(extant.length) && !roxin ) {
 		$('body').append( '<div class="thanksYouFolksRock"><object width="400" height="300"><param name="movie" value="https://www.youtube.com/v/'+vid+'&autoplay='+auto+'"></param><embed src="https://www.youtube.com/v/'+vid+'&autoplay='+auto+'" type="application/x-shockwave-flash" width="400" height="300"></embed></object></div>' );
-		setTimeout( function() { setInterval( roxor, 2100 ); Fireworks(); }, 2000 );
+		setTimeout( function() { setInterval( roxor, 2100 ); Fireworks(); }, 1800 );
 		roxin = true;
 	}
 }

@@ -132,8 +132,19 @@ body {
 	font-style: italic;
 }
 
+.nckCredits > ul > li:last-child {
+	width: 200px;
+}
+
 .nckCredits > ul > li:last-child ul {
 	-webkit-perspective: 500;
+}
+
+.nckCredits > ul > li:last-child h3:hover {
+	background-color: rgba( 255, 139, 96, 0.05 );
+}
+.nckCredits > ul > li:last-child ul li:hover {
+	list-style-image: url( "img/tiny_upvote.png" );
 }
 
 .thanksYouFolksRock {
@@ -142,10 +153,12 @@ body {
 	margin: 20px auto;
 }
 
-.rocking, .thoseWhoRock {
+.rocking {
+	list-style-image: url( "img/tiny_upvote.png" );
 	-webkit-transform-style: preserve-3d;
 	-webkit-transition: 0.5s;
 	-webkit-transform: rotateX(720deg);
+	color: #ABAB15;
 }	
 
 .thoseWhoRock {
