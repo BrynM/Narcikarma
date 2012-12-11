@@ -33,6 +33,7 @@ if ( typeof(nckma) != 'object' ) {
 			, 'aConfFB' : false // read configuration fallbacks...
 		}
 		, nkLastPoll = null
+		, nkMaxHistReal = 500 // aslo see nkMaxHist in the options section
 		, nkPollInterval = 2 * 1000
 		, nkIsPolling = false
 		, nkDataFirst = bpmv.str(localStorage['_lastCached']) ? JSON.parse( localStorage['_lastCached'] ) : null
@@ -305,7 +306,8 @@ if ( typeof(nckma) != 'object' ) {
 					, 'l' : d.link_karma
 					, 't' : d.nkTimeStamp
 				} );
-				while ( ( nkDataSet.length > 500 ) || ( nkDataSet.length > localStorage['savedRefreshes'] ) ) {
+				while ( ( nkDataSet.length > nkMaxHistReal ) || ( nkDataSet.length > parseInt( localStorage['savedRefreshes'], 10 ) ) ) {
+					nckma.debug( 2, 'trimming history', nkDataSet.length )
 					nkDataSet.shift()
 				}
 				localStorage['_dataSet'] = JSON.stringify( nkDataSet );
@@ -346,6 +348,7 @@ if ( typeof(nckma) != 'object' ) {
 		}
 		nckma.debug( 2, 'nckma.parse()', nckma.get() );
 		if ( nckma.testing() ) {
+			nckma.debug( 2, 'History Length', nkDataSet.length );
 			nckma.debug( 2, 'localStorage Remaining in MB', Math.round( ( ( (1024 * 1024 * 5) - unescape( encodeURIComponent( JSON.stringify( localStorage ) ) ).length ) / 1024 / 1024 ) * 100000) / 100000 );
 		}
 	};
@@ -526,6 +529,7 @@ return nckma; })() && (function () {
 	nckma.opts = {};
 
 	var nckmaNeedsSave = false
+		, nkMaxHist = 500
 		, nkOptionNames = {
 			  'alertCommentGain' : 'Alert After Comment Karma Threshold'
 			, 'alertLinkGain'    : 'Alert After Link Karma Threshold'
@@ -574,7 +578,7 @@ return nckma; })() && (function () {
 		, 'color_noChange'   : nckma.opts.valid_color
 		, 'color_posChange'  : nckma.opts.valid_color
 		, 'interval'         : function ( val ) { return ( parseInt(val) > ( nckma.testing() ? 14 : 119 ) ) || ( parseInt(val) === 0 ) ? true : nkOptionNames['interval'] + ' must be 1 minute or more.'; }		
-		, 'savedRefreshes'   : function ( val ) { val = parseInt( val, 10 ); return ( ( val >= 0 ) && ( val <= 100 ) ? true : nkOptionNames['interval'] + ' must be a number between 0 and 100.' ); }
+		, 'savedRefreshes'   : function ( val ) { val = parseInt( val, 10 ); return ( ( val >= 0 ) && ( val <= nkMaxHist ) ? true : nkOptionNames['savedRefreshes'] + ' must be a number between 0 and '+nkMaxHist+'.' ); }
 	};
 
 	/*
@@ -615,7 +619,7 @@ return nckma; })() && (function () {
 		if ( $('body.nckOptions').is( ':visible' ) ) {
 			if ( nckma.testing() ) {
 				ivlSel = $('#opt_interval');
-				$('<h3>DEV MODE <span class="nckNote"><a href="_test_canvas.html">canvas test</a></span></h3>').insertAfter( '#nck_title' );
+				$('<h3>DEV MODE <span class="nkNote"><a href="_test_canvas.html" target="_blank">canvas test</a></span></h3>').insertAfter( '#nck_title' );
 				if ( bpmv.obj(ivlSel) && bpmv.num(ivlSel.length) ) {
 					ivlSel.prepend( '<option value="60">test 1 minute</option>' );
 					ivlSel.prepend( '<option value="30">test 30 sec</option>' );
@@ -800,8 +804,6 @@ return nckma.opts; })() && (function () {
 
 	var nkCanvas = {
 			  'icon'  : null
-			, 'gIcon' : null
-			, 'gImg'  : null
 		}
 		, nkCx = null
 		, line0y = 0
@@ -1255,6 +1257,26 @@ return nckma.opts; })() && (function () {
 	};
 
 return nckma.px; })() && (function () {
+
+	/*
+	********************************************************************************
+	********************************************************************************
+	* SPARKLINES - CODE ADAPTED FROM JSPARK ORIGINAL BY JOHN RESIG
+	* http://ejohn.org/projects/jspark/
+	********************************************************************************
+	********************************************************************************
+	*/
+
+	var nkSkCan = {};
+
+	function nk_sk_cx () {
+
+	}
+
+	// sparkline generator
+	nckma.sk = {};
+
+return nckma.sk; })() && (function () {
 
 	/*
 	********************************************************************************

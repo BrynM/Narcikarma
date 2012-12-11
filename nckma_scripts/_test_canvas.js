@@ -1,4 +1,7 @@
-var last = [];
+var last = []
+	, letrs = nckma.px.chars()
+	, charOut = $('#character_listing code').first();
+
 function print_the_bugger () {
 	var pr = '';
 	if ( bpmv.arr(last) ) {
@@ -14,7 +17,7 @@ function print_the_bugger () {
 
 function nk_test () {
 	var tStr = []
-		, lets = bpmv.keys( nckma.px.chars() )
+		, lets = bpmv.keys( letrs )
 		, set = nckma.px.color_set();
 	for ( var i = 0; i < set.length; i++ ) {
 		tStr = [];
@@ -31,6 +34,29 @@ function nk_test () {
 	setTimeout( print_the_bugger, 100 );
 }
 
+function print_chars () {
+	var txt = ''
+		, btz = null
+		, bC = 0;
+	charOut.empty();
+	for ( var aC in letrs ) {
+		txt += '### '+aC+'\n\n';
+		btz = (''+letrs[aC]).split('');
+		while ( btz.length > 0 ) {
+			txt += btz.shift();
+			bC++;
+			if ( bC > 3 ) {
+				bC = 0;
+				txt += '\n';
+			}
+		}
+		txt += '\n' + letrs[aC] + '\n\n';
+
+	}
+	charOut.text(txt);
+}
+
 $(document).ready( function () {
 	$('#run_test').click( nk_test );
+	print_chars()
 } );
