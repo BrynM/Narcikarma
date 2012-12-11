@@ -33,7 +33,7 @@ if ( typeof(nckma) != 'object' ) {
 			, 'aConfFB' : false // read configuration fallbacks...
 		}
 		, nkLastPoll = null
-		, nkMaxHistReal = 500 // aslo see nkMaxHist in the options section
+		, nkMaxHistReal = 1500 // aslo see nkMaxHist in the options section
 		, nkPollInterval = 2 * 1000
 		, nkIsPolling = false
 		, nkDataFirst = bpmv.str(localStorage['_lastCached']) ? JSON.parse( localStorage['_lastCached'] ) : null
@@ -69,7 +69,7 @@ if ( typeof(nckma) != 'object' ) {
 			, 'interval'         : 600 // in seconds
 			, 'row0'             : 'lKarma' // one of cKarma, lKarma, flags
 			, 'row1'             : 'cKarma'
-			, 'savedRefreshes'   : '150'
+			, 'savedRefreshes'   : '500'
 		}
 		, nkPages = {
 			  'background'   : 'nckma_html/background.html'
@@ -349,6 +349,7 @@ if ( typeof(nckma) != 'object' ) {
 		nckma.debug( 2, 'nckma.parse()', nckma.get() );
 		if ( nckma.testing() ) {
 			nckma.debug( 2, 'History Length', nkDataSet.length );
+			nckma.debug( 2, 'History Max Option', localStorage['savedRefreshes'] );
 			nckma.debug( 2, 'localStorage Remaining in MB', Math.round( ( ( (1024 * 1024 * 5) - unescape( encodeURIComponent( JSON.stringify( localStorage ) ) ).length ) / 1024 / 1024 ) * 100000) / 100000 );
 		}
 	};
@@ -529,7 +530,7 @@ return nckma; })() && (function () {
 	nckma.opts = {};
 
 	var nckmaNeedsSave = false
-		, nkMaxHist = 500
+		, nkMaxHist = 1500
 		, nkOptionNames = {
 			  'alertCommentGain' : 'Alert After Comment Karma Threshold'
 			, 'alertLinkGain'    : 'Alert After Link Karma Threshold'
