@@ -6,10 +6,18 @@ if ( typeof(nckma) != 'object' ) {
 
 (function () {
 
-// http://www.reddit.com/r/Narcikarma/about.json
-// http://www.reddit.com/reddits/mine.json
-// http://www.reddit.com/reddits/mine/subscriber.json
-//http://www.reddit.com/reddits/mine/moderator.json
+	/*
+	********************************************************************************
+	********************************************************************************
+	* CORE
+	********************************************************************************
+	********************************************************************************
+	*/
+
+	// http://www.reddit.com/r/Narcikarma/about.json
+	// http://www.reddit.com/reddits/mine.json
+	// http://www.reddit.com/reddits/mine/subscriber.json
+	//http://www.reddit.com/reddits/mine/moderator.json
 
 
 	/*
@@ -171,6 +179,10 @@ if ( typeof(nckma) != 'object' ) {
 		return full;
 	};
 
+	nckma.get_defaults = function () {
+		return $.extend( {}, nkDefaults );
+	};
+
 	nckma.get_url = function ( url ) {
 		if ( bpmv.str(url) && bpmv.str(nkUrls[url]) ) {
 			return ''+nkUrls[url];
@@ -301,26 +313,26 @@ if ( typeof(nckma) != 'object' ) {
 				localStorage['_lastCached'] = JSON.stringify( nkDataLast );
 				switch ( localStorage['row0'] ) {
 					case 'flags':
-						nckma.draw_change_flags( 1 );
+						nckma.px.draw_change_flags( 1 );
 						break
 					case 'cKarma':
-						nckma.draw_change_comment( 1 );
+						nckma.px.draw_change_comment( 1 );
 						break
 					case 'lKarma':
 					default:
-						nckma.draw_change_link( 1 );
+						nckma.px.draw_change_link( 1 );
 						break
 				}
 				switch ( localStorage['row1'] ) {
 					case 'flags':
-						nckma.draw_change_flags( 2 );
+						nckma.px.draw_change_flags( 2 );
 						break
 					case 'cKarma':
-						nckma.draw_change_comment( 2 );
+						nckma.px.draw_change_comment( 2 );
 						break
 					case 'lKarma':
 					default:
-						nckma.draw_change_link( 2 );
+						nckma.px.draw_change_link( 2 );
 						break
 				}
 			}
@@ -503,6 +515,14 @@ if ( typeof(nckma) != 'object' ) {
 
 return nckma; })() && (function () {
 
+	/*
+	********************************************************************************
+	********************************************************************************
+	* OPTIONS
+	********************************************************************************
+	********************************************************************************
+	*/
+
 	nckma.opts = {};
 
 	var nckmaNeedsSave = false
@@ -595,7 +615,7 @@ return nckma; })() && (function () {
 		if ( $('body.nckOptions').is( ':visible' ) ) {
 			if ( nckma.testing() ) {
 				ivlSel = $('#opt_interval');
-				$('<h3>DEV MODE</h3>').insertAfter( '#nck_title' );
+				$('<h3>DEV MODE <span class="nckNote"><a href="_test_canvas.html">canvas test</a></span></h3>').insertAfter( '#nck_title' );
 				if ( bpmv.obj(ivlSel) && bpmv.num(ivlSel.length) ) {
 					ivlSel.prepend( '<option value="60">test 1 minute</option>' );
 					ivlSel.prepend( '<option value="30">test 30 sec</option>' );
@@ -606,6 +626,7 @@ return nckma; })() && (function () {
 		}
 	};
 
+	// Detect changes in the options page elements
 	nckma.opts.change = function ( noList ) {
 		var tJ = null
 			, defs = nckma.defaults()
@@ -641,6 +662,7 @@ return nckma; })() && (function () {
 		}
 	}
 
+	// converts the options page UI values to a proper localStorage RGBA
 	nckma.opts.change_color = function () {
 		var ego = $(this).attr( 'id' )
 			, cN = ego.replace( /^[^_]+_opt_color_/, '' )
@@ -765,10 +787,22 @@ return nckma; })() && (function () {
 return nckma.opts; })() && (function () {
 
 	/*
+	********************************************************************************
+	********************************************************************************
+	* PIXEL/CANVAS
+	********************************************************************************
+	********************************************************************************
+	*/
+
+	/*
 	* "Local" vars
 	*/
 
-	var nkCanvas = null
+	var nkCanvas = {
+			  'icon'  : null
+			, 'gIcon' : null
+			, 'gImg'  : null
+		}
 		, nkCx = null
 		, line0y = 0
 		, line1y = 9
@@ -842,12 +876,12 @@ return nckma.opts; })() && (function () {
 	nckma.px = {};
 
 	/*
-	* vars
-	*/
-
-	/*
 	* functions
 	*/
+
+	nckma.px.chars = function () {
+		return $.extend( {}, nkChars );
+	};
 
 	nckma.px.color_test = function ( cArr ) {
 		var tC = null
@@ -873,6 +907,7 @@ return nckma.opts; })() && (function () {
 		return ret;
 	}
 
+	// get an RGBA array for a given color name
 	nckma.px.color = function ( color ) {
 		var cA = null
 			, cont = true
@@ -901,11 +936,24 @@ return nckma.opts; })() && (function () {
 		}
 	}
 
-	nckma.px.cx = function () {
-		if ( !bpmv.obj(nkCanvas) || !bpmv.num(nkCanvas.length) || !bpmv.obj(nkCx) ) {
-			nkCanvas = $('#nck_canvas_icon_16');
-			if ( bpmv.obj(nkCanvas) && bpmv.num(nkCanvas.length) ) {
-				nkCx = nkCanvas.get( 0 ).getContext( '2d' );
+	// get an Array containing the set of color names for all known colors
+	nckma.px.color_set = function () {
+		var ret = []
+			, optRx = /^color_/
+			, defs = nckma.get_defaults();
+		for ( var aO in defs ) {
+			if ( defs.hasOwnProperty( aO ) && optRx.test( aO ) ) {
+				ret.push( (''+aO).replace( optRx, '' ) );
+			}
+		}
+		return ret;
+	}
+
+	nckma.px.cx = function ( type ) {
+		if ( !bpmv.obj(nkCanvas.icon) || !bpmv.num(nkCanvas.icon.length) || !bpmv.obj(nkCx) ) {
+			nkCanvas.icon = $('#nck_canvas_icon_16');
+			if ( bpmv.obj(nkCanvas.icon) && bpmv.num(nkCanvas.icon.length) ) {
+				nkCx = nkCanvas.icon.get( 0 ).getContext( '2d' );
 				if ( !bpmv.obj(nkCx) ) {
 					throw 'Narcikarma: Could not get incon canvas!';
 				}
@@ -914,12 +962,12 @@ return nckma.opts; })() && (function () {
 		return nkCx;
 	};
 
-	nckma.draw_change_comment = function ( line ) {
+	nckma.px.draw_change_comment = function ( line ) {
 		var dat = null
 			, delt = 0
 			, col = 'noChange';
 		if ( ( line != 1 ) && ( line != 2 ) ) {
-			nckma.warn( 'Bad line for nckma.draw_change_comment()', line );
+			nckma.warn( 'Bad line for nckma.px.draw_change_comment()', line );
 			return;
 		}
 		dat = nckma.get();
@@ -950,14 +998,14 @@ return nckma.opts; })() && (function () {
 		}
 	};
 
-	nckma.draw_change_flags = function ( line ) {
+	nckma.px.draw_change_flags = function ( line ) {
 		var dat = null
 			, flag = 0
 			, ch = ''
 			, x = 0
 			, y = line > 1 ? line1y : line0y;
 		if ( ( line != 1 ) && ( line != 2 ) ) {
-			nckma.warn( 'Bad line for nckma.draw_change_link()', line );
+			nckma.warn( 'Bad line for nckma.px.draw_change_link()', line );
 			return;
 		}
 		dat = nckma.get();
@@ -1010,12 +1058,12 @@ return nckma.opts; })() && (function () {
 		}
 	};
 
-	nckma.draw_change_link = function ( line ) {
+	nckma.px.draw_change_link = function ( line ) {
 		var dat = null
 			, delt = 0
 			, col = 'noChange';
 		if ( ( line != 1 ) && ( line != 2 ) ) {
-			nckma.warn( 'Bad line for nckma.draw_change_link()', line );
+			nckma.warn( 'Bad line for nckma.px.draw_change_link()', line );
 			return;
 		}
 		dat = nckma.get();
@@ -1200,13 +1248,21 @@ return nckma.opts; })() && (function () {
 			, dat = null
 			, tT = '';
 		if ( bpmv.obj(cx) ) {
-			dat = cx.getImageData( 0, 0, nkCanvas.width(), nkCanvas.height() );
+			dat = cx.getImageData( 0, 0, nkCanvas.icon.width(), nkCanvas.icon.height() );
 			chrome.browserAction.setIcon( { imageData : dat } );
 			return dat;
 		}
 	};
 
 return nckma.px; })() && (function () {
+
+	/*
+	********************************************************************************
+	********************************************************************************
+	* CREDITS
+	********************************************************************************
+	********************************************************************************
+	*/
 
 	var nkCredits = { // the order here controls appearance order
 		'creator' : [
@@ -1332,6 +1388,14 @@ return nckma.px; })() && (function () {
 	};
 
 return nckma.credits; })() && (function () {
+
+	/*
+	********************************************************************************
+	********************************************************************************
+	* RUNTIME
+	********************************************************************************
+	********************************************************************************
+	*/
 
 	if ( nckma._bgTask ) {
 		$(document).ready( nckma.begin );

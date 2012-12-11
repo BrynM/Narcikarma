@@ -9,11 +9,11 @@
 	<div class="nckContent">
 
 		<div>
-			<canvas id="nck_canvas_icon_16" height="16" width="16" style="vertical-align: top;"></canvas>
+			<canvas id="nck_canvas_icon_16" height="16" width="16" style="vertical-align: top;" class="test_canvas_icon"></canvas>
 			&nbsp;<button id="run_test" style="font-size: 10px; height: 16px; line-height: 12px;">Run Icon Test</button>
 		</div>
 
-		<pre><code>0000111100001111
+		<pre id="character_worksheet" style="display:none;"><code>0000111100001111
 1111000011110000
 0000111100001111
 1111000011110000
@@ -504,47 +504,8 @@
 	</div>
 	<script src="../nckma_scripts/jquery-1.8.2.min.js"></script>
 	<script src="../nckma_scripts/bpmv.js"></script>
-	<script src="../nckma_scripts/BmColor.js"></script>
 	<script src="../nckma_scripts/narcikarma.js"></script>
+	<script src="../nckma_scripts/_test_canvas.js"></script>
 
-	<script>
-		var last = [];
-		function print_the_bugger () {
-			var pr = '';
-			if ( bpmv.arr(last) ) {
-				pr = last.shift();
-				if ( bpmv.arr(pr) && ( pr.length == 3 ) ) {
-					nckma.px.draw_line( pr[0], pr[1], nckma.px.color( pr[2] ) );
-					setTimeout( print_the_bugger, 100 );
-				}
-			} else {
-				$('#run_test').removeAttr( 'disabled' );
-			}
-		}
-
-		function nk_test () {
-			var tStr = []
-				, lets = bpmv.keys( nckma.px.chars );
-			for ( var aC in nckma.px.fallbackColors ) {
-				if ( nckma.px.fallbackColors.hasOwnProperty( aC ) ) {
-					tStr = [];
-					for ( var aL = 0; aL < lets.length; aL++ ) {
-						tStr.push( lets[aL] );
-						while ( tStr.length > 4 ) {
-							tStr.shift();
-						}
-						last.push( [ $.extend( [], tStr ), 1, ''+aC ] );
-						last.push( [ $.extend( [], tStr ), 2, ''+aC ] );
-					}
-				}
-			}
-			$('#run_test').attr( 'disabled', 'disabled' );
-			setTimeout( print_the_bugger, 100 );
-		}
-
-		$(document).ready( function () {
-			$('#run_test').click( nk_test );
-		} );
-	</script>
 </body>
 </html>
