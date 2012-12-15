@@ -739,6 +739,33 @@
 			return bush.replace( rex, '' );
 		},
 		/**
+		* Search for a key name in an object or an Array.
+		* @param {mixed} q The key you'd like to find.
+		* q is mixed because you can use an integer for an Array.
+		* @param {mixed} forest The object or Array you'd like to look in.
+		* @param {boolean} slender If true, will return a string containing a "local" namespace representation rather than the found value.
+		* @return {mixed} Will return the found value or the namespace representation.
+		* On failure, will return undefined.
+		*/
+		search : function ( q, forest, slender ) {
+			var aK = null
+				, rR = null
+				, rT = null;
+			if ( this.obj(forest, true) || this.arr(forest) ) {
+				for ( aK in forest ) {
+					if ( aK == q ) {
+						return slender ? aK : forest[aK];
+					} else if ( this.obj(forest[aK], true) || this.arr(forest[aK]) ) {
+						rT = this.search( q, forest[aK], true );
+						rR = aK+'.'+rT;
+						if ( this.str(rT) ) {
+							return slender ? rR : this.walk( rR, forest );
+						}
+					}
+				}
+			}
+		},
+		/**
 		* Serialize an object into a query string
 		* @param {mixed} dexter The object you'd like to convert into a query string
 		* @return {string} Returns the object converted into a query string.
@@ -984,16 +1011,17 @@
 		/**
 		* Walks a string to find an end point
 		* @param {string} path A path to a var... such as "my.var.thing" or "fubarVar"
+		* @param {string} region An optional object to look in rather than the global scope
 		* @return {mixed} Returns the end point of the string if possible otherwise will return undefined
 		*/
-		walk : function ( path ) {
+		walk : function ( path, region ) {
 			var chunked, res, dOb;
 			if ( !this.str(path) || !(/^[a-zA-Z0-9\_\.\[\]\'\"]+$/).test( path ) ) {
 				return;
 			}
 			chunked = path.split( /[\.\[]/g );
 			if ( this.num(chunked.length) ) {
-				dOb = window[chunked[0]];
+				dOb = bpmv.obj(region, true) || bpmv.arr(region) ? region[chunked[0]] : window[chunked[0]];
 				for ( var nn = 1; nn < chunked.length; nn++ ) {
 					chunked[nn] = this.trim( chunked[nn], '\'"]' );
 					if ( typeof(dOb[chunked[nn]]) != 'undefined' ) {
