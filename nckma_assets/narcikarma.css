@@ -7,6 +7,82 @@ body {
 	background: -webkit-linear-gradient(top,  rgba( 255, 139, 96, 0.2 ) 0%, rgba( 148, 148, 255, 0.2 ) 100%);
 	background: linear-gradient(to bottom,  #rgba( 255, 139, 96, 0.2 ) 0%, rgba( 148, 148, 255, 0.2 ) 100%);
 }
+
+hr {
+	display: block;
+	height: 1px;
+	border: none;
+	margin: 5px 0;
+	padding: 0;
+	background: -webkit-linear-gradient( right, rgba( 148, 148, 255, 0.2 ) 0%, rgba( 255, 139, 96, 0.2 ) 100%);
+	background: linear-gradient(to right,  #rgba( 148, 148, 255, 0.2 ) 0%, rgba( 255, 139, 96, 0.2 ) 100%);
+	-webkit-box-shadow:  1px 1px 1px 0px rgba(0, 0, 0, .15);
+	box-shadow:  1px 1px 1px 0px rgba(0, 0, 0, .15);
+}
+input[type="button"],
+input[type="color"],
+button {
+	-webkit-appearance: none !important;
+	background: #e8e8ff;
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e8e8ff));
+	background: -webkit-linear-gradient(top, #fff, #e8e8ff);
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	border: 1px solid #646AAA;
+	color: #000;
+	font-size: 12px;
+	font-family: Arial, sans-serif;
+	text-decoration: none;
+	padding: 2px 4px;
+	vertical-align: middle;
+	opacity: 1;
+}
+input[type="button"]:hover,
+input[type="color"]:hover,
+button:hover,
+input[type="button"]:active,
+input[type="color"]:active,
+button:active {
+	background: #fff;
+	background: -webkit-gradient(linear, left top, left bottom, from(#e8e8ff), to(#fff));
+	background: -webkit-linear-gradient(top, #e8e8ff, #fff);
+	color: #b25f43;
+	border: 1px solid #B25F43;
+	opacity: 1 !important;
+}
+input[type="button"]:active,
+input[type="color"]:active,
+button:active {
+	border: 1px solid #FF8B60;
+}
+input[type="color"]{
+	height: 20px;
+	padding: 0;
+	width: 20px;
+	border: none;
+	background: transparent;
+}
+
+input[type="range"]{
+	vertical-align: middle;
+	height: 10px;
+	width: 50px;
+}
+input[type="button"]:disabled,
+input[type="color"]:disabled,
+button:disabled,
+input[type="button"]:disabled:hover,
+input[type="color"]:disabled:hover,
+button:disabled:hover {
+	background: #fff;
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#888));
+	background: -webkit-linear-gradient(top, #fff, #888);
+	border: 1px solid #333;
+	color: #555;
+	opacity: 0.25 !important;
+}
+
 .nckContent {
 	margin: 10px;
 }
@@ -25,10 +101,17 @@ body {
 	font-weight: bold;
 }
 
-.nckOptionsContainer label {
+.nckOptionsContainer label, .nckOptionsContainer label.label-right {
 	display: inline-block;
 	width: 200px;
 	text-align: right;
+	font-weight: bold;
+	font-size: 11px;
+}
+
+.nckOptionsContainer label.label-right {
+	text-align: left;
+	width: auto;
 }
 
 .nckOptionsContainer input[type=text] {
@@ -48,16 +131,17 @@ body {
 }
 
 .nckContent canvas {
-/*
-	border: 2px solid red;
-*/
 }
 
 .nckPopup {
-	width: 350px;
+	width: 400px;
 	font-size: 80%;
 }
 
+.nckPopup hr {
+	margin-right: 20px;
+
+}
 .nckPopUserStats {
 	font-family: Arial, sans-serif;
 	font-size: 11px;
@@ -82,15 +166,14 @@ body {
 	text-align: left;
 }
 .nckButtonRowHelp {
-	padding-top: 5px;
-	border-top: 1px solid #646AAA;
+	opacity: 0.5;
+}
+.nckButtonRowHelp:hover {
+	opacity: 1;
 }
 
 #nck_name {
 	margin: 0;
-}
-#nck_desc {
-	border-bottom: 1px solid #646AAA;
 }
 #nck_close_x {
 	position: fixed;
@@ -103,6 +186,9 @@ body {
 	text-align: center;
 	padding: 0;
 	margin: 0;
+}
+.nckOptions {
+	overflow-y: scroll;
 }
 .nckOptionsColor {
 	margin-bottom: 5px;
@@ -176,65 +262,6 @@ body {
 	vertical-align: middle;
 }
 
-input[type="button"],
-input[type="color"],
-button {
-	-webkit-appearance: none !important;
-	background: #e8e8ff;
-	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e8e8ff));
-	background: -webkit-linear-gradient(top, #fff, #e8e8ff);
-	-webkit-border-radius: 8px;
-	-moz-border-radius: 8px;
-	border-radius: 8px;
-	border: 1px solid #646AAA;
-	color: #000;
-	font-size: 12px;
-	font-family: Arial, sans-serif;
-	text-decoration: none;
-	padding: 2px 4px;
-	vertical-align: middle;
-}
-input[type="button"]:hover,
-input[type="color"]:hover,
-button:hover,
-input[type="button"]:active,
-input[type="color"]:active,
-button:active {
-	background: #fff;
-	background: -webkit-gradient(linear, left top, left bottom, from(#e8e8ff), to(#fff));
-	background: -webkit-linear-gradient(top, #e8e8ff, #fff);
-	color: #b25f43;
-	border: 1px solid #B25F43;
-}
-input[type="button"]:active,
-input[type="color"]:active,
-button:active {
-	border: 1px solid #FF8B60;
-}
-input[type="color"]{
-	height: 20px;
-	padding: 0;
-	width: 20px;
-	border: none;
-	background: transparent;
-}
-
-input[type="range"]{
-	vertical-align: middle;
-	height: 10px;
-	width: 50px;
-}
-input[type="button"]:disabled,
-input[type="color"]:disabled,
-button:disabled {
-	background: #fff;
-	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#888));
-	background: -webkit-linear-gradient(top, #fff, #888);
-	border: 1px solid #333;
-	color: #555;
-	opacity: 0.25;
-}
-
 /*
 simple CSS tab system
 */
@@ -242,7 +269,7 @@ simple CSS tab system
 	display: block;
 	clear: both;
 	position: relative;
-	min-height: 300px;
+	min-height: 350px;
 	margin: 0;
 }
 .tab-single {
@@ -271,7 +298,7 @@ input[type="radio"]:checked ~ label {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	padding: 20px;
+	padding: 10px;
 	border: 1px solid #ccc;
 	display: none;
 	background: rgba( 255, 255, 255, 0.65 );
@@ -284,6 +311,7 @@ input[type="radio"]:checked ~ label ~ .tab-contents {
 	z-index: 1;
 }
 .tab-contents p {
+	margin: 5px;
 	margin-right: 400px;
 }
 

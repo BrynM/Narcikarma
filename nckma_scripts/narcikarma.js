@@ -61,6 +61,7 @@ if ( typeof(nckma) != 'object' ) {
 			, 'color_noChange'   : '0, 0, 0, 1'
 			, 'color_posChange'  : '0, 190, 0, 1'
 			, 'color_red'        : '235, 0, 0, 1'
+			, 'cumulativeKarma'  : true
 			, 'dateFormat'       : 'US'
 			, 'flag0'            : 'has_mail'
 			, 'flag1'            : 'is_mod'
@@ -545,6 +546,7 @@ return nckma; })() && (function () {
 			, 'color_noChange'   : 'No Change Color'
 			, 'color_posChange'  : 'Positive Change Color'
 			, 'color_red'        : 'Red Color'
+			, 'cumulativeKarma'  : 'Show Cumulative Karma'
 			, 'dateFormat'       : 'Date Format'
 			, 'flag0'            : 'First Flag'
 			, 'flag1'            : 'Second Flag'
@@ -632,7 +634,7 @@ return nckma; })() && (function () {
 	};
 
 	// Detect changes in the options page elements
-	nckma.opts.change = function ( noList ) {
+	nckma.opts.change = function ( ev, noList ) {
 		var tJ = null
 			, defs = nckma.defaults()
 			, ego = null
@@ -650,7 +652,15 @@ return nckma; })() && (function () {
 			tJ = $('#opt_'+aC);
 			if ( defs.hasOwnProperty( aC ) && bpmv.str(aC) && bpmv.obj(tJ) && bpmv.num(tJ.length) ) {
 				newVal = ''+tJ.val();
-				if ( newVal != localStorage[aC] ) {
+				if ( tJ.is( 'input[type="checkbox"]' ) ) {
+					newVal = ''+tJ.is(':checked');
+					if ( bpmv.trueish( localStorage[aC] ) != bpmv.trueish( newVal ) ) {
+						changed++;
+						if ( !noList ) {
+							jL.append( '<li>'+nkOptionNames[aC]+' changed from &quot;'+localStorage[aC]+'&quot; to &quot;'+newVal+'&quot;</li>' );
+						}
+					}
+				} else if ( newVal != localStorage[aC] ) {
 					changed++;
 					if ( !noList ) {
 						jL.append( '<li>'+nkOptionNames[aC]+' changed from &quot;'+localStorage[aC]+'&quot; to &quot;'+newVal+'&quot;</li>' );
@@ -698,7 +708,15 @@ return nckma; })() && (function () {
 						cache[aC] = $('#opt_'+aC);
 					}
 					if ( bpmv.obj(cache[aC]) && bpmv.num(cache[aC].length) ) {
-						cache[aC].val( localStorage[aC] );
+						if ( cache[aC].is( 'input[type="checkbox"]' ) ) {
+							if ( bpmv.trueish( localStorage[aC] ) ) {
+								cache[aC].attr( 'checked', 'checked' );
+							} else {
+								cache[aC].removeAttr( 'checked' );
+							}
+						} else {
+							cache[aC].val( localStorage[aC] );
+						}
 						if ( cache[aC].is( 'input[id^="opt_color_"]' ) ) {
 							tColor = localStorage[aC].split( /\s?,\s?/ );
 							$('#picker_opt_'+aC).val( '#'+nckma.rgb2hex( localStorage[aC] ) );
@@ -748,29 +766,22 @@ return nckma; })() && (function () {
 						if ( localStorage[aC] != defs[aC] ) {
 							nckma.track( aC, localStorage[aC], 'nkOptionsSaved' );
 						}
-						if ( bpmv.obj(cache[aC+'_status']) && bpmv.num(cache[aC+'_status'].length) ) {
-							if ( cache[aC].is( 'select' ) ) {
-								newTxt =  cache[aC].find( 'option:selected' ).text();
-								cache[aC+'_status'].text( 'Set to ' + newTxt + '.' );
-								if ( jlGood ) {
-									jL.append( '<li style="color: rgba( ' + localStorage['color_green'] + ' );">'+nkOptionNames[aC]+' set to &quot;'+newTxt+'&quot;</li>' );
-								}
-							} else {
-								newTxt =  cache[aC].val();
-								cache[aC+'_status'].text( 'Set to ' + newTxt + '.' );
-								if ( jlGood ) {
-									jL.append( '<li style="color: rgba( ' + localStorage['color_green'] + ' );">'+nkOptionNames[aC]+' set to &quot;'+newTxt+'&quot;</li>' );
-								}
-							}
-							cache[aC+'_status'].stop( true ).fadeIn( 100 ).fadeOut( 1500 );
+						if ( cache[aC].is( 'select' ) ) {
+							newTxt =  cache[aC].find( 'option:selected' ).text();
+						} else if ( cache[aC].is( 'input[type="checkbox"]' ) ) {
+							localStorage[aC] = ''+cache[aC].is( ':checked' );
+							newTxt = localStorage[aC];
+						} else {
+							newTxt = cache[aC].val();
+						}
+						nckma.opts.flash_status( aC, nkOptionNames[aC]+'set to ' + newTxt + '.' );
+						if ( jlGood ) {
+							jL.append( '<li style="color: rgba( ' + localStorage['color_green'] + ' );">'+nkOptionNames[aC]+' set to &quot;'+newTxt+'&quot;</li>' );
 						}
 					} else if ( bpmv.str(statText) ) {
-						if ( bpmv.obj(cache[aC+'_status']) && bpmv.num(cache[aC+'_status'].length) ) {
-							cache[aC+'_status'].html( '<span class="nckOptionsError">Error: '+ statText + '</sapn>');
-							cache[aC+'_status'].stop( true ).fadeIn( 100 );
-							if ( jlGood ) {
-								jL.append( '<li style="color: rgba( ' + localStorage['color_red'] + ' );">'+nkOptionNames[aC]+' failed to save. '+statText+'</li>' );
-							}
+						nckma.opts.flash_status( aC, 'Failed saving &quot;'+nkOptionNames[aC]+'&quot;. ' + statText + '.', true );
+						if ( jlGood ) {
+							jL.append( '<li style="color: rgba( ' + localStorage['color_red'] + ' );">'+nkOptionNames[aC]+' failed to save. '+statText+'</li>' );
 						}
 					}
 				}
@@ -784,9 +795,35 @@ return nckma; })() && (function () {
 				} );
 			}, 8000 );
 		}
-		nckma.opts.change( true );
+		nckma.opts.change( null, true );
 		nckma.track( 'func', 'nckma.opts.save', 'nkExec' );
 		nckma.track( 'saved', '', 'nkOptions' );
+	};
+
+	nckma.opts.flash_status = function ( optName, txt, isErr ) {
+		var jEle    = null
+			, fadeIn  = 100
+			, fadeOut = 8000;
+		if ( bpmv.str(optName) && bpmv.str(txt) ) {
+			isErr = isErr ? true : false;
+			if ( !bpmv.obj(nckma.conf.cache[optName+'_status']) || !bpmv.num(nckma.conf.cache[optName+'_status'].length) ) {
+				nckma.conf.cache[optName+'_status'] = $('#opt_'+optName+'_status');
+				if ( !nckma.conf.cache[optName+'_status'] ) {
+					return;
+				}
+			}
+			jEle = nckma.conf.cache[optName+'_status'];
+			if ( isErr ) {
+				jEle.html( '<span class="nckOptionsError" style="color: rgba( ' + localStorage['color_red'] + ' );">Error: '+ txt + '</sapn>').stop( true ).fadeIn( fadeIn );
+			} else {
+				jEle.html( '<span class="" style="color: rgba( ' + localStorage['color_green'] + ' );">'+ txt + '</sapn>').stop( true ).fadeIn( fadeIn, function () {
+					jEle.stop( true ).show().fadeOut( fadeOut, function () {
+						jEle.empty();
+						jEle.show();
+					} );
+				} );
+			}
+		}
 	};
 
 return nckma.opts; })() && (function () {
