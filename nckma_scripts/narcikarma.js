@@ -615,6 +615,7 @@ return nckma; })() && (function () {
 			  'def'   : '50'
 			, 'type'  : 'int'
 			, 'title' : 'Alert After Comment Karma Threshold'
+			, 'desc'  : 'When your comment karma has increased by this amount, an alert will be shown.'
 			, 'min'   : 10
 			, 'kill0' : true
 		};
@@ -622,6 +623,7 @@ return nckma; })() && (function () {
 			  'def'   : '50'
 			, 'type'  : 'int'
 			, 'title' : 'Alert After Link Karma Threshold'
+			, 'desc'  : 'When your link karma has increased by this amount, an alert will be shown.'
 			, 'min'   : 10
 			, 'kill0' : true
 		};
@@ -629,67 +631,80 @@ return nckma; })() && (function () {
 			  'def'   : '2'
 			, 'type'  : 'int'
 			, 'title' : 'Flag Alternate Time'
+			, 'desc'  : 'The time for a row to alternate between flags and other information, if used.'
 			, 'min'   : 1
 		};
 		nkSettings['color_black'] = {
 			  'def'   : '0, 0, 0, 1'
 			, 'type'  : 'color'
 			, 'title' : 'Black Color'
+			, 'desc'  : 'Black Color.'
 		};
 		nkSettings['color_blue'] = {
 			  'def'   : '0, 0, 235, 1'
 			, 'type'  : 'color'
 			, 'title' : 'Blue Color'
+			, 'desc'  : 'Blue Color.'
 		};
 		nkSettings['color_gold'] = {
 			  'def'   : '176, 176, 21, 1'
 			, 'type'  : 'color'
 			, 'title' : 'Gold Color'
+			, 'desc'  : 'Gold Color.'
 		};
 		nkSettings['color_gray'] = {
 			  'def'   : '128, 128, 128, 1'
 			, 'type'  : 'color'
 			, 'title' : 'Grey Color'
+			, 'desc'  : 'Grey Color.'
 		};
 		nkSettings['color_green'] = {
 			  'def'   : '0, 190, 0, 1'
 			, 'type'  : 'color'
 			, 'title' : 'Green Color'
+			, 'desc'  : 'Green Color.'
 		};
 		nkSettings['color_purple'] = {
 			  'def'   : '215, 0, 215, 1'
 			, 'type'  : 'color'
 			, 'title' : 'Purple Color'
+			, 'desc'  : 'Purple Color.'
 		};
 		nkSettings['color_negChange'] = {
 			  'def'   : '235, 0, 0, 1'
 			, 'type'  : 'color'
 			, 'title' : 'Negative Change Color'
+			, 'desc'  : 'Color for a "Negative" change in karma.'
 		};
 		nkSettings['color_noChange'] = {
 			  'def'   : '0, 0, 0, 1'
 			, 'type'  : 'color'
 			, 'title' : 'No Change Color'
+			, 'desc'  : 'Color for no change in karma.'
 		};
 		nkSettings['color_posChange'] = {
 			  'def'   : '0, 190, 0, 1'
 			, 'type'  : 'color'
 			, 'title' : 'Positive Change Color'
+			, 'desc'  : 'Color for a "Positive" change in karma.'
 		};
 		nkSettings['color_red'] = {
 			  'def'   : '235, 0, 0, 1'
 			, 'type'  : 'color'
 			, 'title' : 'Red Color'
+			, 'desc'  : 'Red Color.'
 		};
 		nkSettings['cumulativeKarma'] = {
 			  'def'   : 'true'
 			, 'type'  : 'bool'
 			, 'title' : 'Show Cumulative Karma'
+			, 'desc'  : 'Show the karma change for all of the history, not just this browser session.'
 		};
 		nkSettings['dateFormat'] = {
 			  'def'   : 'US'
 			, 'type'  : 'enum'
 			, 'title' : 'Date Format'
+			, 'desc'  : 'Format for dates.'
 			, 'enum'  : [
 				  { 'v' : 'UK', 'n' : 'UK' }
 				, { 'v' : 'US', 'n' : 'US' }
@@ -699,48 +714,57 @@ return nckma; })() && (function () {
 			  'def'   : 'has_mail'
 			, 'type'  : 'enum'
 			, 'title' : 'First Flag'
+			, 'desc'  : 'First flag shown on a flag row.'
 			, 'enum'  : $.extend( [], nckFlagEnum )
 		};
 		nkSettings['flag1'] = {
 			  'def'   : 'is_mod'
 			, 'type'  : 'enum'
 			, 'title' : 'Second Flag'
+			, 'desc'  : 'Second flag shown on a flag row.'
 			, 'enum'  : $.extend( [], nckFlagEnum )
 		};
 		nkSettings['flag2'] = {
 			  'def'   : 'has_mod_mail'
 			, 'type'  : 'enum'
 			, 'title' : 'Third Flag'
+			, 'desc'  : 'Third flag shown on a flag row.'
 			, 'enum'  : $.extend( [], nckFlagEnum )
 		};
 		nkSettings['flag3'] = {
 			  'def'   : 'is_gold'
 			, 'type'  : 'enum'
 			, 'title' : 'Last Flag'
+			, 'desc'  : 'Last flag shown on a flag row.'
 			, 'enum'  : $.extend( [], nckFlagEnum )
 		};
 		nkSettings['interval'] = {
 			  'def'   : '600'
 			, 'type'  : 'int'
 			, 'title' : 'Refresh Interval'
+			, 'desc'  : 'Interval that your karma stats will be checked.'
 			, 'min'   : nckma.testing() ? 14 : 59
 			, 'kill0' : true
 		};
 		nkSettings['row0'] = {
 			  'def'   : 'lKarma'
 			, 'type'  : 'enum'
-			, 'title' : 'First Icon Row Contents'
+			, 'title' : 'Top Icon Row Contents'
+			, 'desc'  : 'Contents of top icon row.'
 			, 'enum'  : $.extend( [], nckRowEnum )
 		};
 		nkSettings['row1'] = {
 			  'def'   : 'cKarma'
 			, 'type'  : 'enum'
-			, 'title' : 'Second Icon Row Contents'
+			, 'title' : 'Bottom Icon Row Contents'
+			, 'desc'  : 'Contents of bottom icon row.'
+			, 'enum'  : $.extend( [], nckRowEnum )
 		};
 		nkSettings['savedRefreshes'] = {
 			  'def'   : '1000'
 			, 'type'  : 'int'
-			, 'title' : 'Number of Saved Refreshes in History'
+			, 'title' : 'Saved History Items'
+			, 'desc'  : 'Size of the karma gain/loss history.'
 			, 'min'   : 5
 			, 'max'   : 3500
 			, 'kill0' : true
@@ -915,6 +939,8 @@ return nckma; })() && (function () {
 	nckma.opts.restore = function () {
 		var cache = nckma.conf.cache
 			, defs = nckma.defaults()
+			, lJ = null
+			, set = null
 			, tColor = null;
 		if ( bpmv.obj(cache) && bpmv.obj(defs) ) {
 			for ( var aC in defs ) {
@@ -926,6 +952,7 @@ return nckma; })() && (function () {
 						cache[aC] = $('#opt_'+aC);
 					}
 					if ( bpmv.obj(cache[aC]) && bpmv.num(cache[aC].length) ) {
+						set = bpmv.obj(nkSettings[aC]) ? nkSettings[aC] : null;
 						if ( cache[aC].is( 'input[type="checkbox"]' ) ) {
 							if ( bpmv.trueish( localStorage[aC] ) ) {
 								cache[aC].attr( 'checked', 'checked' );
@@ -943,6 +970,24 @@ return nckma; })() && (function () {
 								$('#alpha_opt_'+aC).val( parseFloat(tColor[3]) * 1000 );
 							} else {
 								$('#alpha_opt_'+aC).val( 1000 );
+							}
+						}
+						if ( bpmv.obj(set) ) {
+							if ( bpmv.str(set.title) ) {
+								if ( cache[aC].is( 'input[id^="opt_color_"]' ) ) {
+									$('label[for="picker_opt_'+aC+'"]').text( set.title.replace( /\scolor$/i, '' ) );
+								} else {
+									$('label[for="opt_'+aC+'"]').text( set.title );
+								}
+							}
+							if ( bpmv.str(set.type) && ( set.type == 'enum' ) && bpmv.arr(set.enum) && bpmv.num(set.enum.length) ) {
+								cache[aC].empty();
+								for ( var en = 0; en < set.enum.length; en++ ) {
+									cache[aC].append( '<option value="'+set.enum[en].v+'" '+(localStorage[aC] == set.enum[en].v ? ' selected="selected"' : '')+'>'+set.enum[en].n+'</option' );
+								}
+							}
+							if ( bpmv.str(set.desc) ) {
+									cache[aC].prevUntil( '.nckOptionsContainer' ).parent().attr( 'title', set.desc )
 							}
 						}
 					}
