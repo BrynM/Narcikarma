@@ -25,6 +25,7 @@
 							<option value="120">2 minutes</option>
 							<option value="300">5 minutes</option>
 							<option value="600">10 minutes</option>
+							<option value="900">15 minutes</option>
 							<option value="1200">20 minutes</option>
 							<option value="1800">30 minutes</option>
 							<option value="2700">45 minutes</option>
@@ -229,10 +230,22 @@
 
 					<p>Some utility functionality for your use.</p>
 
-					<div class="nckOptionsContainer nckOptionsColor" title="Reset Stats">
-						<button id="nck_btn_reset">Reset Stats</button>
-						<label for="nck_btn_reset" class="label-right">(Resetting your stats will erase all gains and history!)</label>
+					<div class="nckOptionsContainer" title="Reset Stats">
+						<button id="nck_btn_reset" class="">Reset Stats</button>
+						<label for="nck_btn_reset" class="label-right">Resetting your stats will erase all gains and history!</label>
 						&nbsp;<span id="opt_nck_btn_reset_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer" title="Export Options">
+						<button id="nck_btn_export" class="">Export Options</button>
+						<label for="nck_btn_export" class="label-right">Save your options to a JSON encoded file (sorry, file name can't be controlled by me).</label>
+						&nbsp;<span id="opt_nck_btn_export_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer" title="Import Options">
+						<button id="nck_btn_import" class="" disabled="disabled">Import Options</button>
+						<label for="nck_btn_import" class="label-right">You can import a saved options file by simply dragging the file onto this page and hitting &quot;Save Options&quot;.</label>
+						&nbsp;<span id="opt_nck_btn_import_status"></span>
 					</div>
 
 				</div>
@@ -272,6 +285,7 @@
 
 	<script src="../nckma_scripts/jquery-1.8.2.min.js"></script>
 	<script src="../nckma_scripts/bpmv.js"></script>
+	<script src="../nckma_scripts/base64.js"></script>
 	<script src="../nckma_scripts/narcikarma.js"></script>
 	<script src="../nckma_scripts/options.js"></script>
 

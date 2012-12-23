@@ -83,11 +83,35 @@ button:disabled:hover {
 	opacity: 0.25 !important;
 }
 
+button.nckDangerButton {
+	color: #000;
+	font-weight: bold;
+	background: #F00;
+	background: -webkit-gradient(linear, left top, left bottom, from(#F55), to(#ffeae2));
+	background: -webkit-linear-gradient(top, #F55, #ffeae2);
+	border: 1px solid #960000;
+}
+input[type="button"].nckDangerButton:hover,
+button.nckDangerButton:hover,
+input[type="button"].nckDangerButton:active,
+button.nckDangerButton:active {
+	background: #fff;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffeae2), to(#F00));
+	background: -webkit-linear-gradient(top, #ffeae2, #F00);
+	color: #FFF;
+	border: 1px solid #F00;
+	opacity: 1 !important;
+}
+
+#tools_tab .nckOptionsContainer button {
+	min-width: 150px;
+}
+
 .nckContent {
 	margin: 10px;
 }
 .nckOptionsContainer {
-
+	margin-right: 400px;
 }
 .nckOptionsContainer span {
 	color: green;
@@ -130,6 +154,13 @@ button:disabled:hover {
 	opacity: 1;
 }
 
+.nckTabChanged .tab-label,
+.nckOptionChanged label {
+	color: #B25F43;
+/*
+	background: rgba( 255, 139, 96, .15 );
+*/
+}
 .nckContent canvas {
 }
 
@@ -286,6 +317,7 @@ simple CSS tab system
 	left: 1px;
 	background: rgba( 180, 180, 180, 0.35 );
 	border: 1px solid #ccc;
+	font-weight: bold;
 }
 input[type="radio"]:checked ~ label {
 	background: rgba( 255, 255, 255, 0.65 );

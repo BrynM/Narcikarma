@@ -1,10 +1,9 @@
 var bgP = chrome.extension.getBackgroundPage();
 
 function reset_stats () {
-	if ( confirm( 'Reset starting stats?\n\n(This will erase all karma gains and\nlosses until the next polling period and your history.)') ) {
+	if ( confirm( 'Reset collected stats?\n\n(This will erase all karma gains, karma losses,\nand your history until the next polling period .)') ) {
 		nckma.track( 'func', 'reset_stats', 'nkExec' );
 		bgP.nckma.reset( true );
-		window.close();
 	}
 }
 
@@ -23,19 +22,92 @@ function go_to_cws () {
 	nckma.track( 'func', 'go_to_cws', 'nkExec' );
 }
 
+function export_settings () {
+	window.open( 'data:application/octet-stream;base64;charset=utf-8,' + Base64.encode( JSON.stringify( nckma.opts.get() ) ) );
+}
+
+function import_settings ( ev ) {
+	var fi = null
+		, rd = null;
+	if ( bpmv.obj(ev) ) {
+		ev.preventDefault();
+		ev.stopPropagation();
+		if ( bpmv.obj(ev.originalEvent) && bpmv.obj(ev.originalEvent.dataTransfer) && bpmv.obj(ev.originalEvent.dataTransfer.files, true) ) {
+			fi = ev.originalEvent.dataTransfer.files[0];
+			if ( bpmv.num(fi.size) ) {
+				rd = new FileReader();
+				rd.onload = function ( le ) {
+					var nOpt = null
+					, errTxt = ''
+					, imNum = 0
+					, jT = null
+					, iter = null;
+					if ( bpmv.obj(le) && bpmv.obj(le.target) && bpmv.str(le.target.result) ) {
+						try {
+							nOpt = JSON.parse( le.target.result );
+							if ( bpmv.obj(nOpt, true) ) {
+								for ( iter in nOpt ) {
+									if ( nOpt.hasOwnProperty( iter ) && bpmv.str(nOpt[iter]) ) {
+										jT = $('#opt_'+iter);
+console.log( 'jT', jT );
+console.log( 'test', bpmv.num(jT.length) );
+										if ( bpmv.obj(jT) && bpmv.num(jT.length) ) {
+											jT.val( nOpt[iter] );
+											jT.change();
+											imNum++;
+										}
+									}
+								}
+								if ( !bpmv.num(imNum) ) {
+									errTxt = 'Import failed.\n\nFile "'+fi.name+'" is not a valid Saved Options file.\n\n(no valid options to import)';
+								}
+							} else {
+								errTxt = 'Import failed.\n\nFile "'+fi.name+'" is not a valid Saved Options file.\n\n(file constains no object)';
+							}
+console.log( 'imported', nOpt );
+						} catch ( err ) {
+							errTxt = 'Import failed.\n\nFile "'+fi.name+'" is not a valid Saved Options file.\n\n(JSON Parse Result: '+err+')';
+						}
+						if ( bpmv.str(errTxt) ) {
+							alert( errTxt );
+						}
+					}
+				};
+	      rd.readAsText( fi );
+			}
+		}
+	}
+	return false;
+}
+
+function kill_event ( ev ) {
+	ev.preventDefault();
+	ev.stopPropagation();
+	return false;
+}
+
+jQuery.event.props.push( 'dataTransfer' );
+
 $(document).ready( function () {
-	nckma.opts.init();
-	nckma.opts.restore();
-	$('input,select').change( nckma.opts.change );
-	$('#nckma_reset').click( nckma.opts.restore );
-	$('#nckma_save').click( nckma.opts.save );
-	$('#nckma_default').click( nckma.opts.defaults );
+
+	nckma.opts.ui_init();
+	nckma.opts.ui_restore();
+
+	$('input,select').change( nckma.opts.ui_change );
 	$('#nck_btn_reset').click( reset_stats );
-	$('input[type="color"][id^="picker_opt_color_"],input[type="range"][id^="alpha_opt_color_"]').change( nckma.opts.change_color );
+	$('#nckma_reset').click( nckma.opts.ui_restore );
+	$('#nckma_save').click( nckma.opts.save );
+	$('input[type="color"][id^="picker_opt_color_"],input[type="range"][id^="alpha_opt_color_"]').change( nckma.opts.ui_change_color );
 	$('#nck_pop_btn_credits').click( function () { window.open( '/nckma_html/credits.html' ); } );
 	$('#nck_pop_btn_subreddit').click( go_to_subreddit );
 	$('#nck_pop_btn_source').click( go_to_source );
 	$('#nck_pop_btn_cws').click( go_to_cws );
+	$('#nck_btn_export').click( export_settings );
+	$('#nckma_default').click(  nckma.opts.defaults_set );
+
+	$('body').on( 'dragover', kill_event );
+	$('body').on( 'dragenter', kill_event );
+	$('body').on( 'drop', import_settings );
 
 	/* simple tab links */
 	$('.tab-contents a').click( function ( ev ) {

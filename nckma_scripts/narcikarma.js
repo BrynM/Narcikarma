@@ -110,7 +110,7 @@ if ( typeof(nckma) != 'object' ) {
 	};
 
 	// selector cache
-	nckma.conf.cache = {};
+	nckma._cache = {};
 
 	/*
 	* functions
@@ -119,7 +119,7 @@ if ( typeof(nckma) != 'object' ) {
 	nckma.begin = function () {
 		nckma.debug( 0, 'Narcikarma v'+nckma.version().str );
 		nckma.debug( 0, 'running background task' );
-		nckma.opts.defaults( true );
+		nckma.opts.defaults_set( true );
 		if ( !bpmv.str(localStorage['nkCurrentVer']) ) {
 
 		}
@@ -171,10 +171,7 @@ if ( typeof(nckma) != 'object' ) {
 	nckma.get = function ( asJson ) {
 		var opts = {}
 			, full = undefined;
-		for ( var aC in nkDefaults ) {
-			opts[aC] = localStorage[aC];
-		}
-		full = { 'start' : nkDataFirst, 'current' : nkDataLast, 'options' : opts, 'history' : nkDataSet };
+		full = { 'start' : $.extend( {}, nkDataFirst ), 'current' : $.extend( {}, nkDataLast ), 'options' : nckma.opts.get(), 'history' : $.extend( [], nkDataSet ) };
 		if ( asJson ) {
 			return JSON.stringify( full );
 		}
@@ -286,7 +283,8 @@ if ( typeof(nckma) != 'object' ) {
 	nckma.parse = function ( dat, stat, ev ) {
 		var d = bpmv.obj(dat) && bpmv.obj(dat.data) ? dat.data : null
 			, cDelt = 0
-			, lDelt = 0;
+			, lDelt = 0
+			, nkDsLast = null;
 		nkIsPolling = false;
 		nckma.px.draw_status( 'parse' );
 		if ( stat != 'success' ) {
@@ -302,8 +300,12 @@ if ( typeof(nckma) != 'object' ) {
 					nckma.track( 'func', 'nckma.parse reset nkDataFirst newlogin', 'nkExec' );
 					nkDataFirst = d;
 				}
+				if ( bpmv.num(nkDataSet.length) && bpmv.obj(nkDataSet[nkDataSet.length-1], true) && bpmv.num(nkDataSet[nkDataSet.length-1].t) ) {
+					nkDsLast = nkDataSet[nkDataSet.length-1].t
+				}
 				nkDataSet.push( {
 					  'c' : d.comment_karma
+					, 'd' : bpmv.num(nkDsLast) ? d.nkTimeStamp - nkDsLast : 0 // time delta since last
 					, 'l' : d.link_karma
 					, 't' : d.nkTimeStamp
 				} );
@@ -488,8 +490,8 @@ if ( typeof(nckma) != 'object' ) {
 	nckma.version = function () {
 		var inf = null
 			, ret = { 'num' : null, 'str' : null };
-		if ( bpmv.obj(nckma.conf.cache.version) ) {
-			return nckma.conf.cache.version;
+		if ( bpmv.obj(nckma._cache.version) ) {
+			return nckma._cache.version;
 		}
 		inf = nckma.info();
 		if ( bpmv.str(inf.version) ) {
@@ -503,7 +505,7 @@ if ( typeof(nckma) != 'object' ) {
 			} else {
 				ret.num = null;
 			}
-			nckma.conf.cache.version = ret;
+			nckma._cache.version = ret;
 		}
 		return ret;
 	}
@@ -535,7 +537,7 @@ return nckma; })() && (function () {
 	*/
 
 	var nckmaNeedsSave = false
-		, nkMaxHist = 1500
+		, nkMaxHist = 3500
 		, nkSettings = {}
 		, nkOptionNames = {
 			  'alertCommentGain' : 'Alert After Comment Karma Threshold'
@@ -611,167 +613,169 @@ return nckma; })() && (function () {
 			}
 		];
 
-		nkSettings['alertCommentGain'] = {
-			  'def'   : '50'
-			, 'type'  : 'int'
-			, 'title' : 'Alert After Comment Karma Threshold'
-			, 'desc'  : 'When your comment karma has increased by this amount, an alert will be shown.'
-			, 'min'   : 10
-			, 'kill0' : true
-		};
-		nkSettings['alertLinkGain'] = {
-			  'def'   : '50'
-			, 'type'  : 'int'
-			, 'title' : 'Alert After Link Karma Threshold'
-			, 'desc'  : 'When your link karma has increased by this amount, an alert will be shown.'
-			, 'min'   : 10
-			, 'kill0' : true
-		};
-		nkSettings['alternateTime'] = {
-			  'def'   : '2'
-			, 'type'  : 'int'
-			, 'title' : 'Flag Alternate Time'
-			, 'desc'  : 'The time for a row to alternate between flags and other information, if used.'
-			, 'min'   : 1
-		};
-		nkSettings['color_black'] = {
-			  'def'   : '0, 0, 0, 1'
-			, 'type'  : 'color'
-			, 'title' : 'Black Color'
-			, 'desc'  : 'Black Color.'
-		};
-		nkSettings['color_blue'] = {
-			  'def'   : '0, 0, 235, 1'
-			, 'type'  : 'color'
-			, 'title' : 'Blue Color'
-			, 'desc'  : 'Blue Color.'
-		};
-		nkSettings['color_gold'] = {
-			  'def'   : '176, 176, 21, 1'
-			, 'type'  : 'color'
-			, 'title' : 'Gold Color'
-			, 'desc'  : 'Gold Color.'
-		};
-		nkSettings['color_gray'] = {
-			  'def'   : '128, 128, 128, 1'
-			, 'type'  : 'color'
-			, 'title' : 'Grey Color'
-			, 'desc'  : 'Grey Color.'
-		};
-		nkSettings['color_green'] = {
-			  'def'   : '0, 190, 0, 1'
-			, 'type'  : 'color'
-			, 'title' : 'Green Color'
-			, 'desc'  : 'Green Color.'
-		};
-		nkSettings['color_purple'] = {
-			  'def'   : '215, 0, 215, 1'
-			, 'type'  : 'color'
-			, 'title' : 'Purple Color'
-			, 'desc'  : 'Purple Color.'
-		};
-		nkSettings['color_negChange'] = {
-			  'def'   : '235, 0, 0, 1'
-			, 'type'  : 'color'
-			, 'title' : 'Negative Change Color'
-			, 'desc'  : 'Color for a "Negative" change in karma.'
-		};
-		nkSettings['color_noChange'] = {
-			  'def'   : '0, 0, 0, 1'
-			, 'type'  : 'color'
-			, 'title' : 'No Change Color'
-			, 'desc'  : 'Color for no change in karma.'
-		};
-		nkSettings['color_posChange'] = {
-			  'def'   : '0, 190, 0, 1'
-			, 'type'  : 'color'
-			, 'title' : 'Positive Change Color'
-			, 'desc'  : 'Color for a "Positive" change in karma.'
-		};
-		nkSettings['color_red'] = {
-			  'def'   : '235, 0, 0, 1'
-			, 'type'  : 'color'
-			, 'title' : 'Red Color'
-			, 'desc'  : 'Red Color.'
-		};
-		nkSettings['cumulativeKarma'] = {
-			  'def'   : 'true'
-			, 'type'  : 'bool'
-			, 'title' : 'Show Cumulative Karma'
-			, 'desc'  : 'Show the karma change for all of the history, not just this browser session.'
-		};
-		nkSettings['dateFormat'] = {
-			  'def'   : 'US'
-			, 'type'  : 'enum'
-			, 'title' : 'Date Format'
-			, 'desc'  : 'Format for dates.'
-			, 'enum'  : [
-				  { 'v' : 'UK', 'n' : 'UK' }
-				, { 'v' : 'US', 'n' : 'US' }
-			]
-		};
-		nkSettings['flag0'] = {
-			  'def'   : 'has_mail'
-			, 'type'  : 'enum'
-			, 'title' : 'First Flag'
-			, 'desc'  : 'First flag shown on a flag row.'
-			, 'enum'  : $.extend( [], nckFlagEnum )
-		};
-		nkSettings['flag1'] = {
-			  'def'   : 'is_mod'
-			, 'type'  : 'enum'
-			, 'title' : 'Second Flag'
-			, 'desc'  : 'Second flag shown on a flag row.'
-			, 'enum'  : $.extend( [], nckFlagEnum )
-		};
-		nkSettings['flag2'] = {
-			  'def'   : 'has_mod_mail'
-			, 'type'  : 'enum'
-			, 'title' : 'Third Flag'
-			, 'desc'  : 'Third flag shown on a flag row.'
-			, 'enum'  : $.extend( [], nckFlagEnum )
-		};
-		nkSettings['flag3'] = {
-			  'def'   : 'is_gold'
-			, 'type'  : 'enum'
-			, 'title' : 'Last Flag'
-			, 'desc'  : 'Last flag shown on a flag row.'
-			, 'enum'  : $.extend( [], nckFlagEnum )
-		};
-		nkSettings['interval'] = {
-			  'def'   : '600'
-			, 'type'  : 'int'
-			, 'title' : 'Refresh Interval'
-			, 'desc'  : 'Interval that your karma stats will be checked.'
-			, 'min'   : nckma.testing() ? 14 : 59
-			, 'kill0' : true
-		};
-		nkSettings['row0'] = {
-			  'def'   : 'lKarma'
-			, 'type'  : 'enum'
-			, 'title' : 'Top Icon Row Contents'
-			, 'desc'  : 'Contents of top icon row.'
-			, 'enum'  : $.extend( [], nckRowEnum )
-		};
-		nkSettings['row1'] = {
-			  'def'   : 'cKarma'
-			, 'type'  : 'enum'
-			, 'title' : 'Bottom Icon Row Contents'
-			, 'desc'  : 'Contents of bottom icon row.'
-			, 'enum'  : $.extend( [], nckRowEnum )
-		};
-		nkSettings['savedRefreshes'] = {
-			  'def'   : '1000'
-			, 'type'  : 'int'
-			, 'title' : 'Saved History Items'
-			, 'desc'  : 'Size of the karma gain/loss history.'
-			, 'min'   : 5
-			, 'max'   : 3500
-			, 'kill0' : true
-		};
+	nkSettings['alertCommentGain'] = {
+		  'def'   : '50'
+		, 'type'  : 'int'
+		, 'title' : 'Alert After Comment Karma Threshold'
+		, 'desc'  : 'When your comment karma has increased by this amount, an alert will be shown.'
+		, 'min'   : 10
+		, 'kill0' : true
+	};
+	nkSettings['alertLinkGain'] = {
+		  'def'   : '50'
+		, 'type'  : 'int'
+		, 'title' : 'Alert After Link Karma Threshold'
+		, 'desc'  : 'When your link karma has increased by this amount, an alert will be shown.'
+		, 'min'   : 10
+		, 'kill0' : true
+	};
+	nkSettings['alternateTime'] = {
+		  'def'   : '2'
+		, 'type'  : 'int'
+		, 'title' : 'Flag Alternate Time'
+		, 'desc'  : 'The time for a row to alternate between flags and other information, if used.'
+		, 'min'   : 1
+	};
+	nkSettings['color_black'] = {
+		  'def'   : '0, 0, 0, 1'
+		, 'type'  : 'color'
+		, 'title' : 'Black Color'
+		, 'desc'  : 'Black Color.'
+	};
+	nkSettings['color_blue'] = {
+		  'def'   : '0, 0, 235, 1'
+		, 'type'  : 'color'
+		, 'title' : 'Blue Color'
+		, 'desc'  : 'Blue Color.'
+	};
+	nkSettings['color_gold'] = {
+		  'def'   : '176, 176, 21, 1'
+		, 'type'  : 'color'
+		, 'title' : 'Gold Color'
+		, 'desc'  : 'Gold Color.'
+	};
+	nkSettings['color_gray'] = {
+		  'def'   : '128, 128, 128, 1'
+		, 'type'  : 'color'
+		, 'title' : 'Grey Color'
+		, 'desc'  : 'Grey Color.'
+	};
+	nkSettings['color_green'] = {
+		  'def'   : '0, 190, 0, 1'
+		, 'type'  : 'color'
+		, 'title' : 'Green Color'
+		, 'desc'  : 'Green Color.'
+	};
+	nkSettings['color_purple'] = {
+		  'def'   : '215, 0, 215, 1'
+		, 'type'  : 'color'
+		, 'title' : 'Purple Color'
+		, 'desc'  : 'Purple Color.'
+	};
+	nkSettings['color_negChange'] = {
+		  'def'   : '235, 0, 0, 1'
+		, 'type'  : 'color'
+		, 'title' : 'Negative Change Color'
+		, 'desc'  : 'Color for a "Negative" change in karma.'
+	};
+	nkSettings['color_noChange'] = {
+		  'def'   : '0, 0, 0, 1'
+		, 'type'  : 'color'
+		, 'title' : 'No Change Color'
+		, 'desc'  : 'Color for no change in karma.'
+	};
+	nkSettings['color_posChange'] = {
+		  'def'   : '0, 190, 0, 1'
+		, 'type'  : 'color'
+		, 'title' : 'Positive Change Color'
+		, 'desc'  : 'Color for a "Positive" change in karma.'
+	};
+	nkSettings['color_red'] = {
+		  'def'   : '235, 0, 0, 1'
+		, 'type'  : 'color'
+		, 'title' : 'Red Color'
+		, 'desc'  : 'Red Color.'
+	};
+	nkSettings['cumulativeKarma'] = {
+		  'def'   : 'true'
+		, 'type'  : 'bool'
+		, 'title' : 'Show Cumulative Karma'
+		, 'desc'  : 'Show the karma change for all of the history, not just this browser session.'
+	};
+	nkSettings['dateFormat'] = {
+		  'def'   : 'US'
+		, 'type'  : 'enum'
+		, 'title' : 'Date Format'
+		, 'desc'  : 'Format for dates.'
+		, 'enum'  : [
+			  { 'v' : 'UK', 'n' : 'UK' }
+			, { 'v' : 'US', 'n' : 'US' }
+		]
+	};
+	nkSettings['flag0'] = {
+		  'def'   : 'has_mail'
+		, 'type'  : 'enum'
+		, 'title' : 'First Flag'
+		, 'desc'  : 'First flag shown on a flag row.'
+		, 'enum'  : $.extend( [], nckFlagEnum )
+	};
+	nkSettings['flag1'] = {
+		  'def'   : 'is_mod'
+		, 'type'  : 'enum'
+		, 'title' : 'Second Flag'
+		, 'desc'  : 'Second flag shown on a flag row.'
+		, 'enum'  : $.extend( [], nckFlagEnum )
+	};
+	nkSettings['flag2'] = {
+		  'def'   : 'has_mod_mail'
+		, 'type'  : 'enum'
+		, 'title' : 'Third Flag'
+		, 'desc'  : 'Third flag shown on a flag row.'
+		, 'enum'  : $.extend( [], nckFlagEnum )
+	};
+	nkSettings['flag3'] = {
+		  'def'   : 'is_gold'
+		, 'type'  : 'enum'
+		, 'title' : 'Last Flag'
+		, 'desc'  : 'Last flag shown on a flag row.'
+		, 'enum'  : $.extend( [], nckFlagEnum )
+	};
+	nkSettings['interval'] = {
+		  'def'   : '600'
+		, 'type'  : 'int'
+		, 'title' : 'Refresh Interval'
+		, 'desc'  : 'Interval that your karma stats will be checked.'
+		, 'min'   : nckma.testing() ? 4 : 59
+		, 'kill0' : true
+	};
+	nkSettings['row0'] = {
+		  'def'   : 'lKarma'
+		, 'type'  : 'enum'
+		, 'title' : 'Top Icon Row Contents'
+		, 'desc'  : 'Contents of top icon row.'
+		, 'enum'  : $.extend( [], nckRowEnum )
+	};
+	nkSettings['row1'] = {
+		  'def'   : 'cKarma'
+		, 'type'  : 'enum'
+		, 'title' : 'Bottom Icon Row Contents'
+		, 'desc'  : 'Contents of bottom icon row.'
+		, 'enum'  : $.extend( [], nckRowEnum )
+	};
+	nkSettings['savedRefreshes'] = {
+		  'def'   : '1000'
+		, 'type'  : 'int'
+		, 'title' : 'Saved History Items'
+		, 'desc'  : 'Size of the karma gain/loss history.'
+		, 'min'   : 5
+		, 'max'   : 3500
+		, 'kill0' : true
+	};
 
-	console.log( 'nkSettings length', bpmv.count( nkSettings ) );
-	console.log( 'nckma.defaults() length', bpmv.count( nckma.defaults() ) );
+	var nkSettingsKeys = bpmv.keys( nkSettings );
+
+	console.log( 'nkSettings', { 'curr_len' : bpmv.count( nkSettings ) } );
+	console.log( 'nkSettingsKeys', nkSettingsKeys );
 
 
 	nckma.opts.valid_color = function ( val, setting ) {
@@ -791,7 +795,7 @@ return nckma; })() && (function () {
 		, 'color_negChange'  : nckma.opts.valid_color
 		, 'color_noChange'   : nckma.opts.valid_color
 		, 'color_posChange'  : nckma.opts.valid_color
-		, 'interval'         : function ( val ) { return ( parseInt(val) > ( nckma.testing() ? 14 : 119 ) ) || ( parseInt(val) === 0 ) ? true : nkOptionNames['interval'] + ' must be 1 minute or more.'; }		
+		, 'interval'         : function ( val ) { return ( parseInt(val) > ( nckma.testing() ? 4 : 119 ) ) || ( parseInt(val) === 0 ) ? true : nkOptionNames['interval'] + ' must be 1 minute or more.'; }		
 		, 'savedRefreshes'   : function ( val ) { val = parseInt( val, 10 ); return ( ( val >= 0 ) && ( val <= nkMaxHist ) ? true : nkOptionNames['savedRefreshes'] + ' must be a number between 0 and '+nkMaxHist+'.' ); }
 	};
 
@@ -804,9 +808,28 @@ return nckma; })() && (function () {
 		return 'Setting "'+setting+'" is invalid in source. Please report a bug. Type: "'+type+'"; Arguments: '+( bpmv.obj(args) || bpmv.arr(args) ? JSON.stringify( args ) : args )+';';
 	}
 
-	nckma.opts.defaults = function ( preserve ) {
+	nckma.opts.defaults_get = function ( extended ) {
+		var ret = null
+			, iter = null;
+		if ( extended ) {
+			ret = $.extend( {}, nkSettings );
+		} else {
+			ret = {};
+			for ( iter in nkSettings ) {
+				if ( nkSettings.hasOwnProperty( iter ) && bpmv.obj(nkSettings[iter], true) ) {
+					ret[iter] = ''+nkSettings[iter].def;
+				}
+			}
+			if ( !bpmv.obj(ret, true) ) {
+				ret = null;
+			}
+		}
+		return ret;
+	}
+
+	nckma.opts.defaults_set = function ( preserve ) {
 		var conf = nckma.conf
-			, defs = nckma.defaults()
+			, defs = nckma.opts.defaults_get()
 			, statText = false;
 		if ( ( bpmv.bool(preserve) && preserve ) || confirm( 'Restore default Narcikarma options?' ) ) {
 			for ( var aC in defs ) {
@@ -825,46 +848,112 @@ return nckma; })() && (function () {
 				}
 			}
 			if ( $('body.nckOptions').is( ':visible' ) ) {
-				nckma.opts.restore() && nckma.opts.save();
+				nckma.opts.ui_restore() && nckma.opts.save();
 			}
 			if ( !bpmv.bool(preserve) || !preserve ) {
-				nckma.track( 'func', 'nckma.opts.restore DEFAULTS', 'nkExec' );
+				nckma.track( 'func', 'nckma.opts.ui_restore DEFAULTS', 'nkExec' );
 			}
 		}
 	};
 
-	nckma.opts.init = function () {
-		var ivlSel = null;
-		if ( $('body.nckOptions').is( ':visible' ) ) {
-			if ( nckma.testing() ) {
-				ivlSel = $('#opt_interval');
-				$('<h3>DEV MODE <span class="nkNote"><a href="_test_canvas.html" target="_blank">canvas test</a></span></h3>').insertAfter( '#nck_title' );
-				if ( bpmv.obj(ivlSel) && bpmv.num(ivlSel.length) ) {
-					ivlSel.prepend( '<option value="60">test 1 minute</option>' );
-					ivlSel.prepend( '<option value="30">test 30 sec</option>' );
-					ivlSel.prepend( '<option value="15">test 15 sec</option>' );
-					nckma.track( 'func', 'nckma.opts.init - DEV', 'nkExec' );
+	nckma.opts.get = function ( asJson ) {
+		var opts = {}
+			, defs = nckma.opts.defaults_get();
+		for ( var aC in defs ) {
+			if ( defs.hasOwnProperty( aC ) ) {
+				opts[aC] = localStorage[aC];
+			}
+		}
+		if ( asJson ) {
+			return JSON.stringify( opts );
+		}
+		return opts;
+	};
+
+	// Saves options to localStorage.
+	nckma.opts.save = function () {
+		var cache = nckma._cache
+			, defs = nckma.opts.defaults_get()
+			, jL = $('#changed_options_list')
+			, jlGood = false
+			, statText = ''
+			, newTxt = '';
+		if ( !$('body.nckOptions').is( ':visible' ) ) {
+			return;
+		}
+		$('.nckOptionsContainer span').hide();
+		if ( nckma.testing() && bpmv.obj(jL) && bpmv.num(jL.length) ) {
+			jL.empty();
+			jlGood = true;
+		}
+		for ( var aC in defs ) {
+			if ( defs.hasOwnProperty( aC ) && bpmv.str(aC) ) {
+				if ( !bpmv.obj(cache[aC]) || !bpmv.num(cache[aC].length) ) {
+					cache[aC] = $('#opt_'+aC);
+				}
+				if ( !bpmv.obj(cache[aC+'_status']) || !bpmv.num(cache[aC+'_status'].length) ) {
+					cache[aC+'_status'] = $('#opt_'+aC+'_status');
+				}
+				statText = bpmv.func(nckma.opts.valid[aC]) ? nckma.opts.valid[aC]( cache[aC].val() ) : false;
+				if ( bpmv.obj(cache[aC]) && bpmv.num(cache[aC].length) ) {
+					if ( bpmv.bool(statText) ) {
+						localStorage[aC] = cache[aC].val();
+						if ( localStorage[aC] != defs[aC] ) {
+							nckma.track( aC, localStorage[aC], 'nkOptionsSaved' );
+						}
+						if ( cache[aC].is( 'select' ) ) {
+							newTxt =  cache[aC].find( 'option:selected' ).text();
+						} else if ( cache[aC].is( 'input[type="checkbox"]' ) ) {
+							localStorage[aC] = ''+cache[aC].is( ':checked' );
+							newTxt = localStorage[aC];
+						} else {
+							newTxt = cache[aC].val();
+						}
+						nckma.opts.ui_status( aC, nkOptionNames[aC]+'set to ' + newTxt + '.' );
+						if ( jlGood ) {
+							jL.append( '<li style="color: rgba( ' + localStorage['color_green'] + ' );">'+nkOptionNames[aC]+' set to &quot;'+newTxt+'&quot;</li>' );
+						}
+					} else if ( bpmv.str(statText) ) {
+						nckma.opts.ui_status( aC, 'Failed saving &quot;'+nkOptionNames[aC]+'&quot;. ' + statText + '.', true );
+						if ( jlGood ) {
+							jL.append( '<li style="color: rgba( ' + localStorage['color_red'] + ' );">'+nkOptionNames[aC]+' failed to save. '+statText+'</li>' );
+						}
+					}
 				}
 			}
 		}
+		if ( jlGood ) {
+			setTimeout( function () {
+				jL.stop().show().fadeOut( 5000, function () {
+					jL.empty();
+					jL.show();
+				} );
+			}, 8000 );
+		}
+		nckma.opts.ui_change( null, true );
+		nckma.track( 'func', 'nckma.opts.save', 'nkExec' );
+		nckma.track( 'saved', '', 'nkOptions' );
 	};
 
 	// Detect changes in the options page elements
-	nckma.opts.change = function ( ev, noList ) {
+	nckma.opts.ui_change = function ( ev, noList ) {
 		var tJ = null
-			, defs = nckma.defaults()
+			, defs = nckma.opts.defaults_get()
 			, ego = null
 			, changed = 0
 			, jT = $(this)
 			, jL = $('#changed_options_list')
-			, newVal = null;
+			, newVal = null
+			, addClass = false;
 		if ( (/^(alpha|picker)_opt_color_/).test( jT.attr( 'id' ) ) ) {
 			return;
 		}
+		$( '.tab-single' ).removeClass( 'nckTabChanged' );
 		if ( bpmv.obj(jL) && bpmv.num(jL.length) && !noList ) {
 			jL.empty();
 		}
 		for ( var aC in defs ) {
+			addClass = false;
 			tJ = $('#opt_'+aC);
 			if ( defs.hasOwnProperty( aC ) && bpmv.str(aC) && bpmv.obj(tJ) && bpmv.num(tJ.length) ) {
 				newVal = ''+tJ.val();
@@ -872,15 +961,23 @@ return nckma; })() && (function () {
 					newVal = ''+tJ.is(':checked');
 					if ( bpmv.trueish( localStorage[aC] ) != bpmv.trueish( newVal ) ) {
 						changed++;
+						addClass = true;
 						if ( !noList ) {
 							jL.append( '<li>'+nkOptionNames[aC]+' changed from &quot;'+localStorage[aC]+'&quot; to &quot;'+newVal+'&quot;</li>' );
 						}
 					}
 				} else if ( newVal != localStorage[aC] ) {
 					changed++;
+					addClass = true;
 					if ( !noList ) {
 						jL.append( '<li>'+nkOptionNames[aC]+' changed from &quot;'+localStorage[aC]+'&quot; to &quot;'+newVal+'&quot;</li>' );
 					}
+				}
+				if ( addClass ) {
+					tJ.parentsUntil( '.tab-single' ).parent().addClass( 'nckTabChanged' );
+					tJ.parent().addClass( 'nckOptionChanged' );
+				} else {
+					tJ.parent().removeClass( 'nckOptionChanged' );
 				}
 			}
 		}
@@ -894,7 +991,7 @@ return nckma; })() && (function () {
 	}
 
 	// converts the options page UI values to a proper localStorage RGBA
-	nckma.opts.change_color = function () {
+	nckma.opts.ui_change_color = function () {
 		var ego = $(this).attr( 'id' )
 			, cN = ego.replace( /^[^_]+_opt_color_/, '' )
 			, tA = $('#alpha_opt_color_'+cN)
@@ -909,36 +1006,46 @@ return nckma; })() && (function () {
 		}
 	}
 
-	nckma.opts.flash_status = function ( optName, txt, isErr ) {
-		var jEle    = null
-			, fadeIn  = 100
-			, fadeOut = 8000;
-		if ( bpmv.str(optName) && bpmv.str(txt) ) {
-			isErr = isErr ? true : false;
-			if ( !bpmv.obj(nckma.conf.cache[optName+'_status']) || !bpmv.num(nckma.conf.cache[optName+'_status'].length) ) {
-				nckma.conf.cache[optName+'_status'] = $('#opt_'+optName+'_status');
-				if ( !nckma.conf.cache[optName+'_status'] ) {
-					return;
+	nckma.opts.ui_init = function () {
+		var ivlSel = null
+			, tStr = null
+			, bgP = chrome.extension.getBackgroundPage();
+		if ( $('body.nckOptions').is( ':visible' ) ) {
+			if ( nckma.testing() ) {
+				ivlSel = $('#opt_interval');
+				$('<h3>DEV MODE <span class="nkNote"><a href="_test_canvas.html" target="_blank">canvas test</a></span></h3>').insertAfter( '#nck_title' );
+				// add dev time options
+				if ( bpmv.obj(ivlSel) && bpmv.num(ivlSel.length) ) {
+					ivlSel.prepend( '<option value="30" style="color: #fff; background: #900">test 30 sec</option>' );
+					ivlSel.prepend( '<option value="15" style="color: #fff; background: #900">test 15 sec</option>' );
+					ivlSel.prepend( '<option value="10" style="color: #fff; background: #900">test 10 sec</option>' );
+					ivlSel.prepend( '<option value="5" style="color: #fff; background: #900">test 5 sec</option>' );
 				}
-			}
-			jEle = nckma.conf.cache[optName+'_status'];
-			if ( isErr ) {
-				jEle.html( '<span class="nckOptionsError" style="color: rgba( ' + localStorage['color_red'] + ' );">Error: '+ txt + '</sapn>').stop( true ).fadeIn( fadeIn );
-			} else {
-				jEle.html( '<span class="" style="color: rgba( ' + localStorage['color_green'] + ' );">'+ txt + '</sapn>').stop( true ).fadeIn( fadeIn, function () {
-					jEle.stop( true ).show().fadeOut( fadeOut, function () {
-						jEle.empty();
-						jEle.show();
-					} );
-				} );
+				// add dev kill data tool
+				tStr = '';
+				tStr += '<div class="nckOptionsContainer" title="KILL ALL THE DATA!">\n';
+				tStr += '<button id="nck_btn_kill_all" class="nckDangerButton">Kill All Data</button>\n';
+				tStr += '<label for="nck_btn_kill_all" class="label-right">Dev only! Kill all localStorage.</label>\n';
+				tStr += '&nbsp;<span id="opt_nck_btn_kill_all_status"></span>\n';
+				tStr += '</div>\n';
+				$('#tools_tab .tab-contents').append( tStr ).find('#nck_btn_kill_all').click( function ( ev ) {
+					if ( confirm( 'This will erase all localStorage and may have detrimental effects!') ) {
+						localStorage.clear();
+						nckma.opts.ui_restore();
+						bgP.nckma.reset( true );
+						nckma.track( 'func', 'nck_btn_kill_all - DEV', 'nkExec' );
+					}
+				});
+				// log use of dev
+				nckma.track( 'func', 'nckma.opts.ui_init - DEV', 'nkExec' );
 			}
 		}
 	};
 
 	// Restores select box state to saved value from localStorage.
-	nckma.opts.restore = function () {
-		var cache = nckma.conf.cache
-			, defs = nckma.defaults()
+	nckma.opts.ui_restore = function () {
+		var cache = nckma._cache
+			, defs = nckma.opts.defaults_get()
 			, lJ = null
 			, set = null
 			, tColor = null;
@@ -993,15 +1100,15 @@ return nckma; })() && (function () {
 					}
 				}
 			}
-			nckma.opts.change();
+			nckma.opts.ui_change();
 			return true;
 		}
 	};
 
-	// Saves options to localStorage.
-	nckma.opts.save = function () {
-		var cache = nckma.conf.cache
-			, defs = nckma.defaults()
+		// Saves options to localStorage.
+	nckma.opts.ui_save = function () {
+		var cache = nckma._cache
+			, defs = nckma.opts.defaults_get()
 			, jL = $('#changed_options_list')
 			, jlGood = false
 			, statText = ''
@@ -1037,12 +1144,12 @@ return nckma; })() && (function () {
 						} else {
 							newTxt = cache[aC].val();
 						}
-						nckma.opts.flash_status( aC, nkOptionNames[aC]+'set to ' + newTxt + '.' );
+						nckma.opts.ui_status( aC, nkOptionNames[aC]+'set to ' + newTxt + '.' );
 						if ( jlGood ) {
 							jL.append( '<li style="color: rgba( ' + localStorage['color_green'] + ' );">'+nkOptionNames[aC]+' set to &quot;'+newTxt+'&quot;</li>' );
 						}
 					} else if ( bpmv.str(statText) ) {
-						nckma.opts.flash_status( aC, 'Failed saving &quot;'+nkOptionNames[aC]+'&quot;. ' + statText + '.', true );
+						nckma.opts.ui_status( aC, 'Failed saving &quot;'+nkOptionNames[aC]+'&quot;. ' + statText + '.', true );
 						if ( jlGood ) {
 							jL.append( '<li style="color: rgba( ' + localStorage['color_red'] + ' );">'+nkOptionNames[aC]+' failed to save. '+statText+'</li>' );
 						}
@@ -1058,9 +1165,35 @@ return nckma; })() && (function () {
 				} );
 			}, 8000 );
 		}
-		nckma.opts.change( null, true );
+		nckma.opts.ui_change( null, true );
 		nckma.track( 'func', 'nckma.opts.save', 'nkExec' );
 		nckma.track( 'saved', '', 'nkOptions' );
+	};
+
+	nckma.opts.ui_status = function ( optName, txt, isErr ) {
+		var jEle    = null
+			, fadeIn  = 100
+			, fadeOut = 8000;
+		if ( bpmv.str(optName) && bpmv.str(txt) ) {
+			isErr = isErr ? true : false;
+			if ( !bpmv.obj(nckma._cache[optName+'_status']) || !bpmv.num(nckma._cache[optName+'_status'].length) ) {
+				nckma._cache[optName+'_status'] = $('#opt_'+optName+'_status');
+				if ( !nckma._cache[optName+'_status'] ) {
+					return;
+				}
+			}
+			jEle = nckma._cache[optName+'_status'];
+			if ( isErr ) {
+				jEle.html( '<span class="nckOptionsError" style="color: rgba( ' + localStorage['color_red'] + ' );">Error: '+ txt + '</sapn>').stop( true ).fadeIn( fadeIn );
+			} else {
+				jEle.html( '<span class="" style="color: rgba( ' + localStorage['color_green'] + ' );">'+ txt + '</sapn>').stop( true ).fadeIn( fadeIn, function () {
+					jEle.stop( true ).show().fadeOut( fadeOut, function () {
+						jEle.empty();
+						jEle.show();
+					} );
+				} );
+			}
+		}
 	};
 
 	nckma.opts.valid_bool = function ( val, setting ) {
@@ -1268,7 +1401,7 @@ return nckma.opts; })() && (function () {
 		var cA = null
 			, cont = true
 			, locColor = 'color_' + color;
-		nckma.opts.defaults( true );
+		nckma.opts.defaults_set( true );
 		if ( bpmv.str(color) && bpmv.str(localStorage[locColor]) && /^\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9\.]+/.test( localStorage[locColor] ) ) {
 			cA = localStorage[locColor].split( /\s*,\s*/ );
 			for ( var aI = 0; aI < 4; aI++ ) {
@@ -1645,7 +1778,8 @@ return nckma.sk; })() && (function () {
 			{ 'name' : 'badmonkey0001', 'link' : 'http://www.reddit.com/u/badmonkey0001' }
 		]
 		, 'tools' : [
-			  { 'name' : 'bpmv',             'link' : 'https://github.com/BrynM/bpmv' }
+			  { 'name' : 'base64.js',        'link' : 'https://code.google.com/p/javascriptbase64/' }
+			, { 'name' : 'bpmv',             'link' : 'https://github.com/BrynM/bpmv' }
 			, { 'name' : 'Google Chrome',    'link' : 'http://www.google.com/chrome' }
 			, { 'name' : 'jQuery',           'link' : 'http://jquery.com' }
 			, { 'name' : 'Reddit',           'link' : 'http://www.reddit.com/' }

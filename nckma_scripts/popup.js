@@ -15,8 +15,9 @@ function populate () {
 		sD = JSON.parse( status );
 		if ( bpmv.obj(sD.start, true) ) {
 			$('#nck_user').text(  sD.start.name );
-			cdDelt = new Date().getTimezoneOffset() * 60;
-			cDay = new Date( sD.start.created_utc * 1000 );
+			cdDelt = new Date().getTimezoneOffset() * 60 * 1000;
+			cDay = new Date(0);
+			cDay.setUTCSeconds( sD.start.created_utc );
 			$('#nck_cakeday').text( nckma.str_date( cDay ), localStorage['dateFormat'] );
 			$('#nck_start_lkarma').text( bpmv.num(sD.start.link_karma, true) ? nckma.str_num( sD.start.link_karma ) : 'unknown' );
 			$('#nck_start_ckarma').text( bpmv.num(sD.start.comment_karma, true) ? nckma.str_num( sD.start.comment_karma ) : 'unknown' );
