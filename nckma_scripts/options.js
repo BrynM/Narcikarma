@@ -1,3 +1,5 @@
+jQuery.event.props.push( 'dataTransfer' );
+
 var bgP = chrome.extension.getBackgroundPage();
 
 function reset_stats () {
@@ -49,8 +51,6 @@ function import_settings ( ev ) {
 								for ( iter in nOpt ) {
 									if ( nOpt.hasOwnProperty( iter ) && bpmv.str(nOpt[iter]) ) {
 										jT = $('#opt_'+iter);
-console.log( 'jT', jT );
-console.log( 'test', bpmv.num(jT.length) );
 										if ( bpmv.obj(jT) && bpmv.num(jT.length) ) {
 											jT.val( nOpt[iter] );
 											jT.change();
@@ -64,12 +64,17 @@ console.log( 'test', bpmv.num(jT.length) );
 							} else {
 								errTxt = 'Import failed.\n\nFile "'+fi.name+'" is not a valid Saved Options file.\n\n(file constains no object)';
 							}
-console.log( 'imported', nOpt );
 						} catch ( err ) {
 							errTxt = 'Import failed.\n\nFile "'+fi.name+'" is not a valid Saved Options file.\n\n(JSON Parse Result: '+err+')';
 						}
 						if ( bpmv.str(errTxt) ) {
 							alert( errTxt );
+						} else {
+							if ( $('#nckma_save').attr( 'disabled' ) ) {
+								alert( 'No changes were made. The importated options were already active.' );
+							} else {
+								alert( 'Please review any changes made and hit the "Save Options" button.' );
+							}
 						}
 					}
 				};
@@ -85,8 +90,6 @@ function kill_event ( ev ) {
 	ev.stopPropagation();
 	return false;
 }
-
-jQuery.event.props.push( 'dataTransfer' );
 
 $(document).ready( function () {
 
