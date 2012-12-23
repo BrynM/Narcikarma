@@ -33,7 +33,7 @@ if ( typeof(nckma) != 'object' ) {
 			, 'aConfFB' : false // read configuration fallbacks...
 		}
 		, nkLastPoll = null
-		, nkMaxHistReal = 3500 // aslo see nkMaxHist in the options section
+		, nkMaxHistReal = 10000 // aslo see nkMaxHist in the options section
 		, nkPollInterval = 2 * 1000
 		, nkIsPolling = false
 		, nkDataFirst = bpmv.str(localStorage['_lastCached']) ? JSON.parse( localStorage['_lastCached'] ) : null
@@ -537,7 +537,7 @@ return nckma; })() && (function () {
 	*/
 
 	var nckmaNeedsSave = false
-		, nkMaxHist = 3500
+		, nkMaxHist = 10000
 		, nkSettings = {}
 		, nkOptionNames = {
 			  'alertCommentGain' : 'Alert After Comment Karma Threshold'
@@ -768,7 +768,7 @@ return nckma; })() && (function () {
 		, 'title' : 'Saved History Items'
 		, 'desc'  : 'Size of the karma gain/loss history.'
 		, 'min'   : 5
-		, 'max'   : 3500
+		, 'max'   : 10000
 		, 'kill0' : true
 	};
 
