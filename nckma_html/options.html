@@ -16,7 +16,7 @@
 				<label for="main_options_tab_radio" class="tab-label">Main Options</label>
 				<div class="tab-contents">
 
-					<p>These are the primary options for Narcikarma. If you change any options, you can revert to your saved options with the &quot;Reset Options&quot; button before you save. Your changes will not take effect until you click the &quot;Save Options&quot; button and icon changes won't show until the next refresh. Finally, to restore the default Narcikarma options, use the &quot;Default Options&quot; button.</p>
+					<p>These are the primary options for Narcikarma. If you change any options, you can revert to your saved options with the &quot;Reset Changes&quot; button before you save. Your changes will not take effect until you click the &quot;Save Options&quot; button and icon changes won't show until the next refresh. Finally, to restore the default Narcikarma options, use the &quot;Default Options&quot; button.</p>
 
 					<div class="nckOptionsContainer" title="Interval that your karma stats will be checked.">
 						<label for="opt_interval">Refresh Interval</label>
@@ -89,10 +89,6 @@
 							<option value="7000">7,000</option>
 							<option value="7500">7,500</option>
 							<option value="8000">8,000</option>
-							<option value="8500">8,500</option>
-							<option value="9000">9,000</option>
-							<option value="9500">9,500</option>
-							<option value="10000">10,000</option>
 							<option value="0">disabled</option>
 						</select>&nbsp;<span id="opt_savedRefreshes_status"></span>
 					</div>
@@ -281,7 +277,7 @@
 		</div-->
 
 		<div class="nckOptionsButtons">
-			<button id="nckma_reset" class="optSaveToggle">Reset Options</button>
+			<button id="nckma_reset" class="optSaveToggle">Reset Changes</button>
 			<button id="nckma_save" class="optSaveToggle">Save Options</button>
 			<button id="nckma_default">Default Options</button>
 		</div>
@@ -289,10 +285,11 @@
 		<hr>
 
 		<div class="nckButtonRow nckButtonRowHelp">
-			<button id="nck_pop_btn_credits">Credits</button>
-			<button id="nck_pop_btn_subreddit">/r/Narcikarma</button>
-			<button id="nck_pop_btn_source">Source</button>
-			<button id="nck_pop_btn_cws">Chrome Web Store</button>
+			<button id="nck_btn_graphs">Graphs</button>
+			<button id="nck_btn_credits">Credits</button>
+			<button id="nck_btn_subreddit">/r/Narcikarma</button>
+			<button id="nck_btn_source">Source</button>
+			<button id="nck_btn_cws">Chrome Web Store</button>
 		</div>
 
 		<ul id="changed_options_list">

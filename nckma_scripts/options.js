@@ -101,10 +101,11 @@ $(document).ready( function () {
 	$('#nckma_reset').click( nckma.opts.ui_restore );
 	$('#nckma_save').click( nckma.opts.save );
 	$('input[type="color"][id^="picker_opt_color_"],input[type="range"][id^="alpha_opt_color_"]').change( nckma.opts.ui_change_color );
-	$('#nck_pop_btn_credits').click( function () { window.open( '/nckma_html/credits.html' ); } );
-	$('#nck_pop_btn_subreddit').click( go_to_subreddit );
-	$('#nck_pop_btn_source').click( go_to_source );
-	$('#nck_pop_btn_cws').click( go_to_cws );
+	$('#nck_btn_graphs').click( function () { window.open( '/nckma_html/graphs.html' ); } );
+	$('#nck_btn_credits').click( function () { window.open( '/nckma_html/credits.html' ); } );
+	$('#nck_btn_subreddit').click( go_to_subreddit );
+	$('#nck_btn_source').click( go_to_source );
+	$('#nck_btn_cws').click( go_to_cws );
 	$('#nck_btn_export').click( export_settings );
 	$('#nckma_default').click(  nckma.opts.defaults_set );
 

@@ -33,7 +33,7 @@ if ( typeof(nckma) != 'object' ) {
 			, 'aConfFB' : false // read configuration fallbacks...
 		}
 		, nkLastPoll = null
-		, nkMaxHistReal = 10000 // aslo see nkMaxHist in the options section
+		, nkMaxHistReal = 8000 // aslo see nkMaxHist in the options section
 		, nkPollInterval = 2 * 1000
 		, nkIsPolling = false
 		, nkDataFirst = bpmv.str(localStorage['_lastCached']) ? JSON.parse( localStorage['_lastCached'] ) : null
@@ -43,7 +43,7 @@ if ( typeof(nckma) != 'object' ) {
 		, nkSetInterval = null
 		, nkUrls = {
 		 	  'user'       : 'http://www.reddit.com/api/me.json'
-			, 'userTest'   : 'http://narcikarma.net/test/me.php'
+			, 'userTest'   : 'http://narcikarma.net/test/me.php?d=2'
 			, 'cakeYay'    : 'http://www.reddit.com/r/cakeday/'
 			, 'cakeNuthin' : 'http://www.google.com/search?q=karma+machine&tbm=isch'
 		}
@@ -537,7 +537,7 @@ return nckma; })() && (function () {
 	*/
 
 	var nckmaNeedsSave = false
-		, nkMaxHist = 10000
+		, nkMaxHist = 8000
 		, nkSettings = {}
 		, nkOptionNames = {
 			  'alertCommentGain' : 'Alert After Comment Karma Threshold'
@@ -763,12 +763,12 @@ return nckma; })() && (function () {
 		, 'enum'  : $.extend( [], nckRowEnum )
 	};
 	nkSettings['savedRefreshes'] = {
-		  'def'   : '1000'
+		  'def'   : '5000'
 		, 'type'  : 'int'
 		, 'title' : 'Saved History Items'
 		, 'desc'  : 'Size of the karma gain/loss history.'
 		, 'min'   : 5
-		, 'max'   : 10000
+		, 'max'   : 8000
 		, 'kill0' : true
 	};
 
@@ -1762,6 +1762,10 @@ return nckma.px; })() && (function () {
 
 	// sparkline generator
 	nckma.sk = {};
+
+	nckma.sk.data = function () {
+		var hist = nckma.get().history;
+	}
 
 return nckma.sk; })() && (function () {
 

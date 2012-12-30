@@ -96,6 +96,7 @@ function go_to_user () {
 
 $(document).ready( function () {
 	$('#nck_close_x').click( function () { window.close(); } );
+	$('#nck_btn_graphs').click( function () { window.open( '/nckma_html/graphs.html' ); } );
 	$('#nck_pop_btn_options').click( function () { window.open( '/nckma_html/options.html' ); } );
 	$('#nck_pop_btn_close').click( function () { window.close(); } );
 	$('#nck_pop_btn_user').click( go_to_user );
