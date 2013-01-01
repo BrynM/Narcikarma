@@ -94,7 +94,11 @@ function go_to_user () {
 	}
 }
 
-$(document).ready( function () {
+/*
+* startup cb
+*/
+
+nckma.start( function () {
 	$('#nck_close_x').click( function () { window.close(); } );
 	$('#nck_btn_graphs').click( function () { window.open( '/nckma_html/graphs.html' ); } );
 	$('#nck_pop_btn_options').click( function () { window.open( '/nckma_html/options.html' ); } );

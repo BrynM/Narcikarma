@@ -20,6 +20,7 @@
 	"permissions"      : [
 		"http://www.reddit.com/api/",
 		"http://narcikarma.net/",
-		"notifications"
+		"notifications",
+		"unlimitedStorage"
 	]
 }

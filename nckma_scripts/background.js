@@ -6,13 +6,11 @@ if ( typeof(nckma) != 'object' ) {
 		, lE = null
 		, sc = document.getElementsByTagName('script');
 	nckma._bgTask = true;
-//	$(document).ready( function () {
-		lE = nkBgScrs.length > 0 ? nkBgScrs.length + 1 : 0;
-		nkBgScrs[lE] = document.createElement('script');
-		nkBgScrs[lE].async = true;
-		nkBgScrs[lE].src = '../nckma_scripts/narcikarma.js';
-		sc[sc.length - 1].parentNode.appendChild( nkBgScrs[lE] );
-//	});
+	lE = nkBgScrs.length > 0 ? nkBgScrs.length + 1 : 0;
+	nkBgScrs[lE] = document.createElement('script');
+	nkBgScrs[lE].async = true;
+	nkBgScrs[lE].src = '../nckma_scripts/narcikarma.js';
+	sc[sc.length - 1].parentNode.appendChild( nkBgScrs[lE] );
 } else {
 	throw( 'background.js needs to load before narcikarma.js!!!');
 }

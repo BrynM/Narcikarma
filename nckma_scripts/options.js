@@ -86,13 +86,22 @@ function import_settings ( ev ) {
 }
 
 function kill_event ( ev ) {
-	ev.preventDefault();
-	ev.stopPropagation();
+	if ( bpmv.obj(ev) ) {
+		if ( bpmv.func(ev.preventDefault) ) {
+			ev.preventDefault();
+		}
+		if ( bpmv.func(ev.stopPropagation) ) {
+			ev.stopPropagation();
+		}
+	}
 	return false;
 }
 
-$(document).ready( function () {
+/*
+* startup cb
+*/
 
+nckma.start( function () {
 	nckma.opts.ui_init();
 	nckma.opts.ui_restore();
 
@@ -121,5 +130,4 @@ $(document).ready( function () {
 			jE.attr( 'checked', 'checked' );
 		}
 	} );
-
 });

@@ -594,11 +594,12 @@
 			return ( this.obj(namedRex) && ( Object.prototype.toString.call( namedRex ) === '[object RegExp]' ) && ( !hasTest || this.str(namedRex.source) ) );
 		},
 		/**
-		* Will return an array containing the keys from an object or array
+		* Will return an optionally sorted array containing the keys from an object or array
 		* @param {mixed} lock The object or array you want the keys from
+		* @param {boolean} sort Whether or not to sort the result
 		* @return {array} array containing the keys lock
 		*/
-		keys : function ( lock ) {
+		keys : function ( lock, sort ) {
 			var ret = [];
 			if ( this.obj(lock, true) || this.arr(lock) ) {
 				for ( var aK in lock ) {
@@ -606,7 +607,9 @@
 						ret.push( aK )
 					}
 				}
-				ret.sort();
+				if ( sort ) {
+					ret.sort();
+				}
 			}
 			return ret;
 		},
@@ -1007,6 +1010,22 @@
 				}
 			}
 			return ( this.count(pWagon) > 0 ) ? pWagon : undefined;
+		},
+		/**
+		* Will return an array containing the values from an object or array
+		* @param {mixed} family The object or array you want the values from
+		* @return {array} array containing the values
+		*/
+		values : function ( family ) {
+			var ret = [];
+			if ( this.obj(family, true) || this.arr(family) ) {
+				for ( var aK in family ) {
+					if ( family.hasOwnProperty( aK ) ) {
+						ret.push( family[aK] )
+					}
+				}
+			}
+			return ret;
 		},
 		/**
 		* Walks a string to find an end point

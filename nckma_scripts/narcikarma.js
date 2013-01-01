@@ -19,13 +19,13 @@ if ( typeof(nckma) != 'object' ) {
 	// http://www.reddit.com/reddits/mine/subscriber.json
 	//http://www.reddit.com/reddits/mine/moderator.json
 
-
 	/*
 	* "Local" vars
 	*/
 
 	var nkColorRgxHex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i
-		, nkDebugLvl = 3
+		, nkDebugLvl = 5
+		, nkEvs = {}
 		, nkFlags = {
 			  'debug'   : true
 			, 'ga'      : true
@@ -41,12 +41,15 @@ if ( typeof(nckma) != 'object' ) {
 		, nkDataSet = bpmv.str(localStorage['_dataSet']) ? JSON.parse( localStorage['_dataSet'] ) : []
 		, nkManifest = null
 		, nkSetInterval = null
+		, nkStartCbs = []
+		, nkStarted = false
 		, nkUrls = {
 		 	  'user'       : 'http://www.reddit.com/api/me.json'
-			, 'userTest'   : 'http://narcikarma.net/test/me.php?d=2'
+			, 'userTest'   : 'http://narcikarma.net/test/me.php?d=1.25'
 			, 'cakeYay'    : 'http://www.reddit.com/r/cakeday/'
 			, 'cakeNuthin' : 'http://www.google.com/search?q=karma+machine&tbm=isch'
 		}
+		, nkUserData = {}
 		, nkDefaults = {
 			  'alertCommentGain' : '50'
 			, 'alertLinkGain'    : '50'
@@ -87,66 +90,68 @@ if ( typeof(nckma) != 'object' ) {
 	}
 
 	/*
-	* settings
+	* props
 	*/
-
-	// this is still unused...
-	nckma.conf = function ( vr, vl ) {
-		var pre = 'conf_option_';
-		if ( bpmv.str(vr) && bpmv.str(nkDefaults[vr]) ) {
-			if ( nkFlags['aConfFB'] ) {
-				if ( !bpmv.str(localStorage[pre+vr]) && bpmv.str(localStorage[vr]) ) {
-					localStorage[pre+vr] = ''+localStorage[vr];
-					localStorage.removeItem( vr );
-					nckma.debug( 0, 'migrated alpha option '+vr, localStorage[pre+vr] );
-				}
-			}
-			if ( bpmv.str(vl) ) {
-				localStorage[pre+vr] = ''+vl;
-				nckma.debug( 5, 'set option '+vr, localStorage[pre+vr] );
-			}
-			return localStorage[pre+vr];
-		}
-	};
 
 	// selector cache
 	nckma._cache = {};
+
+	nckma._dL = {
+		  'all'      : 0
+		, 'begin'    : 0
+		, 'db'       : 4
+		, 'dbDetail' : 8
+		, 'dbOps'    : 5
+		, 'ev'       : 10
+		, 'opts'     : 3
+		, 'poll'     : 2
+		, 'px'       : 12
+
+	};
 
 	/*
 	* functions
 	*/
 
-	nckma.begin = function () {
-		nckma.debug( 0, 'Narcikarma v'+nckma.version().str );
-		nckma.debug( 0, 'running background task' );
-		nckma.opts.defaults_set( true );
-		if ( !bpmv.str(localStorage['nkCurrentVer']) ) {
-
+	nckma.begin = function ( cb ) {
+		var ver = nckma.version();
+		if ( nckma._bgTask ) {
+			nckma.debug( nckma._dL.begin, 'Narcikarma v'+nckma.version().str );
+			nckma.opts.defaults_set( true );
+			if ( !bpmv.str(localStorage['nkCurrentVer']) ) {
+				nckma.ev( 'upgrade', { 'old' : localStorage['nkCurrentVer'], 'new' : ver } )
+				localStorage['nkCurrentVer'] = ver;
+			}
+			nckma.debug( nckma._dL.begin, 'active flags', nkFlags );
+			if ( nkFlags['debug'] ) {
+				nckma.debug( nckma._dL.begin, 'debug level', nkDebugLvl );
+			}
+			nckma.debug( nckma._dL.begin, 'storage interval', localStorage['interval'] );
+			nckma.reset();
+			if ( !bpmv.num(nkSetInterval) ) {
+				nckma.debug( nckma._dL.begin, 'running background task' );
+				nkSetInterval = setInterval( nckma.poll, nkPollInterval );
+			}
+			nckma.track( 'func', 'nckma.begin', 'nkExec' );
 		}
-		nckma.debug( 0, 'active flags', nkFlags );
-		if ( nkFlags['debug'] ) {
-			nckma.debug( 0, 'debug level', nkDebugLvl );
-		}
-		nckma.debug( 0, 'storage interval', localStorage['interval'] );
-		nckma.reset();
-		if ( !bpmv.num(nkSetInterval) ) {
-			nkSetInterval = setInterval( nckma.poll, nkPollInterval );
-		}
-		nckma.track( 'func', 'nckma.begin', 'nkExec' );
 	};
 
 	nckma.debug = function ( lvl, msg, etc ) {
-		var args = $.extend( [], arguments );
+		var args = null;
 		if ( nkFlags['debug'] ) {
-			nkDebugLvl = parseInt(nkDebugLvl, 10);
-			if ( !(/^[0-9]+$/).test( ''+lvl ) || ( parseInt(lvl, 10) > parseInt(nkDebugLvl, 10) ) ) {
-				nckma.warn( 'nkma.debug() requires the first parameter to be the debug level', arguments );
+			if ( !(/^[0-9]+$/).test( ''+lvl ) ) {
+				nckma.warn( 'nkma.debug() requires the first parameter to be the intiger debug level', arguments );
 				console.trace();
 				return;
 			}
+			nkDebugLvl = parseInt(nkDebugLvl, 10);
+			if ( parseInt(lvl, 10) > nkDebugLvl ) {
+				return;
+			}
+			args = $.extend( [], arguments );
 			args.shift();
 			if ( bpmv.num(bpmv.count(args)) && bpmv.str(args[0]) ) {
-				args[0] = '[Narcikarma Debug] '+args[0];
+				args[0] = '[Narcikarma Debug '+lvl+','+nkDebugLvl+'] '+args[0];
 				console.log.apply( console, args );
 			} else {
 				nckma.warn( 'nkma.debug() does not have enough arguments', arguments );
@@ -155,17 +160,52 @@ if ( typeof(nckma) != 'object' ) {
 		}
 	}
 
-	nckma.d = function () {
-		if ( nkFlags['debug'] ) {
-			if ( bpmv.num(bpmv.count(arguments)) && bpmv.str(arguments[0]) ) {
-				arguments[0] = '[Narcikarma Debug] '+arguments[0];
-			}
-			console.log.apply( console, arguments );
+	nckma.err = function ( msg, etc ) {
+		if ( bpmv.num(bpmv.count(arguments)) && bpmv.str(arguments[0]) ) {
+			arguments[0] = '[Narcikarma] ERROR: '+arguments[0];
 		}
+		console.error.apply( console, arguments );
 	}
 
-	nckma.defaults = function () {
-		return $.extend( {}, nkDefaults );
+	// we set this up in the core as well
+	nckma.ev = function ( evName, cbOrData ) {
+		var iter = 0
+			, cbRes
+			, bulkRet = {};
+		if ( bpmv.arr(evName) ) { // group of events
+			for ( iter = 0; iter < evName.length; iter++ ) {
+				if ( bpmv.str(evName[iter]) ) {
+					nckma.ev( evName[iter], cbOrData );
+					bulkRet[evName[iter]] = nkEvs[evName[iter]];
+				}
+			}
+			return bulkRet;
+		} else if ( bpmv.str(evName) ) {
+			if ( !bpmv.obj(nkEvs[evName]) ) {
+				nkEvs[evName] = [];
+			}
+			if ( bpmv.func(cbOrData) ) {
+				nkEvs[evName].push( cbOrData );
+				nckma.debug( nckma._dL.ev, 'nckma.ev() callback added', [ evName, arguments, nkEvs[evName] ] );
+				bulkRet[evName] = nkEvs[evName];
+				return bulkRet;
+			} else {
+				if ( bpmv.arr(nkEvs[evName]) ) {
+					for ( iter = 0; iter < nkEvs[evName].length; iter++ ) {
+						if ( bpmv.func(nkEvs[evName][iter]) ) {
+							cbRes = nkEvs[evName][iter].apply( nckma, arguments );
+						}
+						if ( cbRes === false ) {
+							break;
+						}
+					}
+				}
+				nckma.debug( nckma._dL.ev, 'nckma.ev() event fired', [ evName, cbRes, arguments, nkEvs[evName] ] );
+				bulkRet[evName] = nkEvs[evName];
+				return bulkRet;
+			}
+		}
+		nckma.debug( nckma._dL.ev, 'nckma.ev() event call failed', [ arguments ] );
 	};
 
 	nckma.get = function ( asJson ) {
@@ -252,13 +292,6 @@ if ( typeof(nckma) != 'object' ) {
 		}
 	}
 
-	nckma.rgb2hex = function ( rgb ) {
-		var tC = bpmv.str(rgb) ? rgb.split( /\s?,\s?/ ) : rgb;
-		if ( bpmv.arr(tC, true) && ( ( tC.length === 3 ) || ( tC.length === 4 ) ) ) {
-			return '' + ( (1 << 24) + ( parseInt(tC[0]) << 16 ) + ( parseInt(tC[1]) << 8 ) + parseInt(tC[2]) ).toString(16).slice(1);
-		}
-	}
-
 	nckma.info = function ( asJson ) {
 		var man = null;
 			if ( !bpmv.obj(nkManifest) ) {
@@ -309,8 +342,16 @@ if ( typeof(nckma) != 'object' ) {
 					, 'l' : d.link_karma
 					, 't' : d.nkTimeStamp
 				} );
+				nckma.db.user_table( d.name );
+				nckma.db.user_insert( d.name, {
+					  'c' : d.comment_karma
+					, 'd' : bpmv.num(nkDsLast) ? d.nkTimeStamp - nkDsLast : 0 // time delta since last
+					, 'l' : d.link_karma
+					, 't' : d.nkTimeStamp
+				} );
+
 				while ( ( nkDataSet.length > nkMaxHistReal ) || ( nkDataSet.length > parseInt( localStorage['savedRefreshes'], 10 ) ) ) {
-					nckma.debug( 2, 'trimming history', nkDataSet.length )
+					nckma.debug( nckma._dL.poll, 'trimming history', nkDataSet.length )
 					nkDataSet.shift()
 				}
 				localStorage['_dataSet'] = JSON.stringify( nkDataSet );
@@ -349,18 +390,21 @@ if ( typeof(nckma) != 'object' ) {
 			nckma.px.draw_status( 'err' );
 			return;
 		}
-		nckma.debug( 2, 'nckma.parse()', nckma.get() );
+		nckma.debug( nckma._dL.poll, 'nckma.parse()', nckma.get() );
 		if ( nckma.testing() ) {
-			nckma.debug( 2, 'History Length', nkDataSet.length );
-			nckma.debug( 2, 'History Max Option', localStorage['savedRefreshes'] );
-			nckma.debug( 2, 'localStorage Remaining in MB', Math.round( ( ( (1024 * 1024 * 5) - unescape( encodeURIComponent( JSON.stringify( localStorage ) ) ).length ) / 1024 / 1024 ) * 100000) / 100000 );
+			nckma.debug( nckma._dL.poll, 'History Length', nkDataSet.length );
+			nckma.debug( nckma._dL.poll, 'History Max Option', localStorage['savedRefreshes'] );
+			nckma.debug( nckma._dL.poll, 'localStorage total in MB', nckma.stor_size( true ) );
+			nckma.debug( nckma._dL.poll, 'localStorage _dataSet in MB', nckma.stor_key_size( '_dataSet', true ) );
+			// nckma.debug( nckma._dL.poll, 'localStorage Remaining in MB', Math.round( ( ( (1024 * 1024 * 5) - unescape( encodeURIComponent( JSON.stringify( localStorage ) ) ).length ) / 1024 / 1024 ) * 100000) / 100000 );
 		}
 	};
 
 	nckma.poll = function () {
 		var nckmaNow = new Date().getTime()
 			, nckmaInterval = localStorage['interval'] * 1000
-			, nckmaElapsed = bpmv.typeis( nkLastPoll, 'Date' ) ? (nckmaNow - nkLastPoll.getTime()) : -1;
+			, nckmaElapsed = bpmv.typeis( nkLastPoll, 'Date' ) ? (nckmaNow - nkLastPoll.getTime()) : -1
+			, jax = {};
 		if ( nckmaInterval <= 0 ) {
 			return;
 		}
@@ -369,13 +413,17 @@ if ( typeof(nckma) != 'object' ) {
 				nkLastPoll = new Date();
 				nkIsPolling = true;
 				nckma.px.draw_status( 'poll' );
-				$.ajax( {
-					'beforeSend' : nckma.set_headers
-					, 'dataType' : 'json'
-					, 'error'    : nckma.parse
-					, 'success'  : nckma.parse
-					, 'url'      : nkFlags['testing'] ? nkUrls.userTest + '?bust='+(new Date).getTime() : nkUrls.user
-				} );
+				jax['beforeSend'] = nckma.set_headers;
+				jax['dataType'] = 'json';
+				jax['error'] = nckma.parse;
+				jax['success'] = nckma.parse;
+				if ( nkFlags['testing'] ) {
+					jax['url'] = nkUrls.userTest+( (''+nkUrls.userTest).indexOf( '?' ) > -1 ? '&' : '?' )+'bust='+(new Date).getTime();
+				} else {
+					jax['url'] = nkUrls.user;
+				}
+				$.ajax( jax );
+				nckma.debug( nckma._dL.poll, 'poll queued', jax );
 			}
 		}
 	};
@@ -394,6 +442,13 @@ if ( typeof(nckma) != 'object' ) {
 		setTimeout( nckma.poll, 2000 );
 	};
 
+	nckma.rgb2hex = function ( rgb ) {
+		var tC = bpmv.str(rgb) ? rgb.split( /\s?,\s?/ ) : rgb;
+		if ( bpmv.arr(tC, true) && ( ( tC.length === 3 ) || ( tC.length === 4 ) ) ) {
+			return '' + ( (1 << 24) + ( parseInt(tC[0]) << 16 ) + ( parseInt(tC[1]) << 8 ) + parseInt(tC[2]) ).toString(16).slice(1);
+		}
+	}
+
 	nckma.set_headers = function ( req ) {
 		var info = nckma.info()
 			, user = 'user-unknown-first-poll'
@@ -405,10 +460,52 @@ if ( typeof(nckma) != 'object' ) {
 				uId = '' + encodeURI( nkDataFirst.id );
 			}
 			uA = info.name + ' v' + nckma.version().str + ' - ' + info.description + '; User: ' + user + '(id:' + uId + ')';
-			nckma.debug( 2, 'Narcikarma [nckma.set_headers()] Setting X-User-Agent.', uA );
+			nckma.debug( nckma._dL.poll, 'Narcikarma [nckma.set_headers()] Setting X-User-Agent.', uA );
 			// trying to set the user agent proper results in "Refused to set unsafe header 'User-Agent'" :(
 			req.setRequestHeader( 'X-User-Agent', uA );
 		}
+	};
+
+	nckma.start = function ( cb ) {
+		var cbR = null
+			, cbArgs = $.extend( [], arguments );
+		if ( bpmv.bool(cb) && ( cb === true ) ) {
+			nckma.debug( 0, 'Narcikamra startup', [ cbArgs, nkStartCbs.length ] );
+			nkStarted = true;
+			while ( nkStartCbs.length ) {
+				cbR = nkStartCbs.shift();
+				cbR.apply( window, cbArgs );
+			}
+			nckma.ev( 'start', cbArgs );
+			nckma.debug( 0, 'Narcikamra startup complete.' );
+		} else if ( bpmv.func(cb) ) {
+			if ( nkStarted ) {
+				cbR.apply( window, cbArgs );
+				nckma.debug( nckma._dL.ev, 'nckma.start() run cb (already started)', [ cb, cbArgs ] );
+			} else {
+				nkStartCbs.push( cb );
+				nckma.debug( nckma._dL.ev, 'nckma.start() cb added', [ cb, cbArgs ] );
+			}
+		}
+	};
+
+	/* nckma.stor_size() is very loose and is really only meant to be a guestimate of localStorage usage */
+	nckma.stor_size = function ( inMB ) {
+		if ( inMB ) {
+			return Math.round( ( ( unescape( encodeURIComponent( JSON.stringify( localStorage ) ) ).length ) / 1024 / 1024 ) * 100000) / 100000;
+		}
+		return ( unescape( encodeURIComponent( JSON.stringify( localStorage ) ) ).length );
+	};
+
+	/* nckma.stor_key_size() is very loose and is really only meant to be a guestimate of localStorage usage */
+	nckma.stor_key_size = function ( key, inMB ) {
+		if ( !bpmv.str(localStorage[key]) ) {
+			return 0;
+		}
+		if ( inMB ) {
+			return Math.round( ( ( unescape( encodeURIComponent( localStorage[key] ) ).length ) / 1024 / 1024 ) * 100000 ) / 100000;
+		}
+		return ( unescape( encodeURIComponent( localStorage[key] ) ).length );
 	};
 
 	nckma.str_date = function ( dObj, loc ) {
@@ -520,7 +617,175 @@ if ( typeof(nckma) != 'object' ) {
 		nckma.track( 'warn', bpmv.str(arguments[0]) ? arguments[0] : '', 'nkExec' );
 	}
 
+	/*
+	* startup cb
+	*/
+
+	nckma.start( function () {
+		nckma.version();
+		if ( nckma._bgTask ) {
+			nckma.begin();
+		}
+	});
+
 return nckma; })() && (function () {
+
+	/*
+	********************************************************************************
+	********************************************************************************
+	* DATABASE
+	********************************************************************************
+	********************************************************************************
+	*/
+
+	nckma.db = {};
+
+/*
+SELECT name FROM sqlite_master
+WHERE type='table'
+ORDER BY name;
+
+IndexedDB instead?
+*/
+
+	// unlimitedStorage permission overrides size I think
+	var nkDataDb = openDatabase( 'nkDataDb', '2.0', 'Narcikarma Data', 20 * 1024 * 1024 )
+		nckTablesChecked = {};
+
+	function proc_result ( res ) {
+		var iter
+			, len
+			, ret;
+		if ( bpmv.obj(res) && bpmv.typeis( res, 'SQLResultSet' ) ) {
+			if ( ( res.rowsAffected === 1) && bpmv.num(res.insertId, true) ) {
+				if ( nckma.testing() ) {
+					nckma.debug( nckma._dL.dbDetail, '[nckma.db] proc single insert', [ res.insertId, arguments ] );
+				}
+				return res.insertId;
+			} else if ( bpmv.obj(res.rows) && bpmv.num(res.rows.length) ) {
+				len = res.rows.length;
+				ret = [];
+				for ( iter = 0; iter < len; iter++){
+					ret.push( res.rows.item( iter ) );
+				}
+				if ( nckma.testing() ) {
+					nckma.debug( nckma._dL.dbDetail, '[nckma.db] proc result', [ ret, arguments ] );
+				}
+				return ret;
+			} else {
+				if ( nckma.testing() ) {
+					nckma.debug( nckma._dL.dbDetail, '[nckma.db] proc null', arguments );
+				}
+			}
+		}
+	}
+
+	nckma.db.error = function ( tx, err ) {
+		nckma.err( '[nckma.db] Database transaction error!!!', tx );
+		return;
+	};
+
+	nckma.db.op = function ( tx, res ) {
+		var ret;
+		if ( bpmv.obj(tx) ) {
+			switch ( bpmv.whatis(tx) ) {
+				case 'SQLTransaction':
+					ret = proc_result( res );
+					if ( bpmv.func(tx._nckmaCb) ) {
+						tx._nckmaCb.apply( window, [ ret, arguments ] );
+					}
+					if ( nckma.testing() ) {
+						nckma.debug( nckma._dL.dbOps, '[nckma.db] Op SQLTransaction', arguments );
+					}
+					break;
+				default:
+					if ( nckma.testing() ) {
+						nckma.debug( nckma._dL.dbOps, '[nckma.db] Op '+bpmv.whatis(tx), arguments );
+					}
+					break;
+			}
+		}
+		return ret;
+	};
+
+	nckma.db.sql = function ( sql, cb ) {
+		if ( bpmv.str(sql) ) {
+			try {
+				nckma.debug( nckma._dL.db, 'running SQL', { 'sql' : sql, 'cb' : cb } );
+				return nkDataDb.transaction( function ( tx ) {
+					tx._nckmaCb = cb;
+					tx._nckmaSql = sql;
+					tx.executeSql( sql, [], nckma.db.op, nckma.db.error );
+				});
+			} catch ( err ) {
+				nckma.err( 'SQL Error.', { 'e' : err, 'args' : arguments } );
+			}
+		}
+	};
+
+	nckma.db.user_table = function ( user ) {
+		var sql = '';
+		if ( bpmv.str( user ) ) {
+			sql += 'CREATE TABLE IF NOT EXISTS';
+			sql += ' user_'+user+'_data(';
+			sql += ' id INTEGER PRIMARY KEY AUTOINCREMENT,';
+			sql += ' epoch INTEGER NOT NULL DEFAULT 0,';
+			sql += ' delta INTEGER NOT NULL DEFAULT 0,';
+			sql += ' cKarma INTEGER NOT NULL DEFAULT 0,';
+			sql += ' lKarma INTEGER NOT NULL DEFAULT 0';
+			sql += ');';
+			nckma.db.sql( sql );
+		}
+	};
+
+	nckma.db.user_insert = function ( user, data, cb ) {
+		var ins = {}
+			, iter = null;
+		if ( bpmv.str(user) && bpmv.obj(data, true) ) {
+			for ( iter in data ) {
+				if ( bpmv.str(iter) && data.hasOwnProperty(iter) && bpmv.num(data[iter], true) ) {
+					switch ( iter.toLowerCase() ) {
+						case 'comment_karma':
+						case 'ckarma':
+						case 'c':
+							ins.cKarma = parseInt( data[iter], 10 );
+							break;
+						case 'delta':
+						case 'd':
+							ins.delta = parseInt( data[iter], 10 );
+							break;
+						case 'link_karma':
+						case 'lkarma':
+						case 'l':
+							ins.lKarma = parseInt( data[iter], 10 );
+							break;
+						case 'timestamp':
+						case 'epoch':
+						case 't':
+							ins.epoch = parseInt( data[iter], 10 );
+							break;
+						default:
+							break;
+					}
+				}
+			}
+			if ( bpmv.obj(ins, true) ) {
+				var sql = '';
+				if ( !bpmv.num(ins.epoch) ) {
+					ins.epoch = new Date().getTime();
+				}
+				sql += 'INSERT INTO';
+				sql += ' user_'+user+'_data';
+				sql += ' ( '+bpmv.keys( ins ).join( ', ' )+' )';
+				sql += ' VALUES';
+				sql += ' ( "'+bpmv.values( ins ).join( '", "' )+'" )';
+				sql += ';';
+				nckma.db.sql( sql, cb );
+			}
+		}
+	};
+
+return nckma.db; })() && (function () {
 
 	/*
 	********************************************************************************
@@ -539,6 +804,7 @@ return nckma; })() && (function () {
 	var nckmaNeedsSave = false
 		, nkMaxHist = 8000
 		, nkSettings = {}
+		, nkSettingsKeys = []
 		, nkOptionNames = {
 			  'alertCommentGain' : 'Alert After Comment Karma Threshold'
 			, 'alertLinkGain'    : 'Alert After Link Karma Threshold'
@@ -772,11 +1038,7 @@ return nckma; })() && (function () {
 		, 'kill0' : true
 	};
 
-	var nkSettingsKeys = bpmv.keys( nkSettings );
-
-	console.log( 'nkSettings', { 'curr_len' : bpmv.count( nkSettings ) } );
-	console.log( 'nkSettingsKeys', nkSettingsKeys );
-
+	nkSettingsKeys = bpmv.keys( nkSettings, true );
 
 	nckma.opts.valid_color = function ( val, setting ) {
 		return nckma.px.color_test( val ) ? true : 'Color needs to be in the format "0-255, 0-255, 0-255, 0.0-1.0".';
@@ -804,9 +1066,30 @@ return nckma; })() && (function () {
 	*/
 
 	nckma.opts.bad_setting = function ( type, setting, args ) {
-		console.error( 'nckma.opts.valid_'+type+'(): Setting "'+setting+'" is invalid in source. Please report a bug.', { 'args' : args } );
+		nckma.err( 'nckma.opts.valid_'+type+'(): Setting "'+setting+'" is invalid in source. Please report a bug.', { 'args' : args } );
 		return 'Setting "'+setting+'" is invalid in source. Please report a bug. Type: "'+type+'"; Arguments: '+( bpmv.obj(args) || bpmv.arr(args) ? JSON.stringify( args ) : args )+';';
 	}
+
+	/*
+	// this is still unused...
+	nckma.conf = function ( vr, vl ) {
+		var pre = 'conf_option_';
+		if ( bpmv.str(vr) && bpmv.str(nkDefaults[vr]) ) {
+			if ( nkFlags['aConfFB'] ) {
+				if ( !bpmv.str(localStorage[pre+vr]) && bpmv.str(localStorage[vr]) ) {
+					localStorage[pre+vr] = ''+localStorage[vr];
+					localStorage.removeItem( vr );
+					nckma.debug( 0, 'migrated alpha option '+vr, localStorage[pre+vr] );
+				}
+			}
+			if ( bpmv.str(vl) ) {
+				localStorage[pre+vr] = ''+vl;
+				nckma.debug( 5, 'set option '+vr, localStorage[pre+vr] );
+			}
+			return localStorage[pre+vr];
+		}
+	};
+	*/
 
 	nckma.opts.defaults_get = function ( extended ) {
 		var ret = null
@@ -828,8 +1111,7 @@ return nckma; })() && (function () {
 	}
 
 	nckma.opts.defaults_set = function ( preserve ) {
-		var conf = nckma.conf
-			, defs = nckma.opts.defaults_get()
+		var defs = nckma.opts.defaults_get()
 			, statText = false;
 		if ( ( bpmv.bool(preserve) && preserve ) || confirm( 'Restore default Narcikarma options?' ) ) {
 			for ( var aC in defs ) {
@@ -1275,6 +1557,15 @@ return nckma; })() && (function () {
 		return nckma.opts.bad_setting( 'int', setting, arguments );
 	};
 
+	/*
+	* startup cb
+	*/
+
+	nckma.start( function () {
+		console.log( 'nkSettings', { 'curr_len' : bpmv.count( nkSettings ) } );
+		console.log( 'nkSettingsKeys', nkSettingsKeys );
+	});
+
 return nckma.opts; })() && (function () {
 
 	/*
@@ -1609,7 +1900,7 @@ return nckma.opts; })() && (function () {
 						var color = nckma.px.color( color );
 					}
 					if ( !bpmv.arr(color) || ( color.length != 4 ) ) {
-						nckma.debug( 4, 'Substituting color for black.', color );
+						nckma.debug( nckma._dL.px, 'Substituting color for black.', color );
 						phil = 'rgba( 0, 0, 0, 1 )';
 					} else {
 						phil = 'rgba( '+color[0]+', '+color[1]+', '+color[2]+', '+color[3]+' )';
@@ -1911,9 +2202,8 @@ return nckma.credits; })() && (function () {
 	********************************************************************************
 	*/
 
-	if ( nckma._bgTask ) {
-		$(document).ready( nckma.begin );
-	}
-
+	$(document).ready( function () {
+		nckma.start( true, arguments );
+	});
 
 })();
