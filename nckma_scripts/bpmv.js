@@ -349,7 +349,7 @@
 		 * @param {mixed} pin What you are looking for.
 		 * Can be any valid value.
 		 * @param stack The object or array you are looking in
-		 * @param siv Assume the pin is not == and instead is the keyname
+		 * @param {boolean} siv Assume the pin is not == and instead is the keyname
 		 * of what you're looking for
 		 * @return {mixed} the key if found or null if not found
 		 */

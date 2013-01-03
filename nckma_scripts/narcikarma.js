@@ -17,14 +17,14 @@ if ( typeof(nckma) != 'object' ) {
 	// http://www.reddit.com/r/Narcikarma/about.json
 	// http://www.reddit.com/reddits/mine.json
 	// http://www.reddit.com/reddits/mine/subscriber.json
-	//http://www.reddit.com/reddits/mine/moderator.json
+	// http://www.reddit.com/reddits/mine/moderator.json
 
 	/*
 	* "Local" vars
 	*/
 
 	var nkColorRgxHex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i
-		, nkDebugLvl = 23
+		, nkDebugLvl = 15
 		, nkEvs = {}
 		, nkFlags = {
 			  'debug'   : true
@@ -34,12 +34,15 @@ if ( typeof(nckma) != 'object' ) {
 		}
 		, nkLastPoll = null
 		, nkMaxHistReal = 8000 // aslo see nkMaxHist in the options section
-		, nkPollInterval = 2 * 1000
+		, nkPollInterval = 1000
 		, nkIsPolling = false
 		, nkDataFirst = bpmv.str(localStorage['_lastCached']) ? JSON.parse( localStorage['_lastCached'] ) : null
 		, nkDataLast = null
 		// , nkDataSet = bpmv.str(localStorage['_dataSet']) ? JSON.parse( localStorage['_dataSet'] ) : []
 		, nkManifest = null
+		, nkQuietEvents = [
+			'beat'
+		]
 		, nkSetInterval = null
 		, nkStartCbs = []
 		, nkStarted = false
@@ -96,6 +99,7 @@ if ( typeof(nckma) != 'object' ) {
 	// selector cache
 	nckma._cache = {};
 
+	// debug levels
 	nckma._dL = {
 		  'all'      : 0
 		, 'any'      : 0
@@ -105,10 +109,10 @@ if ( typeof(nckma) != 'object' ) {
 		, 'dbOps'    : 23
 		, 'dbSql'    : 25
 		, 'ev'       : 10
+		, 'evQuiet'  : 18
 		, 'opts'     : 5
 		, 'poll'     : 2
 		, 'px'       : 30
-
 	};
 
 	/*
@@ -135,8 +139,9 @@ if ( typeof(nckma) != 'object' ) {
 			nckma.debug( nckma._dL.begin, plug+'storage interval', localStorage['interval'] );
 			nckma.reset();
 			if ( !bpmv.num(nkSetInterval) ) {
-				nckma.debug( nckma._dL.begin, plug+'running background task' );
-				nkSetInterval = setInterval( nckma.poll, nkPollInterval );
+				nckma.debug( nckma._dL.begin, plug+'running background task - starting heartbeat' );
+				nkSetInterval = setInterval( nckma.heartbeat, nkPollInterval );
+				// nkSetInterval = setInterval( nckma.poll, nkPollInterval );
 			}
 			nckma.track( 'func', 'nckma.begin', 'nkExec' );
 		}
@@ -192,7 +197,7 @@ if ( typeof(nckma) != 'object' ) {
 			}
 			if ( bpmv.func(cbOrData) ) {
 				nkEvs[evName].push( cbOrData );
-				nckma.debug( nckma._dL.ev, 'nckma.ev() callback added', [ evName, arguments, nkEvs[evName] ] );
+				nckma.debug( nckma._dL.ev, 'nckma.ev() callback added', [ evName, cbOrData, nkEvs[evName] ] );
 				bulkRet[evName] = nkEvs[evName];
 				return bulkRet;
 			} else {
@@ -206,7 +211,11 @@ if ( typeof(nckma) != 'object' ) {
 						}
 					}
 				}
-				nckma.debug( nckma._dL.ev, 'nckma.ev() event fired', [ evName, cbRes, arguments, nkEvs[evName] ] );
+				if ( !bpmv.num(bpmv.find( evName, nkQuietEvents ), true) ) {
+					nckma.debug( nckma._dL.ev, 'nckma.ev() event fired', [ evName, cbRes, cbOrData, nkEvs[evName] ] );
+				} else {
+					nckma.debug( nckma._dL.evQuiet, 'nckma.ev() event fired', [ evName, cbRes, cbOrData, nkEvs[evName] ] );
+				}
 				bulkRet[evName] = nkEvs[evName];
 				return bulkRet;
 			}
@@ -285,6 +294,10 @@ if ( typeof(nckma) != 'object' ) {
 		return ret;
 	};
 
+	nckma.heartbeat = function () {
+		nckma.ev( 'beat' );
+	};
+
 	nckma.hex2rgb = function ( hex ) {
 		var res = null;
 		if ( bpmv.str(hex) && nkColorRgxHex.test( hex ) ) {
@@ -297,7 +310,7 @@ if ( typeof(nckma) != 'object' ) {
 				];
 			}
 		}
-	}
+	};
 
 	nckma.info = function ( asJson ) {
 		var man = null;
@@ -408,6 +421,7 @@ if ( typeof(nckma) != 'object' ) {
 			nckma.px.draw_status( 'err' );
 			return;
 		}
+		nckma.ev( 'parse', [ dat, stat, ev ] );
 		if ( dbg ) {
 			nckma.debug( nckma._dL.poll, 'nckma.parse()', nckma.get() );
 		}
@@ -418,25 +432,25 @@ if ( typeof(nckma) != 'object' ) {
 			, nckmaInterval = localStorage['interval'] * 1000
 			, nckmaElapsed = bpmv.typeis( nkLastPoll, 'Date' ) ? (nckmaNow - nkLastPoll.getTime()) : -1
 			, jax = {};
-		if ( nckmaInterval <= 0 ) {
-			return;
-		}
-		if ( !bpmv.num(nckmaElapsed) || ( nckmaElapsed >= nckmaInterval ) ) {
-			if ( !nkIsPolling ) {
-				nkLastPoll = new Date();
-				nkIsPolling = true;
-				nckma.px.draw_status( 'poll' );
-				jax['beforeSend'] = nckma.set_headers;
-				jax['dataType'] = 'json';
-				jax['error'] = nckma.parse;
-				jax['success'] = nckma.parse;
-				if ( nkFlags['testing'] ) {
-					jax['url'] = nkUrls.userTest+( (''+nkUrls.userTest).indexOf( '?' ) > -1 ? '&' : '?' )+'bust='+(new Date).getTime();
-				} else {
-					jax['url'] = nkUrls.user;
+		if ( nckmaInterval > 0 ) {
+			if ( !bpmv.num(nckmaElapsed) || ( nckmaElapsed >= nckmaInterval ) ) {
+				if ( !nkIsPolling ) {
+					nkLastPoll = new Date();
+					nkIsPolling = true;
+					nckma.px.draw_status( 'poll' );
+					jax['beforeSend'] = nckma.set_headers;
+					jax['dataType'] = 'json';
+					jax['error'] = nckma.parse;
+					jax['success'] = nckma.parse;
+					if ( nkFlags['testing'] ) {
+						jax['url'] = nkUrls.userTest+( (''+nkUrls.userTest).indexOf( '?' ) > -1 ? '&' : '?' )+'bust='+(new Date).getTime();
+					} else {
+						jax['url'] = nkUrls.user;
+					}
+					$.ajax( jax );
+					nckma.debug( nckma._dL.poll, 'poll queued', jax );
+					nckma.ev( 'poll', jax );
 				}
-				$.ajax( jax );
-				nckma.debug( nckma._dL.poll, 'poll queued', jax );
 			}
 		}
 	};
@@ -638,6 +652,7 @@ if ( typeof(nckma) != 'object' ) {
 	nckma.start( function () {
 		nckma.version();
 		if ( nckma._bgTask ) {
+			nckma.ev( 'beat', nckma.poll );
 			nckma.begin();
 		}
 	});
