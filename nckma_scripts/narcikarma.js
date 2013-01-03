@@ -182,7 +182,8 @@ if ( typeof(nckma) != 'object' ) {
 	nckma.ev = function ( evName, cbOrData ) {
 		var iter = 0
 			, cbRes
-			, bulkRet = {};
+			, bulkRet = {}
+			, plug = '[EVENT] ';
 		if ( bpmv.arr(evName) ) { // group of events
 			for ( iter = 0; iter < evName.length; iter++ ) {
 				if ( bpmv.str(evName[iter]) ) {
@@ -197,7 +198,7 @@ if ( typeof(nckma) != 'object' ) {
 			}
 			if ( bpmv.func(cbOrData) ) {
 				nkEvs[evName].push( cbOrData );
-				nckma.debug( nckma._dL.ev, 'nckma.ev() callback added', [ evName, cbOrData, nkEvs[evName] ] );
+				nckma.debug( nckma._dL.ev, plug+'callback added', [ evName, cbOrData, nkEvs[evName] ] );
 				bulkRet[evName] = nkEvs[evName];
 				return bulkRet;
 			} else {
@@ -212,15 +213,37 @@ if ( typeof(nckma) != 'object' ) {
 					}
 				}
 				if ( !bpmv.num(bpmv.find( evName, nkQuietEvents ), true) ) {
-					nckma.debug( nckma._dL.ev, 'nckma.ev() event fired', [ evName, cbRes, cbOrData, nkEvs[evName] ] );
+					nckma.debug( nckma._dL.ev, plug+'fired', [ evName, cbRes, cbOrData, nkEvs[evName] ] );
 				} else {
-					nckma.debug( nckma._dL.evQuiet, 'nckma.ev() event fired', [ evName, cbRes, cbOrData, nkEvs[evName] ] );
+					nckma.debug( nckma._dL.evQuiet, plug+'fired', [ evName, cbRes, cbOrData, nkEvs[evName] ] );
 				}
 				bulkRet[evName] = nkEvs[evName];
 				return bulkRet;
 			}
 		}
-		nckma.debug( nckma._dL.ev, 'nckma.ev() event call failed', [ arguments ] );
+		nckma.debug( nckma._dL.ev, plug+'FAILED', [ arguments ] );
+	};
+
+	// kill an event bind or entire event
+	nckma.ev_kill = function ( evName, cb ) {
+		var iter
+			, cbS = ''
+			, ret = {};
+		if ( bpmv.str(evName) && bpmv.arr(nkEvs[evName]) && bpmv.func(cb) ) {
+			cbS = cb.toString();
+			for ( iter in nkEvs[evName] ) {
+				if ( nkEvs[evName].hasOwnProperty( iter ) && bpmv.func(nkEvs[evName][iter]) && ( cbS === nkEvs[evName][iter].toString() ) ) {
+					nkEvs[evName].splice ( iter, 1 );
+				}
+			}
+		} else if ( bpmv.func(cb) ) {
+			for ( iter in nkEvs ) {
+				if ( nkEvs.hasOwnProperty( iter ) && bpmv.str(iter) ) {
+					ret[iter] = nckma.ev_kill( iter, cb );
+				}
+			}
+		}
+		return $.extend( {}, nkEvs );
 	};
 
 	nckma.get = function ( asJson ) {
@@ -354,36 +377,13 @@ if ( typeof(nckma) != 'object' ) {
 					nckma.track( 'func', 'nckma.parse reset nkDataFirst newlogin', 'nkExec' );
 					nkDataFirst = d;
 				}
-				/* DEPRECATED LOCALSTORAGE HISTORY
-				if ( bpmv.num(nkDataSet.length) && bpmv.obj(nkDataSet[nkDataSet.length-1], true) && bpmv.num(nkDataSet[nkDataSet.length-1].t) ) {
-					nkDsLast = nkDataSet[nkDataSet.length-1].t
-				}
-				nkDataSet.push( {
-					  'c' : d.comment_karma
-					, 'd' : bpmv.num(nkDsLast) ? d.nkTimeStamp - nkDsLast : 0 // time delta since last
-					, 'l' : d.link_karma
-					, 't' : d.nkTimeStamp
-				} );
-				while ( ( nkDataSet.length > nkMaxHistReal ) || ( nkDataSet.length > parseInt( localStorage['savedRefreshes'], 10 ) ) ) {
-					nckma.debug( nckma._dL.poll, 'trimming history', nkDataSet.length )
-					nkDataSet.shift()
-				}
-				localStorage['_dataSet'] = JSON.stringify( nkDataSet );
-				if ( dbg ) {
-					nckma.debug( nckma._dL.poll, 'History Length', nkDataSet.length );
-					nckma.debug( nckma._dL.poll, 'History Max Option', localStorage['savedRefreshes'] );
-					nckma.debug( nckma._dL.poll, 'localStorage total in MB', nckma.stor_size( true ) );
-					nckma.debug( nckma._dL.poll, 'localStorage _dataSet in MB', nckma.stor_key_size( '_dataSet', true ) );
-					// nckma.debug( nckma._dL.poll, 'localStorage Remaining in MB', Math.round( ( ( (1024 * 1024 * 5) - unescape( encodeURIComponent( JSON.stringify( localStorage ) ) ).length ) / 1024 / 1024 ) * 100000) / 100000 );
-				}
-				*/
-
-				nckma.db.user_table( d.name );
-				nckma.db.user_insert( d.name, {
-					  'c' : d.comment_karma
-					, 'd' : bpmv.num(nkDsLast) ? d.nkTimeStamp - nkDsLast : 0 // time delta since last
-					, 'l' : d.link_karma
-					, 't' : d.nkTimeStamp
+				nckma.db.user_table( d.name, function () {
+					nckma.db.user_insert( d.name, {
+						  'c' : d.comment_karma
+						, 'd' : bpmv.num(nkDsLast) ? d.nkTimeStamp - nkDsLast : 0 // time delta since last
+						, 'l' : d.link_karma
+						, 't' : d.nkTimeStamp
+					} );
 				} );
 
 				nkDataLast = d;
@@ -467,7 +467,7 @@ if ( typeof(nckma) != 'object' ) {
 			//localStorage['_dataSet'] = '';
 			// nkDataSet = [];
 		}
-		setTimeout( nckma.poll, 2000 );
+		setTimeout( nckma.poll, 1000 );
 	};
 
 	nckma.rgb2hex = function ( rgb ) {
@@ -673,6 +673,31 @@ return nckma; })() && (function () {
 	var nkDataDb = openDatabase( 'nkDataDb', '2.0', 'Narcikarma Data', 20 * 1024 * 1024 )
 		nkUserTableRx = /^user\_.*\_data$/;
 
+	function handle_user_clear( arr, tx, res ) {
+		var dbg = nckma.testing( true )
+			, iter
+			, len = 0
+			, tn;
+		if ( bpmv.arr(arr) ) {
+			len = arr.length;
+			for ( iter = 0; iter < len; iter++ ) {
+				if ( bpmv.obj(arr[iter]) && bpmv.str(arr[iter].name) ) {
+					tn = nckma.db.sane_name( arr[iter].name );
+					if ( bpmv.str(tn) && (nkUserTableRx).test( tn ) ) {
+						if ( dbg ) {
+							nckma.debug( nckma._dL.db, 'Attempting to remove user table...', tn );
+						}
+						nckma.db.sql( 'DROP TABLE '+tn+';', function ( subTx ) {
+							if ( dbg ) {
+								nckma.debug( nckma._dL.db, 'User table '+tn+' removal result:', arguments );
+							}
+						} );
+					}
+				}
+			}
+		}
+	}
+
 	function proc_result ( res ) {
 		var iter
 			, len
@@ -742,79 +767,6 @@ return nckma; })() && (function () {
 		return ret;
 	};
 
-	nckma.db.sql = function ( sql, cb ) {
-		if ( bpmv.str(sql) ) {
-			try {
-				nckma.debug( nckma._dL.dbSql, 'running SQL', { 'sql' : sql, 'cb' : cb } );
-				return nkDataDb.transaction( function ( tx ) {
-					tx._nckmaCb = cb;
-					tx._nckmaSql = sql;
-					tx.executeSql( sql, [], nckma.db.op, nckma.db.error );
-				});
-			} catch ( err ) {
-				nckma.err( 'SQL Error.', { 'e' : err, 'args' : arguments } );
-			}
-		}
-	};
-
-	nckma.db.user_table = function ( user ) {
-		var sql = ''
-			, un = nckma.db.sane_name( user );
-		if ( bpmv.str( un ) ) {
-			sql += 'CREATE TABLE IF NOT EXISTS';
-			sql += ' user_'+un+'_data(';
-			sql += ' id INTEGER PRIMARY KEY AUTOINCREMENT,';
-			sql += ' epoch INTEGER NOT NULL DEFAULT 0,';
-			sql += ' delta INTEGER NOT NULL DEFAULT 0,';
-			sql += ' cKarma INTEGER NOT NULL DEFAULT 0,';
-			sql += ' lKarma INTEGER NOT NULL DEFAULT 0';
-			sql += ');';
-			nckma.db.sql( sql );
-		} else {
-			nckma.warn( 'Could not create user table. User name invalid.', { 'orig' : user, 'use' : un } );
-		}
-	};
-
-	function handle_user_clear( arr, tx, res ) {
-		var dbg = nckma.testing( true )
-			, iter
-			, len = 0
-			, tn;
-		if ( bpmv.arr(arr) ) {
-			len = arr.length;
-			for ( iter = 0; iter < len; iter++ ) {
-				if ( bpmv.obj(arr[iter]) && bpmv.str(arr[iter].name) ) {
-					tn = nckma.db.sane_name( arr[iter].name );
-					if ( bpmv.str(tn) && (nkUserTableRx).test( tn ) ) {
-						if ( dbg ) {
-							nckma.debug( nckma._dL.db, 'Attempting to remove user table...', tn );
-						}
-						nckma.db.sql( 'DROP TABLE '+tn+';', function ( subTx ) {
-							if ( dbg ) {
-								nckma.debug( nckma._dL.db, 'User table '+tn+' removal result:', arguments );
-							}
-						} );
-					}
-				}
-			}
-		}
-	}
-
-	nckma.db.user_clear = function ( user ) {
-		var un;
-		if ( bpmv.str(user) ) {
-			un = nckma.db.sane_name( user );
-			if ( bpmv.str(un) && !(nkUserTableRx).test( un ) ) {
-				un = 'user_'+un+'_data';
-			}
-			if ( bpmv.str(un) ) {
-				return nckma.db.sql( 'SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\''+un+'\' ORDER BY name LIMIT 1;', handle_user_clear );
-			}
-		} else if ( ( typeof(user) === 'boolean' ) && user ) { // must pass boolean true for all
-			return nckma.db.sql( 'SELECT name FROM sqlite_master WHERE type=\'table\' ORDER BY name;', handle_user_clear );
-		}
-	};
-
 	nckma.db.sane = function ( val, noQuotes ) {
 		switch ( bpmv.whatis(val).toLowerCase() ) {
 			case 'string':
@@ -863,7 +815,37 @@ return nckma; })() && (function () {
 		}
 	};
 
-	nckma.db.user_insert = function ( user, data, cb ) {
+	nckma.db.sql = function ( sql, cb ) {
+		if ( bpmv.str(sql) ) {
+			try {
+				nckma.debug( nckma._dL.dbSql, 'running SQL', { 'sql' : sql, 'cb' : cb } );
+				return nkDataDb.transaction( function ( tx ) {
+					tx._nckmaCb = cb;
+					tx._nckmaSql = sql;
+					tx.executeSql( sql, [], nckma.db.op, nckma.db.error );
+				});
+			} catch ( err ) {
+				nckma.err( 'SQL Error.', { 'e' : err, 'args' : arguments } );
+			}
+		}
+	};
+
+	nckma.db.user_clear = function ( user ) {
+		var un;
+		if ( bpmv.str(user) ) {
+			un = nckma.db.sane_name( user );
+			if ( bpmv.str(un) && !(nkUserTableRx).test( un ) ) {
+				un = 'user_'+un+'_data';
+			}
+			if ( bpmv.str(un) ) {
+				return nckma.db.sql( 'SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\''+un+'\' ORDER BY name LIMIT 1;', handle_user_clear );
+			}
+		} else if ( ( typeof(user) === 'boolean' ) && user ) { // must pass boolean true for all
+			return nckma.db.sql( 'SELECT name FROM sqlite_master WHERE type=\'table\' ORDER BY name;', handle_user_clear );
+		}
+	};
+
+	nckma.db.user_insert = function ( user, data, iCb ) {
 		var ins = {}
 			, iter = null
 			, un = nckma.db.sane_name( user );
@@ -906,10 +888,50 @@ return nckma; })() && (function () {
 				sql += ' VALUES';
 				sql += ' ( "'+bpmv.values( ins ).join( '", "' )+'" )';
 				sql += ';';
-				nckma.db.sql( sql, cb );
+				nckma.db.sql( sql, function ( id ) {
+					if ( bpmv.num(id, true) ) {
+						nckma.ev( 'dbUserInsert', $.extend( [], arguments ) );
+					}
+					if ( bpmv.func(iCb) ) {
+						iCb.apply( window, arguments );
+					}
+				});
 			}
 		} else {
 			nckma.warn( 'Could not insert into user table. User name or data object invalid.', { 'args' : arguments, 'use' : un } );
+		}
+	};
+
+	nckma.db.user_table = function ( user, tCb ) {
+		var sql = ''
+			, un = nckma.db.sane_name( user );
+		if ( bpmv.str( un ) ) {
+			nckma.db.sql( 'SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'user_'+un+'_data\' ORDER BY name LIMIT 1;', function ( res ) {
+				if ( !bpmv.arr(res) ) {
+					sql += 'CREATE TABLE IF NOT EXISTS';
+					sql += ' user_'+un+'_data(';
+					sql += ' id INTEGER PRIMARY KEY AUTOINCREMENT,';
+					sql += ' epoch INTEGER NOT NULL DEFAULT 0,';
+					sql += ' delta INTEGER NOT NULL DEFAULT 0,';
+					sql += ' cKarma INTEGER NOT NULL DEFAULT 0,';
+					sql += ' lKarma INTEGER NOT NULL DEFAULT 0';
+					sql += ');';
+					nckma.db.sql( sql, function () {
+						var args = $.extend( [], arguments );
+						args.unshift( user );
+						nckma.ev( 'dbUserTableCreated', args );
+						if ( bpmv.func(tCb) ) {
+							tCb.apply( window, args );
+						}
+					});
+				} else {
+					if ( bpmv.func(tCb) ) {
+						tCb.apply( window, [] );
+					}
+				}
+			});
+		} else {
+			nckma.warn( 'Could not check/create user table. User name invalid.', { 'orig' : user, 'use' : un } );
 		}
 	};
 
