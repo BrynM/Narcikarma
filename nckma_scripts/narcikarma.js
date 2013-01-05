@@ -169,14 +169,14 @@ if ( typeof(nckma) != 'object' ) {
 				console.trace();
 			}
 		}
-	}
+	};
 
 	nckma.err = function ( msg, etc ) {
 		if ( bpmv.num(bpmv.count(arguments)) && bpmv.str(arguments[0]) ) {
 			arguments[0] = '[Narcikarma] ERROR: '+arguments[0];
 		}
 		console.error.apply( console, arguments );
-	}
+	};
 
 	// we set this up in the core as well
 	nckma.ev = function ( evName, cbOrData ) {
@@ -475,7 +475,7 @@ if ( typeof(nckma) != 'object' ) {
 		if ( bpmv.arr(tC, true) && ( ( tC.length === 3 ) || ( tC.length === 4 ) ) ) {
 			return '' + ( (1 << 24) + ( parseInt(tC[0]) << 16 ) + ( parseInt(tC[1]) << 8 ) + parseInt(tC[2]) ).toString(16).slice(1);
 		}
-	}
+	};
 
 	nckma.set_headers = function ( req ) {
 		var info = nckma.info()
@@ -589,7 +589,7 @@ if ( typeof(nckma) != 'object' ) {
 			return nI+nD;
 		}
 		return  ''+num;
-	}
+	};
 
 	nckma.testing = function ( checkDebug ) {
 		if ( checkDebug ) {
@@ -597,7 +597,7 @@ if ( typeof(nckma) != 'object' ) {
 		} else {
 			return nkFlags['testing'] ? true : false;
 		}
-	}
+	};
 
 	nckma.track = function ( label, val, cat ) {
 		var category = bpmv.str(cat) ? ''+cat : 'nkRuntime';
@@ -610,7 +610,7 @@ if ( typeof(nckma) != 'object' ) {
 		if ( bpmv.obj(_gaq) || bpmv.arr(_gaq) ) {
 			return _gaq.push( [ '_trackEvent', category + ' v' + nckma.version().str, label, val ] );
 		}
-	}
+	};
 
 	nckma.version = function () {
 		var inf = null
@@ -633,7 +633,7 @@ if ( typeof(nckma) != 'object' ) {
 			nckma._cache.version = ret;
 		}
 		return ret;
-	}
+	};
 
 	nckma.warn = function () {
 		if ( nkFlags['debug'] ) {
@@ -643,7 +643,7 @@ if ( typeof(nckma) != 'object' ) {
 			console.warn.apply( console, arguments );
 		}
 		nckma.track( 'warn', bpmv.str(arguments[0]) ? arguments[0] : '', 'nkExec' );
-	}
+	};
 
 	/*
 	* startup cb
@@ -671,7 +671,8 @@ return nckma; })() && (function () {
 
 	// unlimitedStorage permission overrides size I think
 	var nkDataDb = openDatabase( 'nkDataDb', '2.0', 'Narcikarma Data', 20 * 1024 * 1024 )
-		nkUserTableRx = /^user\_.*\_data$/;
+		, nkUserTableRx = /^user\_.*\_data$/
+		, nkUserTableRepl = /(^user\_|\_data$)/;
 
 	function handle_user_clear( arr, tx, res ) {
 		var dbg = nckma.testing( true )
@@ -696,7 +697,7 @@ return nckma; })() && (function () {
 				}
 			}
 		}
-	}
+	};
 
 	function proc_result ( res ) {
 		var iter
@@ -725,7 +726,53 @@ return nckma; })() && (function () {
 				}
 			}
 		}
-	}
+	};
+
+	nckma.db.describe = function ( table, dCb ) {
+		var sql
+			, tn = nckma.db.sane_name( table );
+		if ( bpmv.str(table) && bpmv.func(dCb) ) {
+			sql = 'SELECT sql FROM sqlite_master WHERE name = "'+tn+'" LIMIT 1;'
+			nckma.db.sql( sql, function ( res ) {
+				var args
+					, ret = []
+					, retArr;
+				if ( bpmv.obj(res) && bpmv.obj(res[0]) && bpmv.str(res[0].sql) ) {
+					retArr = res[0].sql.match( /\([^)]+\)/ );
+					if ( bpmv.arr(retArr) && bpmv.str(retArr[0]) ) {
+						retArr = retArr[0].replace( /(\s*[()]\s*)/g, ' ' ).replace( /\s+/g, ' ' ).split( /\s*,\s*/ );
+						if ( bpmv.arr(retArr) ) {
+							for ( var it = 0; it < retArr.length; it++ ) {
+								retArr[it] = retArr[it].match( /^\s*([^\s]+)\s+([^\s]+)\s+(.*)$/ );
+								if ( bpmv.arr(retArr[it]) ) {
+									retArr[it].shift();
+									if ( retArr.length > 0 ) {
+										ret.push( retArr[it] );
+									}
+								}
+							}
+							if ( bpmv.arr(ret) && bpmv.arr(ret) ) {
+								args = $.extend( [], arguments );
+								args.shift();
+								args.unshift( ret );
+								dCb.apply( window, args );
+								return;
+							}
+						}
+					}
+				}
+				// we should have rearly-returned already if we had success
+				if ( bpmv.func(dCb) ) {
+					args = $.extend( [], arguments );
+					args.unshift( null );
+					dCb.apply( window, args );
+				}
+			} );
+		} else if ( bpmv.func(dCb) ) {
+			args = $.extend( [], arguments ).unshift( null );
+			dCb.apply( window, args );
+		}
+	};
 
 	nckma.db.error = function ( tx, err ) {
 		if ( bpmv.obj(tx) ) {
@@ -798,20 +845,19 @@ return nckma; })() && (function () {
 		var iter
 			, len
 			, ret = ''
-			, tRet
 			, rex = /[a-z0-9\_]/i;
 		if ( bpmv.str(val) ) {
-			tRet = (''+val).replace( /\_\s\S\n\r/g, '_' );
-			len = tRet.length;
-			for ( iter = 0; iter < len; iter++ ) {
-				if ( rex.test( tRet[iter] ) ) {
-					ret += tRet[iter];
-				}
-			}
-			ret = ret.replace( /(^[0-9\_]+|[\_]+$)/, '' );
-			if ( ret.length ) {
+			ret = (''+val).replace( /\s/g, '_' ).replace( /([^a-z0-9_-]+|__+)/g, '_' ).replace( /(^_+|_+$)/g, '' );
+			if ( bpmv.str(ret) ) {
 				return ret;
 			}
+		}
+	};
+
+	nckma.db.sane_table = function ( val ) {
+		var ret = nckma.db.sane_name( val );
+		if ( bpmv.str(ret) ) {
+			return nkUserTableRx.test( ret ) ? ret : 'user_'+ret+'_data' ;
 		}
 	};
 
@@ -831,25 +877,39 @@ return nckma; })() && (function () {
 	};
 
 	nckma.db.user_clear = function ( user ) {
-		var un;
+		var ut;
 		if ( bpmv.str(user) ) {
-			un = nckma.db.sane_name( user );
-			if ( bpmv.str(un) && !(nkUserTableRx).test( un ) ) {
-				un = 'user_'+un+'_data';
-			}
-			if ( bpmv.str(un) ) {
-				return nckma.db.sql( 'SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\''+un+'\' ORDER BY name LIMIT 1;', handle_user_clear );
+			ut = nckma.db.sane_table( user );
+			if ( bpmv.str(ut) ) {
+				return nckma.db.sql( 'SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\''+ut+'\' ORDER BY name LIMIT 1;', handle_user_clear );
 			}
 		} else if ( ( typeof(user) === 'boolean' ) && user ) { // must pass boolean true for all
 			return nckma.db.sql( 'SELECT name FROM sqlite_master WHERE type=\'table\' ORDER BY name;', handle_user_clear );
 		}
 	};
 
+	nckma.db.user_get = function ( user, whereOrCb, cbOrWhere ) {
+		var wh = bpmv.str(cbOrWhere) ? ''+cbOrWhere : null
+			, gCb = bpmv.func(cbOrWhere) ? cbOrWhere: null
+			, sql = ''
+			, ut = nckma.db.sane_table( user );
+		if ( bpmv.str(ut) ) {
+			if ( bpmv.str(whereOrCb) ) {
+				wh = ''+whereOrCb;
+			}
+			if ( bpmv.func(whereOrCb) ) {
+				gCb = whereOrCb;
+			}
+			sql = 'SELECT '
+
+		}
+	};
+
 	nckma.db.user_insert = function ( user, data, iCb ) {
 		var ins = {}
 			, iter = null
-			, un = nckma.db.sane_name( user );
-		if ( bpmv.str(un) && bpmv.obj(data, true) ) {
+			, ut = nckma.db.sane_table( user );
+		if ( bpmv.str(ut) && bpmv.obj(data, true) ) {
 			for ( iter in data ) {
 				if ( bpmv.str(iter) && data.hasOwnProperty(iter) && bpmv.num(data[iter], true) ) {
 					switch ( iter.toLowerCase() ) {
@@ -883,7 +943,7 @@ return nckma; })() && (function () {
 					ins.epoch = new Date().getTime();
 				}
 				sql += 'INSERT INTO';
-				sql += ' user_'+un+'_data';
+				sql += ' '+ut+'';
 				sql += ' ( '+bpmv.keys( ins ).join( ', ' )+' )';
 				sql += ' VALUES';
 				sql += ' ( "'+bpmv.values( ins ).join( '", "' )+'" )';
@@ -898,18 +958,18 @@ return nckma; })() && (function () {
 				});
 			}
 		} else {
-			nckma.warn( 'Could not insert into user table. User name or data object invalid.', { 'args' : arguments, 'use' : un } );
+			nckma.warn( 'Could not insert into user table. User name or data object invalid.', { 'args' : arguments, 'ut' : ut } );
 		}
 	};
 
 	nckma.db.user_table = function ( user, tCb ) {
 		var sql = ''
-			, un = nckma.db.sane_name( user );
-		if ( bpmv.str( un ) ) {
-			nckma.db.sql( 'SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'user_'+un+'_data\' ORDER BY name LIMIT 1;', function ( res ) {
+			, ut = nckma.db.sane_table( user );
+		if ( bpmv.str(ut) ) {
+			nckma.db.sql( 'SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'user_'+ut+'_data\' ORDER BY name LIMIT 1;', function ( res ) {
 				if ( !bpmv.arr(res) ) {
 					sql += 'CREATE TABLE IF NOT EXISTS';
-					sql += ' user_'+un+'_data(';
+					sql += ' '+ut+'(';
 					sql += ' id INTEGER PRIMARY KEY AUTOINCREMENT,';
 					sql += ' epoch INTEGER NOT NULL DEFAULT 0,';
 					sql += ' delta INTEGER NOT NULL DEFAULT 0,';
@@ -931,7 +991,7 @@ return nckma; })() && (function () {
 				}
 			});
 		} else {
-			nckma.warn( 'Could not check/create user table. User name invalid.', { 'orig' : user, 'use' : un } );
+			nckma.warn( 'Could not check/create user table. User name invalid.', { 'orig' : user, 'ut' : ut } );
 		}
 	};
 
@@ -1218,7 +1278,7 @@ return nckma.db; })() && (function () {
 	nckma.opts.bad_setting = function ( type, setting, args ) {
 		nckma.err( 'nckma.opts.valid_'+type+'(): Setting "'+setting+'" is invalid in source. Please report a bug.', { 'args' : args } );
 		return 'Setting "'+setting+'" is invalid in source. Please report a bug. Type: "'+type+'"; Arguments: '+( bpmv.obj(args) || bpmv.arr(args) ? JSON.stringify( args ) : args )+';';
-	}
+	};
 
 	/*
 	// this is still unused...
@@ -1258,7 +1318,7 @@ return nckma.db; })() && (function () {
 			}
 		}
 		return ret;
-	}
+	};
 
 	nckma.opts.defaults_set = function ( preserve ) {
 		var defs = nckma.opts.defaults_get()
@@ -1420,7 +1480,7 @@ return nckma.db; })() && (function () {
 			nckmaNeedsSave = false;
 			$('.optSaveToggle').attr( 'disabled', 'disabled' );
 		}
-	}
+	};
 
 	// converts the options page UI values to a proper localStorage RGBA
 	nckma.opts.ui_change_color = function () {
@@ -1436,7 +1496,7 @@ return nckma.db; })() && (function () {
 			tJ.val( nckma.hex2rgb( $('#picker_opt_color_'+cN).val() ).join( ', ' ) + ', ' + opa );
 			tJ.change();
 		}
-	}
+	};
 
 	nckma.opts.ui_init = function () {
 		var ivlSel = null
@@ -1835,7 +1895,7 @@ return nckma.opts; })() && (function () {
 			ret = false;
 		}
 		return ret;
-	}
+	};
 
 	// get an RGBA array for a given color name
 	nckma.px.color = function ( color ) {
@@ -1864,7 +1924,7 @@ return nckma.opts; })() && (function () {
 			nckma.warn( 'Used fallback black!', { 'color' : color, 'val' : [ 0, 0, 0, 1 ] } );
 			return [ 0, 0, 0, 1 ];
 		}
-	}
+	};
 
 	// get an Array containing the set of color names for all known colors
 	nckma.px.color_set = function () {
@@ -1877,7 +1937,7 @@ return nckma.opts; })() && (function () {
 			}
 		}
 		return ret;
-	}
+	};
 
 	nckma.px.cx = function ( type ) {
 		if ( !bpmv.obj(nkCanvas.icon) || !bpmv.num(nkCanvas.icon.length) || !bpmv.obj(nkCx) ) {
@@ -2132,7 +2192,7 @@ return nckma.opts; })() && (function () {
 				nckma.px.read();
 			}
 		}
-	}
+	};
 
 	nckma.px.draw_status = function ( stat ) {
 		var cl = ''
@@ -2199,14 +2259,14 @@ return nckma.px; })() && (function () {
 
 	function nk_sk_cx () {
 
-	}
+	};
 
 	// sparkline generator
 	nckma.sk = {};
 
 	nckma.sk.data = function () {
 		var hist = nckma.get().history;
-	}
+	};
 
 return nckma.sk; })() && (function () {
 
