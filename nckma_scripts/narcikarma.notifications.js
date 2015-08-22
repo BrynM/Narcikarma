@@ -4,7 +4,7 @@ var notification = chrome.notifications.create('abcde', {
 		// icon url - can be relative
 		iconUrl: '../nckma_assets/img/icon.png',
   		// notification title
-  		title: 'Narcikamra startup!',
+  		title: 'Narcikamra v'+nckma.version().str+' startup!',
   		// notification body text
   		message: 'Testing those notifications...',
   		buttons: [

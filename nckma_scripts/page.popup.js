@@ -1,5 +1,7 @@
 var bgP = chrome.extension.getBackgroundPage();
 
+var nckma = bgP.nckma;
+
 function populate () {
 	var sD = null;
 	var cDelt = 0;
@@ -76,11 +78,11 @@ function populate () {
 				pClass = 'color: rgba( ' + localStorage['color_noChange'] + ' );';
 			}
 
-			$('#nck_curr_ckarma').html( ( bpmv.num(sD.current.comment_karma, true) ? nckma.str_num(sD.current.comment_karma) : 'unknown' ) + ' (<span style="'+pClass+'">' + pChar + nckma.str_num(cDelt) + '</span>)' );
-			$('#nck_is_gold').html( sD.current.is_gold ? '<a href="http://www.reddit.com/r/lounge" target="_blank" style="color:#dec145;">Like a Sir</a>' : '<a href="http://www.reddit.com/gold" target="_blank">Not yet</a>' );
-			$('#nck_has_mail').html( sD.current.has_mail ? '<a href="http://www.reddit.com/message/inbox/" target="_blank" style="color:red;">Yes</a>' : '<a href="http://www.reddit.com/message/inbox/" target="_blank">No</a>' );
-			$('#nck_is_mod').html( sD.current.is_mod ? '<a href="http://www.reddit.com/r/mod/" target="_blank">Yes</a>' : 'No' );
-			$('#nck_has_mod_mail').html( sD.current.has_mod_mail ? '<a href="http://www.reddit.com/message/moderator/" target="_blank" style="color:red;">Yes</a>' : '<a href="http://www.reddit.com/message/moderator/" target="_blank">No</a>' );
+			$('#nck_curr_ckarma').html( ( bpmv.num(sD.current.comment_karma, true) ? nckma.str_num(sD.current.comment_karma) : 'unknown' ) + ' (<span style="'+pClass+'">' + pChar + nckma.str_num(cDelt) + '</span>)');
+			$('#nck_is_gold').html(sD.current.is_gold ? '<a href="'+nckma.get_url('lounge')+'" target="_blank" style="color:#dec145;">Like a Sir</a>' : '<a href="'+nckma.get_url('gold')+'" target="_blank">Not yet</a>');
+			$('#nck_has_mail').html('<a href="'+nckma.get_url('inbox')+'" target="_blank" style="color:red;">'+(sD.current.has_mail ? 'Yes ('+sD.current.inbox_count+')' : 'No')+'</a>');
+			$('#nck_is_mod').html(sD.current.is_mod ? '<a href="'+nckma.get_url('modqueue')+'" target="_blank">Yes</a>' : 'No');
+			$('#nck_has_mod_mail').html('<a href="'+nckma.get_url('modmail')+'" target="_blank" style="color:red;">'+(sD.current.has_mod_mail ? 'Yes' : 'No')+'</a>');
 		} else {
 			$('#nck_curr_lkarma').text('unknown');
 			$('#nck_curr_ckarma').text('unknown');

@@ -266,7 +266,7 @@
 
 						break;
 					case 'has_mod_mail':
-						if (dat.current.has_mail) {
+						if (dat.current.has_mod_mail) {
 							nckma.px.draw_char('f1', x, y, nckma.px.color('blue'));
 						} else {
 							nckma.px.draw_char('f0', x, y, nckma.px.color('blue'));
