@@ -3,13 +3,20 @@
 	"data": {
 		"has_mail": false,
 		"name": "badmonkey",
+		"is_friend": false,
 		"created": 1286020403.0,
+		"hide_from_robots": false,
+		"gold_creddits": 0,
 		"modhash": "f1xm",
 		"created_utc": 1286020403.0,
 		"link_karma": 124,
 		"comment_karma": 3320,
+		"over_18": true,
 		"is_gold": true,
 		"is_mod": true,
+		"gold_expiration": 1447830314,
+		"inbox_count": 0,
+		"has_verified_email": true,
 		"id": "aaaaaa",
 		"has_mod_mail": false
 	}
