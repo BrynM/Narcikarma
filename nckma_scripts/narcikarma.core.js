@@ -49,6 +49,7 @@ if (typeof(nckma) != 'object') {
 	var nkStarted = false;
 	var nkUrls = {
 		'user': 'http://www.reddit.com/api/me.json',
+		//'userTest': 'chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_scripts/me.json',
 		'userTest': 'http://www.reddit.com/api/me.json',
 		// disabled test url for now
 		//'userTest': 'http://narcikarma.net/test/me.php?d=1.25',
@@ -440,7 +441,8 @@ if (typeof(nckma) != 'object') {
 				nckma.db.user_table(d.name, function () {
 					nckma.db.user_insert( d.name, {
 						'c': d.comment_karma,
-						'd': bpmv.num(nkDsLast) ? d.nkTimeStamp - nkDsLast : 0, // time delta since last
+						// time delta since last
+						'd': bpmv.num(nkDsLast) ? d.nkTimeStamp - nkDsLast : 0,
 						'l': d.link_karma,
 						't': d.nkTimeStamp
 					});
