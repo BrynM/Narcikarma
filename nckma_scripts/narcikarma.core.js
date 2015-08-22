@@ -231,7 +231,7 @@ if (typeof(nckma) != 'object') {
 
 			if (bpmv.func(cbOrData)) {
 				nkEvs[evName].push(cbOrData);
-				nckma.debug(nckma._dL.ev, plug+'callback added', [ evName, cbOrData, nkEvs[evName] ]);
+				nckma.debug(nckma._dL.ev, plug+'callback added '+evName, [ evName, cbOrData, nkEvs[evName] ]);
 				bulkRet[evName] = nkEvs[evName];
 
 				return bulkRet;
@@ -249,9 +249,9 @@ if (typeof(nckma) != 'object') {
 				}
 
 				if (!bpmv.num(bpmv.find(evName, nkQuietEvents), true)) {
-					nckma.debug(nckma._dL.ev, plug+'fired', [ evName, cbRes, cbOrData, nkEvs[evName] ]);
+					nckma.debug(nckma._dL.ev, plug+'fired '+evName, [ evName, cbRes, cbOrData, nkEvs[evName] ]);
 				} else {
-					nckma.debug(nckma._dL.evQuiet, plug+'fired', [ evName, cbRes, cbOrData, nkEvs[evName] ]);
+					nckma.debug(nckma._dL.evQuiet, plug+'fired '+evName, [ evName, cbRes, cbOrData, nkEvs[evName] ]);
 				}
 
 				bulkRet[evName] = nkEvs[evName];
@@ -291,7 +291,12 @@ if (typeof(nckma) != 'object') {
 		var opts = {};
 		var full;
 
-		full = { 'start': $.extend({}, nkDataFirst ), 'current': $.extend({}, nkDataLast), 'options': nckma.opts.get() };
+		full = {
+			'start': $.extend({}, nkDataFirst ),
+			'current': bpmv.obj(nkDataLast, true) ? $.extend({}, nkDataLast) : $.extend({}, nkDataFirst ),
+			'options': nckma.opts.get()
+		};
+
 		// full = { 'start': $.extend({}, nkDataFirst ), 'current': $.extend({}, nkDataLast), 'options': nckma.opts.get(), 'history': $.extend([], nkDataSet) };
 
 		if (asJson) {
@@ -589,6 +594,8 @@ if (typeof(nckma) != 'object') {
 
 		if (bpmv.bool(cb) && (cb === true)) {
 			nckma.debug(0, 'Narcikamra startup', [cbArgs, nkStartCbs.length]);
+			nckma.ev('start', cbArgs);
+
 			nkStarted = true;
 
 			while (nkStartCbs.length) {
@@ -596,11 +603,10 @@ if (typeof(nckma) != 'object') {
 				cbR.apply(window, cbArgs);
 			}
 
-			nckma.ev('start', cbArgs);
 			nckma.debug(0, 'Narcikamra startup complete.');
 		} else if (bpmv.func(cb)) {
 			if (nkStarted) {
-				cbR.apply(window, cbArgs);
+				cb.apply(window, cbArgs);
 				nckma.debug(nckma._dL.ev, 'nckma.start() run cb (already started)', [cb, cbArgs]);
 			} else {
 				nkStartCbs.push(cb);

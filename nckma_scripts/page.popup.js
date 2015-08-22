@@ -1,4 +1,5 @@
 var bgP = chrome.extension.getBackgroundPage();
+var nckma = bgP.nckma;
 
 function populate () {
 	var sD = null;
@@ -11,11 +12,12 @@ function populate () {
 	var info = null;
 	var inf = '';
 
-	status = bgP.nckma.get(true);
+	status = nckma.get(true);
 
 	if (bpmv.str(status)) {
 		sD = JSON.parse(status);
-
+console.log('status', status);
+console.log('sD', sD);
 		if ( bpmv.obj(sD.start, true) ) {
 			$('#nck_user').text(sD.start.name);
 
