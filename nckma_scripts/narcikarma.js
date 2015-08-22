@@ -29,7 +29,7 @@ if ( typeof(nckma) != 'object' ) {
 		, nkFlags = {
 			  'debug'   : true
 			, 'ga'      : true
-			, 'testing' : false
+			, 'testing' : true
 			, 'aConfFB' : false // read configuration fallbacks...
 		}
 		, nkLastPoll = null
@@ -48,7 +48,9 @@ if ( typeof(nckma) != 'object' ) {
 		, nkStarted = false
 		, nkUrls = {
 		 	  'user'       : 'http://www.reddit.com/api/me.json'
-			, 'userTest'   : 'http://narcikarma.net/test/me.php?d=1.25'
+			, 'userTest'   : 'http://www.reddit.com/api/me.json'
+			// disabled test url for now
+			//, 'userTest'   : 'http://narcikarma.net/test/me.php?d=1.25'
 			, 'cakeYay'    : 'http://www.reddit.com/r/cakeday/'
 			, 'cakeNuthin' : 'http://www.google.com/search?q=karma+machine&tbm=isch'
 		}
