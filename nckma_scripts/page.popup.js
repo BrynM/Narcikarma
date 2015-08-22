@@ -1,7 +1,5 @@
 var bgP = chrome.extension.getBackgroundPage();
 
-var nckma = bgP.nckma;
-
 function populate () {
 	var sD = null;
 	var cDelt = 0;
