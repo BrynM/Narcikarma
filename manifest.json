@@ -18,8 +18,9 @@
 	},
 	"content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self' https://www.youtube.com",
 	"permissions"      : [
-		"http://www.reddit.com/api/",
-		"http://narcikarma.net/",
+		"cookies",
+		"*://www.reddit.com/*",
+		"*://narcikarma.net/*",
 		"notifications",
 		"unlimitedStorage"
 	]
