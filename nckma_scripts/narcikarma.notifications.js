@@ -4,7 +4,7 @@ var notification = chrome.notifications.create('abcde', {
 		// icon url - can be relative
 		iconUrl: '../nckma_assets/img/icon.png',
   		// notification title
-  		title: 'Hello!',
+  		title: 'Narcikamra startup!',
   		// notification body text
   		message: 'Testing those notifications...',
   		buttons: [
@@ -19,7 +19,7 @@ var notification = chrome.notifications.create('abcde', {
 			chrome.notifications.clear(notId, function() {
 				console.log('notify closed', arguments);
 			});
-		}, 2500);
+		}, 5000);
 	}
 );
 
