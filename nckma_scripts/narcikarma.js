@@ -29,7 +29,7 @@ if ( typeof(nckma) != 'object' ) {
 		, nkFlags = {
 			  'debug'   : true
 			, 'ga'      : true
-			, 'testing' : true
+			, 'testing' : false
 			, 'aConfFB' : false // read configuration fallbacks...
 		}
 		, nkLastPoll = null
@@ -442,6 +442,7 @@ if ( typeof(nckma) != 'object' ) {
 					jax['dataType'] = 'json';
 					jax['error'] = nckma.parse;
 					jax['success'] = nckma.parse;
+					jax['async'] = true;
 					if ( nkFlags['testing'] ) {
 						jax['url'] = nkUrls.userTest+( (''+nkUrls.userTest).indexOf( '?' ) > -1 ? '&' : '?' )+'bust='+(new Date).getTime();
 					} else {
@@ -1401,7 +1402,7 @@ return nckma.db; })() && (function () {
 						} else {
 							newTxt = cache[aC].val();
 						}
-						nckma.opts.ui_status( aC, nkOptionNames[aC]+'set to ' + newTxt + '.' );
+						nckma.opts.ui_status( aC, nkOptionNames[aC]+' set to ' + newTxt + '.' );
 						if ( jlGood ) {
 							jL.append( '<li style="color: rgba( ' + localStorage['color_green'] + ' );">'+nkOptionNames[aC]+' set to &quot;'+newTxt+'&quot;</li>' );
 						}
