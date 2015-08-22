@@ -1,18 +1,21 @@
 // background.js
 
-if ( typeof(nckma) != 'object' ) {
-	var nckma = {}
-	  , nkBgScrs = []
-		, lE = null
-		, sc = document.getElementsByTagName('script');
+if (typeof(nckma) != 'object') {
+	var nckma = {};
+	var nkBgScrs = [];
+	var lE = null;
+	var sc = document.getElementsByTagName('script');
+
 	nckma._bgTask = true;
 	lE = nkBgScrs.length > 0 ? nkBgScrs.length + 1 : 0;
+
 	nkBgScrs[lE] = document.createElement('script');
 	nkBgScrs[lE].async = true;
 	nkBgScrs[lE].src = '../nckma_scripts/narcikarma.js';
-	sc[sc.length - 1].parentNode.appendChild( nkBgScrs[lE] );
+
+	sc[sc.length - 1].parentNode.appendChild(nkBgScrs[lE]);
 } else {
-	throw( 'background.js needs to load before narcikarma.js!!!');
+	throw('background.js needs to load before narcikarma.js!!!');
 }
 
 /*
