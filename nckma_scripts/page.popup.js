@@ -16,8 +16,7 @@ function populate () {
 
 	if (bpmv.str(status)) {
 		sD = JSON.parse(status);
-console.log('status', status);
-console.log('sD', sD);
+
 		if ( bpmv.obj(sD.start, true) ) {
 			$('#nck_user').text(sD.start.name);
 
