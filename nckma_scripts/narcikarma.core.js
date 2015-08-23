@@ -640,11 +640,12 @@ if (typeof(nckma) != 'object') {
 		return (unescape(encodeURIComponent(localStorage[key])).length);
 	};
 
-	nckma.str_date = function (dObj, loc) {
+	nckma.str_date = function (da, loc) {
 		var hours = '';
 		var mins = '';
 		var secs = '';
 		var dFmt = !bpmv.str(loc) ? ''+localStorage['dateFormat'] : ''+loc;
+		dObj = bpmv.typeis(da, 'Date') ? da : new Date(da);
 
 		if (bpmv.typeis(dObj, 'Date')) {
 			hours = dObj.getHours();

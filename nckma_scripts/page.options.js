@@ -3,29 +3,29 @@ jQuery.event.props.push('dataTransfer');
 var bgP = chrome.extension.getBackgroundPage();
 
 function reset_stats () {
-	if ( confirm( 'Reset collected stats?\n\n(This will erase all karma gains, karma losses,\nand your history until the next polling period .)')) {
-		nckma.track( 'func', 'reset_stats', 'nkExec' );
+	if (confirm('Reset collected stats?\n\n(This will erase all karma gains, karma losses,\nand your history until the next polling period .)')) {
+		nckma.track('func', 'reset_stats', 'nkExec');
 		bgP.nckma.reset(true);
 	}
 }
 
 function go_to_subreddit () {
 	window.open('http://www.reddit.com/r/Narcikarma/');
-	nckma.track( 'func', 'go_to_subreddit', 'nkExec' );
+	nckma.track('func', 'go_to_subreddit', 'nkExec');
 }
 
 function go_to_source () {
 	window.open('https://github.com/BrynM/Narcikarma');
-	nckma.track( 'func', 'go_to_source', 'nkExec' );
+	nckma.track('func', 'go_to_source', 'nkExec');
 }
 
 function go_to_cws () {
 	window.open('https://chrome.google.com/webstore/detail/narcikarma/mogaeafejjipmngijfhdjkmjomgdicdg');
-	nckma.track( 'func', 'go_to_cws', 'nkExec' );
+	nckma.track('func', 'go_to_cws', 'nkExec');
 }
 
 function export_settings () {
-	window.open( 'data:application/octet-stream;base64;charset=utf-8,' + Base64.encode(JSON.stringify(nckma.opts.get())));
+	window.open('data:application/octet-stream;base64;charset=utf-8,' + Base64.encode(JSON.stringify(nckma.opts.get())));
 }
 
 function import_settings (ev) {
@@ -81,9 +81,9 @@ function import_settings (ev) {
 							alert(errTxt);
 						} else {
 							if ($('#nckma_save').attr('disabled')) {
-								alert( 'No changes were made. The importated options were already active.' );
+								nckma.notify.warn('No changes were made. The importated options were already active.');
 							} else {
-								alert( 'Please review any changes made and hit the "Save Options" button.' );
+								nckma.notify.warn('Please review any changes made and hit the "Save Options" button.');
 							}
 						}
 					}

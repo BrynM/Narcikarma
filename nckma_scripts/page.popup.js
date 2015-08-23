@@ -8,7 +8,6 @@ function populate () {
 	var pClass = '';
 	var pChar = '';
 	var cDay = null;
-	var cdDelt = 0;
 	var info = null;
 	var inf = '';
 
@@ -20,8 +19,6 @@ function populate () {
 		if ( bpmv.obj(sD.start, true) ) {
 			$('#nck_user').text(sD.start.name);
 
-			cdDelt = new Date().getTimezoneOffset() * 60 * 1000;
-
 			cDay = new Date(0);
 			cDay.setUTCSeconds(sD.start.created_utc);
 
@@ -30,9 +27,7 @@ function populate () {
 			$('#nck_start_ckarma').text( bpmv.num(sD.start.comment_karma, true) ? nckma.str_num(sD.start.comment_karma) : 'unknown' );
 
 			if (bpmv.num(sD.start.nkTimeStamp)) {
-				cDay = new Date(sD.start.nkTimeStamp);
-
-				$('#nck_start_timestamp').text(nckma.str_date(cDay), localStorage['dateFormat'] );
+				$('#nck_start_timestamp').text(nckma.str_date(sD.start.nkTimeStamp), localStorage['dateFormat'] );
 			} else {
 				$('#nck_start_timestamp').text('unknown');
 			}
@@ -45,9 +40,7 @@ function populate () {
 
 		if ( bpmv.obj(sD.current, true) ) {
 			if (bpmv.num(sD.current.nkTimeStamp)) {
-				cDay = new Date(sD.current.nkTimeStamp);
-
-				$('#nck_curr_timestamp').text(nckma.str_date(cDay), localStorage['dateFormat'] );
+				$('#nck_curr_timestamp').text(nckma.str_date(sD.current.nkTimeStamp), localStorage['dateFormat'] );
 			} else {
 				$('#nck_curr_timestamp').text('unknown');
 			}
@@ -78,7 +71,8 @@ function populate () {
 			}
 
 			$('#nck_curr_ckarma').html( ( bpmv.num(sD.current.comment_karma, true) ? nckma.str_num(sD.current.comment_karma) : 'unknown' ) + ' (<span style="'+pClass+'">' + pChar + nckma.str_num(cDelt) + '</span>)');
-			$('#nck_is_gold').html(sD.current.is_gold ? '<a href="'+nckma.get_url('lounge')+'" target="_blank" style="color:#dec145;">Like a Sir</a>' : '<a href="'+nckma.get_url('gold')+'" target="_blank">Not yet</a>');
+			$('#nck_is_gold').html(sD.current.is_gold ? '<a href="'+nckma.get_url('lounge')+'" target="_blank" style="color: rgba( ' + localStorage['color_gold'] + ' );">Like a Sir</a>' : '<a href="'+nckma.get_url('gold')+'" target="_blank">Not yet</a>');
+			$('#nck_gold_credits').html(sD.current.gold_creddits > 0 ? '<span  style="color: rgba( ' + localStorage['color_gold'] + ' );">'+sD.current.gold_creddits+'</span>' : '0');
 			$('#nck_has_mail').html('<a href="'+nckma.get_url('inbox')+'" target="_blank" style="color:red;">'+(sD.current.has_mail ? 'Yes ('+sD.current.inbox_count+')' : 'No')+'</a>');
 			$('#nck_is_mod').html(sD.current.is_mod ? '<a href="'+nckma.get_url('modqueue')+'" target="_blank">Yes</a>' : 'No');
 			$('#nck_has_mod_mail').html('<a href="'+nckma.get_url('modmail')+'" target="_blank" style="color:red;">'+(sD.current.has_mod_mail ? 'Yes' : 'No')+'</a>');
