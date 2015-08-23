@@ -49,8 +49,9 @@ if (typeof(nckma) != 'object') {
 	var nkStarted = false;
 	var nkUrls = {
 		'user': 'https://www.reddit.com/api/me.json',
-		'userTest': 'chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_scripts/me.json',
-		//'userTest': 'http://www.reddit.com/api/me.json',
+		//'userTest': 'chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_scripts/me.json',
+		//'userTest': 'http://narcikarma.net/nckma_scripts/me.json',
+		'userTest': 'http://www.reddit.com/api/me.json',
 		// disabled test url for now
 		//'userTest': 'http://narcikarma.net/test/me.php?d=1.25',
 		'cakeYay': 'https://www.reddit.com/r/cakeday/',
@@ -208,12 +209,12 @@ if (typeof(nckma) != 'object') {
 		console.error.apply(console, arguments);
 	};
 
-	// we set this up in the core as well
 	nckma.ev = function (evName, cbOrData) {
 		var iter = 0;
 		var cbRes;
 		var bulkRet = {};
 		var plug = '[EVENT] ';
+		var quietEvent = true;
 
 		if (bpmv.arr(evName)) { // group of events
 			for (iter = 0; iter < evName.length; iter++) {
@@ -231,11 +232,19 @@ if (typeof(nckma) != 'object') {
 
 			if (bpmv.func(cbOrData)) {
 				nkEvs[evName].push(cbOrData);
-				nckma.debug(nckma._dL.ev, plug+'callback added '+evName, [ evName, cbOrData, nkEvs[evName] ]);
+				nckma.debug(nckma._dL.ev, plug+'callback added '+evName, [cbOrData, nkEvs[evName]]);
 				bulkRet[evName] = nkEvs[evName];
 
 				return bulkRet;
 			} else {
+				quietEvent = bpmv.num(bpmv.find(evName, nkQuietEvents), true);
+
+				if(!quietEvent) {
+					nckma.debug(nckma._dL.ev, plug+'firing '+evName, [cbOrData, nkEvs[evName]]);
+				} else {
+					nckma.debug(nckma._dL.evQuiet, plug+'firing '+evName, [cbOrData, nkEvs[evName]]);
+				}
+
 				if (bpmv.arr(nkEvs[evName])) {
 					for (iter = 0; iter < nkEvs[evName].length; iter++) {
 						if (bpmv.func(nkEvs[evName][iter])) {
@@ -248,13 +257,9 @@ if (typeof(nckma) != 'object') {
 					}
 				}
 
-				if (!bpmv.num(bpmv.find(evName, nkQuietEvents), true)) {
-					nckma.debug(nckma._dL.ev, plug+'fired '+evName, [ evName, cbRes, cbOrData, nkEvs[evName] ]);
-				} else {
-					nckma.debug(nckma._dL.evQuiet, plug+'fired '+evName, [ evName, cbRes, cbOrData, nkEvs[evName] ]);
-				}
-
 				bulkRet[evName] = nkEvs[evName];
+
+				nckma.debug(nckma._dL.evQuiet, plug+'fired '+evName, cbRes);
 
 				return bulkRet;
 			}	
@@ -262,7 +267,7 @@ if (typeof(nckma) != 'object') {
 		nckma.debug(nckma._dL.ev, plug+'FAILED', [arguments]);
 	};
 
-	// kill an event bind or entire event
+	// kill a cb event bind or for all events
 	nckma.ev_kill = function (evName, cb) {
 		var iter;
 		var cbS = '';
@@ -296,8 +301,6 @@ if (typeof(nckma) != 'object') {
 			'current': bpmv.obj(nkDataLast, true) ? $.extend({}, nkDataLast) : $.extend({}, nkDataFirst ),
 			'options': nckma.opts.get()
 		};
-
-		// full = { 'start': $.extend({}, nkDataFirst ), 'current': $.extend({}, nkDataLast), 'options': nckma.opts.get(), 'history': $.extend([], nkDataSet) };
 
 		if (asJson) {
 			return JSON.stringify(full);
