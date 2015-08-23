@@ -1,4 +1,5 @@
 var bgP = chrome.extension.getBackgroundPage();
+var bpmv = bgP.bpmv;
 var keez = [];
 var allD = false;
 var roxin = false;

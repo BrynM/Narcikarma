@@ -1,7 +1,7 @@
 {
 	"kind" : "t2",
 	"data": {
-		"comment_karma": 3323,
+		"comment_karma": 12,
 		"created": 1286020403.0,
 		"created_utc": 1286020403.0,
 		"gold_creddits": 12,
@@ -15,7 +15,7 @@
 		"is_friend": false,
 		"is_gold": true,
 		"is_mod": true,
-		"link_karma": 124,
+		"link_karma": 12,
 		"modhash": "f1xm",
 		"name": "badmonkey",
 		"over_18": true

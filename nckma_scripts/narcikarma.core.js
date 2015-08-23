@@ -48,19 +48,21 @@ if (typeof(nckma) != 'object') {
 	var nkStartCbs = [];
 	var nkStarted = false;
 	var nkUrls = {
-		'user': 'https://www.reddit.com/api/me.json',
-		//'userTest': 'chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_scripts/me.json',
-		//'userTest': 'http://narcikarma.net/nckma_scripts/me.json',
-		'userTest': 'http://www.reddit.com/api/me.json',
-		// disabled test url for now
-		//'userTest': 'http://narcikarma.net/test/me.php?d=1.25',
-		'cakeYay': 'https://www.reddit.com/r/cakeday/',
 		'cakeNuthin': 'http://www.google.com/search?q=karma+machine&tbm=isch',
+		'cakeYay': 'https://www.reddit.com/r/cakeday/',
+		'credits': '/nckma_html/credits.html',
 		'gold': 'http://www.reddit.com/gold',
+		'graphs': '/nckma_html/graphs.html',
 		'inbox': 'http://www.reddit.com/message/inbox/',
 		'lounge': 'https://www.reddit.com/r/lounge',
 		'modmail': 'http://www.reddit.com/message/moderator/',
-		'modqueue': 'https://www.reddit.com/r/mod/about/modqueue'
+		'modqueue': 'https://www.reddit.com/r/mod/about/modqueue',
+		'options': '/nckma_html/options.html',
+		'user': 'https://www.reddit.com/api/me.json',
+		//'userTest': 'chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_scripts/me.json'
+		//'userTest': 'http://narcikarma.net/test/me.php?d=1.25'
+		'userTest': 'http://www.reddit.com/api/me.json'
+		//'userTest': 'http://narcikarma.net/nckma_scripts/me.json'
 	};
 	var nkUserData = {};
 	var nkDefaults = {

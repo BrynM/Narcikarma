@@ -78,10 +78,10 @@ function import_settings (ev) {
 						}
 
 						if (bpmv.str(errTxt)) {
-							alert(errTxt);
+							nckma.notify.err(errTxt);
 						} else {
 							if ($('#nckma_save').attr('disabled')) {
-								nckma.notify.warn('No changes were made. The importated options were already active.');
+								nckma.notify.note('No changes were made. The imported options were already active.');
 							} else {
 								nckma.notify.warn('Please review any changes made and hit the "Save Options" button.');
 							}
@@ -131,9 +131,9 @@ nckma.start( function () {
 	$('#nck_btn_export').click(export_settings);
 	$('#nckma_default').click(nckma.opts.defaults_set);
 
-	$('body').on( 'dragover', kill_event );
-	$('body').on( 'dragenter', kill_event );
-	$('body').on( 'drop', import_settings );
+	$('body').on('dragover', kill_event);
+	$('body').on('dragenter', kill_event);
+	$('body').on('drop', import_settings);
 
 	/* simple tab links */
 	$('.tab-contents a').click( function (ev) {

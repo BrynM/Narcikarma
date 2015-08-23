@@ -1,5 +1,6 @@
 var bgP = chrome.extension.getBackgroundPage();
 var nckma = bgP.nckma;
+var bpmv = bgP.bpmv;
 
 function populate () {
 	var sD = null;
@@ -17,7 +18,7 @@ function populate () {
 		sD = JSON.parse(status);
 
 		if ( bpmv.obj(sD.start, true) ) {
-			$('#nck_user').text(sD.start.name);
+			$('#nck_user').text(sD.start.name+(sD.current.has_verified_email ? '' : ' (unverified email)'));
 
 			cDay = new Date(0);
 			cDay.setUTCSeconds(sD.start.created_utc);
@@ -71,6 +72,7 @@ function populate () {
 			}
 
 			$('#nck_curr_ckarma').html( ( bpmv.num(sD.current.comment_karma, true) ? nckma.str_num(sD.current.comment_karma) : 'unknown' ) + ' (<span style="'+pClass+'">' + pChar + nckma.str_num(cDelt) + '</span>)');
+
 			$('#nck_is_gold').html(sD.current.is_gold ? '<a href="'+nckma.get_url('lounge')+'" target="_blank" style="color: rgba( ' + localStorage['color_gold'] + ' );">Like a Sir</a>' : '<a href="'+nckma.get_url('gold')+'" target="_blank">Not yet</a>');
 			$('#nck_gold_credits').html(sD.current.gold_creddits > 0 ? '<span  style="color: rgba( ' + localStorage['color_gold'] + ' );">'+sD.current.gold_creddits+'</span>' : '0');
 			$('#nck_has_mail').html('<a href="'+nckma.get_url('inbox')+'" target="_blank" style="color:red;">'+(sD.current.has_mail ? 'Yes ('+sD.current.inbox_count+')' : 'No')+'</a>');
@@ -96,30 +98,19 @@ function populate () {
 	}
 }
 
-function go_to_user () {
-	status = bgP.nckma.get(true);
-
-	if (bpmv.str(status)) {
-		var sD = JSON.parse(status);
-
-		if (bpmv.obj(sD.start, true) && bpmv.str(sD.start.name)) {
-			window.open('http://www.reddit.com/user/'+sD.start.name+'/');
-			nckma.track( 'func', 'go_to_user', 'nkExec' );
-		}
-	}
-}
-
 /*
 * startup cb
 */
 
 $(function () {
-	$('#nck_close_x').click( function () { window.close(); } );
-	$('#nck_btn_graphs').click( function () { window.open('/nckma_html/graphs.html'); } );
-	$('#nck_btn_options').click( function () { window.open('/nckma_html/options.html'); } );
-	$('#nck_btn_close').click( function () { window.close(); } );
-	$('#nck_btn_user').click(go_to_user);
-	$('#nck_btn_credits').click( function () { window.open('/nckma_html/credits.html'); } );
+	//$('#nck_close_x').click( function () { window.close(); } );
+	//$('#nck_btn_graphs').click( function () { window.open('/nckma_html/graphs.html'); } );
+	//$('#nck_btn_options').click( function () { window.open('/nckma_html/options.html'); } );
+	//$('#nck_btn_close').click( function () { window.close(); } );
+	//$('#nck_btn_user').click(go_to_user);
+	//$('#nck_btn_credits').click( function () { window.open('/nckma_html/credits.html'); } );
+
+	nckma.pages.bind_btns(window);
 
 	populate();
 
