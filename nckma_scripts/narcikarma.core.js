@@ -28,7 +28,7 @@ if (typeof(nckma) != 'object') {
 	var nkFlags = {
 		'debug': true,
 		'ga': true,
-		'testing': true,
+		'testing': false,
 		// read configuration fallbacks...
 		'aConfFB': false
 	};
@@ -48,12 +48,27 @@ if (typeof(nckma) != 'object') {
 	var nkStartCbs = [];
 	var nkStarted = false;
 	var nkUrls = {
-		'user': 'http://www.reddit.com/api/me.json',
-		'userTest': 'http://www.reddit.com/api/me.json',
-		// disabled test url for now
-		//'userTest': 'http://narcikarma.net/test/me.php?d=1.25',
-		'cakeYay': 'http://www.reddit.com/r/cakeday/',
-		'cakeNuthin': 'http://www.google.com/search?q=karma+machine&tbm=isch'
+		'cakeNuthin': 'http://www.google.com/search?q=karma+machine&tbm=isch',
+		'cakeYay': 'https://www.reddit.com/r/cakeday/',
+		'credits': '/nckma_html/credits.html',
+		'getGoldCredits': 'https://www.reddit.com/gold?goldtype=creddits&num_creddits=12&edit=true',
+		'giveGold': 'https://www.reddit.com/gold?goldtype=gift&months=1',
+		'gold': 'http://www.reddit.com/gold',
+		'graphs': '/nckma_html/graphs.html',
+		'inbox': 'https://www.reddit.com/message/inbox/',
+		'lounge': 'https://www.reddit.com/r/lounge',
+		'modmail': 'http://www.reddit.com/message/moderator/',
+		'modqueue': 'https://www.reddit.com/r/mod/about/modqueue',
+		'options': '/nckma_html/options.html',
+		'source': 'https://github.com/BrynM/Narcikarma',
+		'subreddit': 'https://www.reddit.com/r/Narcikarma/',
+		'user': 'https://www.reddit.com/api/me.json',
+		'userBase': 'https://www.reddit.com/user/',
+		//'userTest': 'chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_scripts/me.json'
+		//'userTest': 'http://narcikarma.net/test/me.php?d=1.25'
+		'userTest': 'https://www.reddit.com/api/me.json',
+		//'userTest': 'http://narcikarma.net/nckma_scripts/me.json',
+		'webstore': 'https://chrome.google.com/webstore/detail/narcikarma/mogaeafejjipmngijfhdjkmjomgdicdg'
 	};
 	var nkUserData = {};
 	var nkDefaults = {
@@ -202,12 +217,12 @@ if (typeof(nckma) != 'object') {
 		console.error.apply(console, arguments);
 	};
 
-	// we set this up in the core as well
 	nckma.ev = function (evName, cbOrData) {
 		var iter = 0;
 		var cbRes;
 		var bulkRet = {};
 		var plug = '[EVENT] ';
+		var quietEvent = true;
 
 		if (bpmv.arr(evName)) { // group of events
 			for (iter = 0; iter < evName.length; iter++) {
@@ -225,11 +240,19 @@ if (typeof(nckma) != 'object') {
 
 			if (bpmv.func(cbOrData)) {
 				nkEvs[evName].push(cbOrData);
-				nckma.debug(nckma._dL.ev, plug+'callback added', [ evName, cbOrData, nkEvs[evName] ]);
+				nckma.debug(nckma._dL.ev, plug+'callback added '+evName, [cbOrData, nkEvs[evName]]);
 				bulkRet[evName] = nkEvs[evName];
 
 				return bulkRet;
 			} else {
+				quietEvent = bpmv.num(bpmv.find(evName, nkQuietEvents), true);
+
+				if(!quietEvent) {
+					nckma.debug(nckma._dL.ev, plug+'firing '+evName, [cbOrData, nkEvs[evName]]);
+				} else {
+					nckma.debug(nckma._dL.evQuiet, plug+'firing '+evName, [cbOrData, nkEvs[evName]]);
+				}
+
 				if (bpmv.arr(nkEvs[evName])) {
 					for (iter = 0; iter < nkEvs[evName].length; iter++) {
 						if (bpmv.func(nkEvs[evName][iter])) {
@@ -242,21 +265,17 @@ if (typeof(nckma) != 'object') {
 					}
 				}
 
-				if (!bpmv.num(bpmv.find(evName, nkQuietEvents), true)) {
-					nckma.debug(nckma._dL.ev, plug+'fired', [ evName, cbRes, cbOrData, nkEvs[evName] ]);
-				} else {
-					nckma.debug(nckma._dL.evQuiet, plug+'fired', [ evName, cbRes, cbOrData, nkEvs[evName] ]);
-				}
-
 				bulkRet[evName] = nkEvs[evName];
 
+				nckma.debug(nckma._dL.evQuiet, plug+'fired '+evName, cbRes);
+
 				return bulkRet;
-			}
+			}	
 		}
 		nckma.debug(nckma._dL.ev, plug+'FAILED', [arguments]);
 	};
 
-	// kill an event bind or entire event
+	// kill a cb event bind or for all events
 	nckma.ev_kill = function (evName, cb) {
 		var iter;
 		var cbS = '';
@@ -285,8 +304,11 @@ if (typeof(nckma) != 'object') {
 		var opts = {};
 		var full;
 
-		full = { 'start': $.extend({}, nkDataFirst ), 'current': $.extend({}, nkDataLast), 'options': nckma.opts.get() };
-		// full = { 'start': $.extend({}, nkDataFirst ), 'current': $.extend({}, nkDataLast), 'options': nckma.opts.get(), 'history': $.extend([], nkDataSet) };
+		full = {
+			'start': $.extend({}, nkDataFirst ),
+			'current': bpmv.obj(nkDataLast, true) ? $.extend({}, nkDataLast) : $.extend({}, nkDataFirst ),
+			'options': nckma.opts.get()
+		};
 
 		if (asJson) {
 			return JSON.stringify(full);
@@ -440,7 +462,8 @@ if (typeof(nckma) != 'object') {
 				nckma.db.user_table(d.name, function () {
 					nckma.db.user_insert( d.name, {
 						'c': d.comment_karma,
-						'd': bpmv.num(nkDsLast) ? d.nkTimeStamp - nkDsLast : 0, // time delta since last
+						// time delta since last
+						'd': bpmv.num(nkDsLast) ? d.nkTimeStamp - nkDsLast : 0,
 						'l': d.link_karma,
 						't': d.nkTimeStamp
 					});
@@ -582,6 +605,8 @@ if (typeof(nckma) != 'object') {
 
 		if (bpmv.bool(cb) && (cb === true)) {
 			nckma.debug(0, 'Narcikamra startup', [cbArgs, nkStartCbs.length]);
+			nckma.ev('start', cbArgs);
+
 			nkStarted = true;
 
 			while (nkStartCbs.length) {
@@ -589,11 +614,10 @@ if (typeof(nckma) != 'object') {
 				cbR.apply(window, cbArgs);
 			}
 
-			nckma.ev('start', cbArgs);
 			nckma.debug(0, 'Narcikamra startup complete.');
 		} else if (bpmv.func(cb)) {
 			if (nkStarted) {
-				cbR.apply(window, cbArgs);
+				cb.apply(window, cbArgs);
 				nckma.debug(nckma._dL.ev, 'nckma.start() run cb (already started)', [cb, cbArgs]);
 			} else {
 				nkStartCbs.push(cb);
@@ -624,11 +648,12 @@ if (typeof(nckma) != 'object') {
 		return (unescape(encodeURIComponent(localStorage[key])).length);
 	};
 
-	nckma.str_date = function (dObj, loc) {
+	nckma.str_date = function (da, loc) {
 		var hours = '';
 		var mins = '';
 		var secs = '';
 		var dFmt = !bpmv.str(loc) ? ''+localStorage['dateFormat'] : ''+loc;
+		dObj = bpmv.typeis(da, 'Date') ? da : new Date(da);
 
 		if (bpmv.typeis(dObj, 'Date')) {
 			hours = dObj.getHours();

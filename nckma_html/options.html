@@ -7,7 +7,15 @@
 <body class="nckOptions">
 	<div class="nckContent">
 
-		<h1 id="nck_title">Narcikarma Options</h1>
+		<h1 id="nck_title"><span  class="nck-html-stat" data-stat="ext_name_full">Narcikarma</span> Options</h1>
+
+		<hr>
+
+		<div class="nckOptionsButtons">
+			<button id="nckma_reset" class="optSaveToggle">Reset Changes</button>
+			<button id="nckma_save" class="optSaveToggle">Save Options</button>
+			<button id="nckma_default">Default Options</button>
+		</div>
 
 		<div class="tab-group">
 
@@ -44,7 +52,6 @@
 
 					<div class="nckOptionsContainer" title="Size of the karma gain/loss history.">
 						<label for="opt_savedRefreshes">History Size</label>
-						<!-- select id="opt_savedRefreshes" dir="rtl" fuck="these won't align right in webkit :(" -->
 						<select id="opt_savedRefreshes">
 							<option value="25">25</option>
 							<option value="50">50</option>
@@ -123,6 +130,7 @@
 					<p>Color settings can be found in the <a href="#color_options_tab_radio">Color Options</a> tab.</p>
 					<p>Some extras can be found in the <a href="#tools_tab_radio">Tools</a> tab.</p>
 
+					<div class="clear"></div>
 				</div>
 			</div>
 
@@ -131,17 +139,18 @@
 				<label for="flags_options_tab_radio" class="tab-label">Flag Options</label>
 				<div class="tab-contents">
 
-					<p>If flags are shown that is... see your &quot;Top Row&quot; and &quot;Second Row&quot; settings in the <a href="#main_options_tab_radio">Main Options</a> tab.</p>
+					<p>If flags are shown that is... see your &quot;Top Icon Row Contents&quot; and &quot;Bottom Icon Row Contents&quot; settings in the <a href="#main_options_tab_radio">Main Options</a> tab.</p>
 
-					<!-- div class="nckOptionsContainer" title="The time between a row alternating between flags and other information.">
+					<div class="nckOptionsContainer" title="The time between a row alternating between flags and other information.">
 						<label for="opt_alternateTime">Alternate Flags Every</label>
 						<select id="opt_alternateTime">
+							<option value="2">2 Seconds</option>
 							<option value="5">5 Seconds</option>
 							<option value="15">15 Seconds</option>
 							<option value="30">30 Seconds</option>
 							<option value="60">1 minute</option>
 						</select>&nbsp;(if enabled for a row)&nbsp;<span id="opt_alternateTime_status"></span>
-					</div -->
+					</div>
 
 					<div class="nckOptionsContainer" title="First flag shown on flag row.">
 						<label for="opt_flag0">First Flag</label>
@@ -191,6 +200,8 @@
 						</select>&nbsp;<span id="opt_flag3_status"></span>
 
 					</div>
+
+					<div class="clear"></div>
 				</div>
 			</div>
 
@@ -201,37 +212,10 @@
 
 					<p>You can change the color of each of these by clicking on the color swatch. The slider will change that color's opacity (alpha).</p>
 
-					<div class="nckOptionsContainer nckOptionsColor" title="Positive Votes">
-						<label for="picker_opt_color_posChange">Positive Change</label>
-						<input id="opt_color_posChange" type="text" class="nckHidden" />
-						<input type="color" id="picker_opt_color_posChange" title="Pick a &quot;Positive Votes&quot; color" />
-						<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_posChange" title="Change &quot;Positive Change&quot; color tranparency (alpha)" />
-						&nbsp;<span id="opt_color_posChange_status"></span>
+					<div id="color_selector_options">
 					</div>
 
-					<div class="nckOptionsContainer nckOptionsColor" title="No Change In Votes">
-						<label for="picker_opt_color_noChange">No Change</label>
-						<input id="opt_color_noChange" type="text" class="nckHidden" />
-						<input type="color" id="picker_opt_color_noChange" title="Pick a &quot;No Change&quot; color" />
-						<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_noChange" title="Change &quot;No Change&quot; color tranparency (alpha)" />
-						&nbsp;<span id="opt_color_noChange_status"></span>
-					</div>
-
-					<div class="nckOptionsContainer nckOptionsColor" title="Negative Votes">
-						<label for="picker_opt_color_negChange">Negative Change</label>
-						<input id="opt_color_negChange" type="text" class="nckHidden" />
-						<input type="color" id="picker_opt_color_negChange" title="Pick a &quot;Negative Votes&quot; color" />
-						<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_negChange" title="Change &quot;Negative Votes&quot; color tranparency (alpha)" />
-						&nbsp;<span id="opt_color_negChange_status"></span>
-					</div>
-
-					<div class="nckOptionsContainer nckOptionsColor" title="Gold">
-						<label for="picker_opt_color_gold">Gold</label>
-						<input id="opt_color_gold" type="text" class="nckHidden" />
-						<input type="color" id="picker_opt_color_gold" title="Pick a &quot;Gold&quot; color" />
-						<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_gold" title="Change &quot;Gold&quot; color tranparency (alpha)" />
-						&nbsp;<span id="opt_color_gold_status"></span>
-					</div>
+					<div class="clear"></div>
 				</div>
 			</div>
 
@@ -260,11 +244,12 @@
 						&nbsp;<span id="opt_nck_btn_import_status"></span>
 					</div>
 
+					<div class="clear"></div>
 				</div>
 			</div>
-
 		</div>
 
+		<hr>
 
 		<!-- Alerts? -->
 		<!-- div class="nckOptionsContainer" title="When your comment karma has increased by this amount, an alert will be shown.">
@@ -276,20 +261,13 @@
 			<input type="text" id="opt_alertLinkGain">&nbsp;<span id="opt_alertLinkGain_status"></span>
 		</div-->
 
-		<div class="nckOptionsButtons">
-			<button id="nckma_reset" class="optSaveToggle">Reset Changes</button>
-			<button id="nckma_save" class="optSaveToggle">Save Options</button>
-			<button id="nckma_default">Default Options</button>
-		</div>
-
-		<hr>
-
 		<div class="nckButtonRow nckButtonRowHelp">
-			<button id="nck_btn_graphs">Graphs</button>
-			<button id="nck_btn_credits">Credits</button>
-			<button id="nck_btn_subreddit">/r/Narcikarma</button>
-			<button id="nck_btn_source">Source</button>
-			<button id="nck_btn_cws">Chrome Web Store</button>
+			<button class="nck-btn-graphs">Graphs</button>
+			<button class="nck-btn-credits">Credits</button>
+			<button class="nck-btn-subreddit">/r/Narcikarma</button>
+			<button class="nck-btn-source">Source</button>
+			<button class="nck-btn-webstore">Chrome Web Store</button>
+			<button class="nck-btn-close">Close</button>
 		</div>
 
 		<ul id="changed_options_list">
@@ -300,11 +278,13 @@
 	<script src="../lib/bpmv.js"></script>
 	<script src="../lib/base64.js"></script>
 	<script src="../nckma_scripts/narcikarma.core.js"></script>
+	<script src="../nckma_scripts/narcikarma.notifications.js"></script>
 	<script src="../nckma_scripts/narcikarma.db.js"></script>
 	<script src="../nckma_scripts/narcikarma.opts.js"></script>
 	<script src="../nckma_scripts/narcikarma.px.js"></script>
 	<script src="../nckma_scripts/narcikarma.spark.js"></script>
 	<script src="../nckma_scripts/narcikarma.credits.js"></script>
+	<script src="../nckma_scripts/narcikarma.pages.js"></script>
 	<script src="../nckma_scripts/narcikarma.startup.js"></script>
 	<script src="../nckma_scripts/page.options.js"></script>
 

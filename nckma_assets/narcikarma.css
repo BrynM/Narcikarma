@@ -140,7 +140,7 @@ button.nckDangerButton:active {
 	opacity: 1;
 }
 
-#nck_close_x {
+.nck-close-x {
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -150,7 +150,7 @@ button.nckDangerButton:active {
 	line-height: 9px;
 	text-align: center;
 	padding: 0;
-	margin: 0;
+	margin: 10px;
 }
 
 /*
@@ -224,8 +224,12 @@ button.nckDangerButton:active {
 	display: block;
 	clear: both;
 	position: relative;
-	min-height: 350px;
+	min-height: 410px;
 	margin: 0;
+}
+
+.clear {
+	clear: both;
 }
 
 .tab-single {
@@ -302,7 +306,7 @@ input[type="radio"]:checked ~ label ~ .tab-contents {
 	color: green;
 }
 
-#nck_name {
+h3.nck-html-stat[data-stat="ext_name_full"] {
 	margin: 0;
 }
 
@@ -397,6 +401,7 @@ input[type="radio"]:checked ~ label ~ .tab-contents {
 
 .nckOptionsButtons {
 	text-align: left;
+	margin: 10px 0;
 }
 
 #changed_options_list {

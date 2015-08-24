@@ -69,17 +69,18 @@
 		'Z': '111000100100100010001110'
 	};
 	var nkFallbackColors = {
-		'black': [   0,   0,   0,   1 ],
-		'blue': [   0,   0, 235,   1 ],
-		'gold': [ 176, 176,  21,   1 ],
-		'gray': [ 128, 128, 128,   1 ],
-		'green': [   0, 190,   0,   1 ],
-		'purple': [ 215,   0, 215,   1 ],
-		'red': [ 235,   0,   0,   1 ],
-		'negChange': [ 235,   0,   0,   1 ],
-		'noChange': [   0,   0,   0,   1 ],
-		'posChange': [   0, 190,   0,   1 ]
+		'black':     [  0,   0,   0,   1],
+		'blue':      [  0,   0, 235,   1],
+		'gold':      [176, 176,  21,   1],
+		'gray':      [128, 128, 128,   1],
+		'green':     [  0, 190,   0,   1],
+		'purple':    [215,   0, 215,   1],
+		'red':       [235,   0,   0,   1],
+		'negChange': [235,   0,   0,   1],
+		'noChange':  [  0,   0,   0,   1],
+		'posChange': [  0, 190,   0,   1]
 	};
+	nkFallbackColors['grey'] = nkFallbackColors['gray'];
 
 	/*
 	* create
@@ -266,7 +267,7 @@
 
 						break;
 					case 'has_mod_mail':
-						if (dat.current.has_mail) {
+						if (dat.current.has_mod_mail) {
 							nckma.px.draw_char('f1', x, y, nckma.px.color('blue'));
 						} else {
 							nckma.px.draw_char('f0', x, y, nckma.px.color('blue'));

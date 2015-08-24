@@ -1,6 +1,7 @@
 {
 	"name": "Narcikarma",
-	"version": "0.5",
+	"short_name": "Narcikarma",
+	"version": "0.50111",
 	"manifest_version": 2,
 	"description": "A Reddit karma tracker for Google Chrome by badmonkey0001",
 	"browser_action": {
@@ -9,8 +10,13 @@
 	},
 	"icons": {
 		"16": "nckma_assets/img/icon16.png",
+		"24": "nckma_assets/img/icon24.png",
+		"32": "nckma_assets/img/icon32.png",
 		"48": "nckma_assets/img/icon48.png",
-		"128": "nckma_assets/img/icon128.png"
+		"64": "nckma_assets/img/icon64.png",
+		"128": "nckma_assets/img/icon128.png",
+		"256": "nckma_assets/img/icon.png",
+		"512": "nckma_assets/img/icon512.png"
 	},
 	"options_page": "nckma_html/options.html",
 	"background": {
