@@ -17,3 +17,4 @@ function load_nckma_ga () {
 	s.parentNode.insertBefore(ga, s);
 }
 
+load_nckma_ga();
