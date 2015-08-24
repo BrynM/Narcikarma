@@ -21,7 +21,6 @@
 					<div class="nckOptionsContainer" title="Interval that your karma stats will be checked.">
 						<label for="opt_interval">Refresh Interval</label>
 						<select id="opt_interval">
-							<option value="60">1 minute</option>
 							<option value="120">2 minutes</option>
 							<option value="300">5 minutes</option>
 							<option value="600">10 minutes</option>
@@ -131,17 +130,18 @@
 				<label for="flags_options_tab_radio" class="tab-label">Flag Options</label>
 				<div class="tab-contents">
 
-					<p>If flags are shown that is... see your &quot;Top Row&quot; and &quot;Second Row&quot; settings in the <a href="#main_options_tab_radio">Main Options</a> tab.</p>
+					<p>If flags are shown that is... see your &quot;Top Icon Row Contents&quot; and &quot;Bottom Icon Row Contents&quot; settings in the <a href="#main_options_tab_radio">Main Options</a> tab.</p>
 
-					<!-- div class="nckOptionsContainer" title="The time between a row alternating between flags and other information.">
+					<div class="nckOptionsContainer" title="The time between a row alternating between flags and other information.">
 						<label for="opt_alternateTime">Alternate Flags Every</label>
 						<select id="opt_alternateTime">
+							<option value="2">2 Seconds</option>
 							<option value="5">5 Seconds</option>
 							<option value="15">15 Seconds</option>
 							<option value="30">30 Seconds</option>
 							<option value="60">1 minute</option>
 						</select>&nbsp;(if enabled for a row)&nbsp;<span id="opt_alternateTime_status"></span>
-					</div -->
+					</div>
 
 					<div class="nckOptionsContainer" title="First flag shown on flag row.">
 						<label for="opt_flag0">First Flag</label>
@@ -201,52 +201,7 @@
 
 					<p>You can change the color of each of these by clicking on the color swatch. The slider will change that color's opacity (alpha).</p>
 
-					<div class="nckOptionsContainer nckOptionsColor" title="Positive Votes">
-						<label for="picker_opt_color_posChange">Positive Change</label>
-						<input id="opt_color_posChange" type="text" class="nckHidden" />
-						<input type="color" id="picker_opt_color_posChange" title="Pick a &quot;Positive Votes&quot; color" />
-						<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_posChange" title="Change &quot;Positive Change&quot; color tranparency (alpha)" />
-						&nbsp;<span id="opt_color_posChange_status"></span>
-					</div>
-
-					<div class="nckOptionsContainer nckOptionsColor" title="No Change In Votes">
-						<label for="picker_opt_color_noChange">No Change</label>
-						<input id="opt_color_noChange" type="text" class="nckHidden" />
-						<input type="color" id="picker_opt_color_noChange" title="Pick a &quot;No Change&quot; color" />
-						<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_noChange" title="Change &quot;No Change&quot; color tranparency (alpha)" />
-						&nbsp;<span id="opt_color_noChange_status"></span>
-					</div>
-
-					<div class="nckOptionsContainer nckOptionsColor" title="Negative Votes">
-						<label for="picker_opt_color_negChange">Negative Change</label>
-						<input id="opt_color_negChange" type="text" class="nckHidden" />
-						<input type="color" id="picker_opt_color_negChange" title="Pick a &quot;Negative Votes&quot; color" />
-						<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_negChange" title="Change &quot;Negative Votes&quot; color tranparency (alpha)" />
-						&nbsp;<span id="opt_color_negChange_status"></span>
-					</div>
-
-					<div class="nckOptionsContainer nckOptionsColor" title="Gold">
-						<label for="picker_opt_color_gold">Gold</label>
-						<input id="opt_color_gold" type="text" class="nckHidden" />
-						<input type="color" id="picker_opt_color_gold" title="Pick a &quot;Gold&quot; color" />
-						<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_gold" title="Change &quot;Gold&quot; color tranparency (alpha)" />
-						&nbsp;<span id="opt_color_gold_status"></span>
-					</div>
-
-					<div class="nckOptionsContainer nckOptionsColor" title="Has mail">
-						<label for="picker_opt_color_hasMail">Has mail color</label>
-						<input id="opt_color_hasMail" type="text" class="nckHidden" />
-						<input type="color" id="picker_opt_color_hasMail" title="Pick a &quot;Has mail color&quot; color" />
-						<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_hasMail" title="Change &quot;Has Mail&quot; color tranparency (alpha)" />
-						&nbsp;<span id="opt_color_hasMail_status"></span>
-					</div>
-
-					<div class="nckOptionsContainer nckOptionsColor" title="Has empty mail inbox">
-						<label for="picker_opt_color_noMail">Has empty mail inbox</label>
-						<input id="opt_color_noMail" type="text" class="nckHidden" />
-						<input type="color" id="picker_opt_color_noMail" title="Pick a &quot;Has empty mail inbox&quot; color" />
-						<input type="range" min="0" max="1000" value="1" class="" id="alpha_opt_color_noMail" title="Change &quot;Has empty mail inbox&quot; color tranparency (alpha)" />
-						&nbsp;<span id="opt_color_noMail_status"></span>
+					<div id="color_selector_options">
 					</div>
 				</div>
 			</div>
@@ -280,7 +235,6 @@
 			</div>
 
 		</div>
-
 
 		<!-- Alerts? -->
 		<!-- div class="nckOptionsContainer" title="When your comment karma has increased by this amount, an alert will be shown.">

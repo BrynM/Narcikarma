@@ -439,6 +439,10 @@
 		return opts;
 	};
 
+	nckma.opts.get_default_details = function (asJson) {
+		return $.extend({}, nkSettings);
+	};
+
 	// Saves options to localStorage.
 	nckma.opts.save = function () {
 		var cache = nckma._cache;
@@ -618,6 +622,7 @@
 
 				// add dev time options
 				if (bpmv.obj(ivlSel) && bpmv.num(ivlSel.length)) {
+					ivlSel.prepend('<option value="60" style="color: #fff; background: #900">test 1 min</option>');
 					ivlSel.prepend('<option value="30" style="color: #fff; background: #900">test 30 sec</option>');
 					ivlSel.prepend('<option value="15" style="color: #fff; background: #900">test 15 sec</option>');
 					ivlSel.prepend('<option value="10" style="color: #fff; background: #900">test 10 sec</option>');
