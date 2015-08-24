@@ -6,7 +6,7 @@
 </head>
 <body class="nckPopup">
 
-	<button id="nck_close_x">X</button>
+	<button class="nck-close-x" id="nck_close_x">X</button>
 
 	<div class="nckContent nckPopup">
 
@@ -19,51 +19,63 @@
 			<tbody>
 				<tr>
 					<td>User</td>
-					<td id="nck_user"></td>
+					<td id="nck_user"><em>unknown</em></td>
+				</tr>
+				<tr>
+					<td>Over 18</td>
+					<td id="nck_over_18"><em>unknown</em></td>
 				</tr>
 				<tr>
 					<td>Cake Day</td>
-					<td id="nck_cakeday"></td>
+					<td id="nck_cakeday"><em>unknown</em></td>
 				</tr>
 				<tr>
 					<td>Starting Link Karma</td>
-					<td id="nck_start_lkarma"></td>
+					<td id="nck_start_lkarma"><em>unknown</em></td>
 				</tr>
 				<tr>
 					<td>Current Link Karma</td>
-					<td id="nck_curr_lkarma"></td>
+					<td id="nck_curr_lkarma"><em>unknown</em></td>
 				</tr>
 				<tr>
 					<td>Starting Comment Karma</td>
-					<td id="nck_start_ckarma"></td>
+					<td id="nck_start_ckarma"><em>unknown</em></td>
 				</tr>
 				<tr>
 					<td>Current Comment Karma</td>
-					<td id="nck_curr_ckarma"></td>
+					<td id="nck_curr_ckarma"><em>unknown</em></td>
+				</tr>
+				<tr>
+					<td>Total Karma</td>
+					<td id="nck_total_karma"><em>unknown</em></td>
 				</tr>
 				<tr>
 					<td>Has Mail</td>
-					<td id="nck_has_mail"></td>
+					<td id="nck_has_mail"><em>unknown</em></td>
 				</tr>
 				<tr>
 					<td>Is A Mod</td>
-					<td id="nck_is_mod"></td>
+					<td id="nck_is_mod"><em>unknown</em></td>
 				</tr>
 				<tr>
 					<td>Has Mod Mail</td>
-					<td id="nck_has_mod_mail"></td>
+					<td id="nck_has_mod_mail"><em>unknown</em></td>
 				</tr>
 				<tr>
 					<td>Has Reddit Gold</td>
-					<td id="nck_is_gold"></td>
+					<td id="nck_is_gold"><em>unknown</em></td>
+				</tr>
+				<tr>
+					<td>Gold Credits</td>
+					<td id="nck_gold_creddits"><em>unknown</em></td>
 				</tr>
 				<tr>
 					<td>Starting Data Checked</td>
-					<td id="nck_start_timestamp"></td>
+					<td id="nck_start_timestamp"><em>unknown</em></td>
 				</tr>
 				<tr>
 					<td>Current Data Checked</td>
-					<td id="nck_curr_timestamp"></td>
+					<td id="nck_curr_timestamp"><em>unknown</em></td>
 				</tr>
 			</tbody>
 		</table>
@@ -71,16 +83,15 @@
 		<hr>
 		
 		<div class="nckButtonRow">
-			<button id="nck_btn_user">Open User</button>
-			<button id="nck_btn_options">Options</button>
-			<button id="nck_btn_graphs">Graphs</button>
-			<button id="nck_btn_credits">Credits</button>
-			<button id="nck_btn_close">Close</button>
+			<button class="nck-btn-user">Open User</button>
+			<button class="nck-btn-options">Options</button>
+			<button class="nck-btn-graphs">Graphs</button>
+			<button class="nck-btn-credits">Credits</button>
+			<button class="nck-btn-close">Close</button>
 		</div>
 	</div>
 
 	<script src="../lib/jquery-1.8.2.min.js"></script>
-	<script src="../lib/bpmv.js"></script>
 	<script src="../nckma_scripts/page.popup.js"></script>
 
 </body>

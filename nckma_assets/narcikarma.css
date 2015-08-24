@@ -140,7 +140,7 @@ button.nckDangerButton:active {
 	opacity: 1;
 }
 
-#nck_close_x {
+.nck-close-x {
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -150,7 +150,7 @@ button.nckDangerButton:active {
 	line-height: 9px;
 	text-align: center;
 	padding: 0;
-	margin: 0;
+	margin: 10px;
 }
 
 /*

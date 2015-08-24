@@ -48,19 +48,24 @@ if (typeof(nckma) != 'object') {
 	var nkStartCbs = [];
 	var nkStarted = false;
 	var nkUrls = {
-		'user': 'https://www.reddit.com/api/me.json',
-		//'userTest': 'chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_scripts/me.json',
-		//'userTest': 'http://narcikarma.net/nckma_scripts/me.json',
-		'userTest': 'http://www.reddit.com/api/me.json',
-		// disabled test url for now
-		//'userTest': 'http://narcikarma.net/test/me.php?d=1.25',
-		'cakeYay': 'https://www.reddit.com/r/cakeday/',
 		'cakeNuthin': 'http://www.google.com/search?q=karma+machine&tbm=isch',
+		'cakeYay': 'https://www.reddit.com/r/cakeday/',
+		'credits': '/nckma_html/credits.html',
+		'getGoldCredits': 'https://www.reddit.com/gold?goldtype=creddits&num_creddits=12&edit=true',
+		'giveGold': 'https://www.reddit.com/gold?goldtype=gift&months=1',
 		'gold': 'http://www.reddit.com/gold',
-		'inbox': 'http://www.reddit.com/message/inbox/',
+		'graphs': '/nckma_html/graphs.html',
+		'inbox': 'https://www.reddit.com/message/inbox/',
 		'lounge': 'https://www.reddit.com/r/lounge',
 		'modmail': 'http://www.reddit.com/message/moderator/',
-		'modqueue': 'https://www.reddit.com/r/mod/about/modqueue'
+		'modqueue': 'https://www.reddit.com/r/mod/about/modqueue',
+		'options': '/nckma_html/options.html',
+		'user': 'https://www.reddit.com/api/me.json',
+		'userBase': 'https://www.reddit.com/user/',
+		//'userTest': 'chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_scripts/me.json'
+		//'userTest': 'http://narcikarma.net/test/me.php?d=1.25'
+		'userTest': 'https://www.reddit.com/api/me.json'
+		//'userTest': 'http://narcikarma.net/nckma_scripts/me.json'
 	};
 	var nkUserData = {};
 	var nkDefaults = {
@@ -640,11 +645,12 @@ if (typeof(nckma) != 'object') {
 		return (unescape(encodeURIComponent(localStorage[key])).length);
 	};
 
-	nckma.str_date = function (dObj, loc) {
+	nckma.str_date = function (da, loc) {
 		var hours = '';
 		var mins = '';
 		var secs = '';
 		var dFmt = !bpmv.str(loc) ? ''+localStorage['dateFormat'] : ''+loc;
+		dObj = bpmv.typeis(da, 'Date') ? da : new Date(da);
 
 		if (bpmv.typeis(dObj, 'Date')) {
 			hours = dObj.getHours();

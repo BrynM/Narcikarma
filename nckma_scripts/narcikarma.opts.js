@@ -31,6 +31,8 @@
 		'color_negChange': 'Negative Change Color',
 		'color_noChange': 'No Change Color',
 		'color_posChange': 'Positive Change Color',
+		'color_hasMail': 'Has mail or modmail',
+		'color_noMail': 'Empty mail or modmail inbox',
 		'color_red': 'Red Color',
 		'cumulativeKarma': 'Show Cumulative Karma',
 		'dateFormat': 'Date Format',
@@ -179,6 +181,20 @@
 		'type': 'color',
 		'title': 'Positive Change Color',
 		'desc': 'Color for a "Positive" change in karma.'
+	};
+
+	nkSettings['color_hasMail'] = {
+		'def': '0, 128, 0, 1',
+		'type': 'color',
+		'title': 'Has mail color',
+		'desc': 'Has mail or modmail color.'
+	};
+
+	nkSettings['color_noMail'] = {
+		'def': '160, 160, 160, 1',
+		'type': 'color',
+		'title': 'No mail color',
+		'desc': 'Empty mail or modmail inbox color.'
 	};
 
 	nkSettings['color_red'] = {
