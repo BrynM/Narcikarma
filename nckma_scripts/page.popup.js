@@ -54,7 +54,7 @@ function populate () {
 			$('#nck_has_mod_mail').html(nckma.pages.tpl('has_mod_mail', true));
 		}
 
-		info = bgP.nckma.info(true);
+		info = nckma.info(true);
 
 		if (bpmv.str(info)) {
 			inf = JSON.parse(info);
@@ -70,17 +70,8 @@ function populate () {
 */
 
 $(function () {
-	//$('#nck_close_x').click( function () { window.close(); } );
-	//$('#nck_btn_graphs').click( function () { window.open('/nckma_html/graphs.html'); } );
-	//$('#nck_btn_options').click( function () { window.open('/nckma_html/options.html'); } );
-	//$('#nck_btn_close').click( function () { window.close(); } );
-	//$('#nck_btn_user').click(go_to_user);
-	//$('#nck_btn_credits').click( function () { window.open('/nckma_html/credits.html'); } );
-
 	nckma.pages.bind_btns(window);
-
 	populate();
-
 	nckma.ev('parse', populate);
 });
 
