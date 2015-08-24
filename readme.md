@@ -28,7 +28,7 @@ At a glance you can check your narcissistic progress, meaning you can stop using
 
 ^^link ^^only ^^works ^^for ^^testers ^^ATM
 
-**Latest Version:** [0.51]()
+**Latest Version:** [0.50111]()
 
 **Release Status:** Closed Alpha
 
