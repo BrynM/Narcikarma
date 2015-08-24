@@ -224,8 +224,12 @@ button.nckDangerButton:active {
 	display: block;
 	clear: both;
 	position: relative;
-	min-height: 350px;
+	min-height: 500px;
 	margin: 0;
+}
+
+.clear {
+	clear: both;
 }
 
 .tab-single {
@@ -397,6 +401,7 @@ input[type="radio"]:checked ~ label ~ .tab-contents {
 
 .nckOptionsButtons {
 	text-align: left;
+	margin: 10px 0;
 }
 
 #changed_options_list {

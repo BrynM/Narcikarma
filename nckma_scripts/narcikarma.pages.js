@@ -242,9 +242,9 @@
 		html += 'title="Open your modmail" ';
 
 		if (stats.current.has_mod_mail) {
-			html +='style="color: rgba(' + opts['color_hasMail'] + ');"';
+			html +='style="color: rgba(' + opts['color_hasModMail'] + ');"';
 		} else {
-			html +='style="color: rgba(' + opts['color_noMail'] + ');"';
+			html +='style="color: rgba(' + opts['color_noModMail'] + ');"';
 		}
 
 		html += '>';
