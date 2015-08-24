@@ -102,7 +102,7 @@
 	function open_current_user (ev) {
 		status = nckma.get();
 
-		if (bpmv.str(status)) {
+		if (bpmv.obj(status)) {
 			if (bpmv.obj(status.start, true) && bpmv.str(status.start.name)) {
 				open_url('http://www.reddit.com/user/'+status.start.name+'/');
 				nckma.track('func', 'open_current_user', 'nkExec');
