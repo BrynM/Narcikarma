@@ -333,7 +333,7 @@
 		'color_noChange': nckma.opts.valid_color,
 		'color_posChange': nckma.opts.valid_color,
 		'interval': function (val) {
-			return (parseInt(val) > (nckma.testing() ? 4 : 119)) || (parseInt(val) === 0) ? true : nkOptionNames['interval'] + ' must be 1 minute or more.';
+			return (parseInt(val) > (nckma.testing() ? 4 : 59)) || (parseInt(val) === 0) ? true : nkOptionNames['interval'] + ' must be 1 minute or more.';
 		},
 		'savedRefreshes': function (val) {
 			val = parseInt(val, 10);
@@ -636,7 +636,6 @@
 
 				// add dev time options
 				if (bpmv.obj(ivlSel) && bpmv.num(ivlSel.length)) {
-					ivlSel.prepend('<option value="60" style="color: #fff; background: #900">test 1 min</option>');
 					ivlSel.prepend('<option value="30" style="color: #fff; background: #900">test 30 sec</option>');
 					ivlSel.prepend('<option value="15" style="color: #fff; background: #900">test 15 sec</option>');
 					ivlSel.prepend('<option value="10" style="color: #fff; background: #900">test 10 sec</option>');
@@ -651,7 +650,7 @@
 				tStr += '&nbsp;<span id="opt_nck_btn_kill_all_status"></span>\n';
 				tStr += '</div>\n';
 
-				$('#tools_tab .tab-contents').append(tStr ).find('#nck_btn_kill_all').click(function ( ev) {
+				$('#tools_tab .tab-contents').append(tStr ).find('#nck_btn_kill_all').click(function (ev) {
 					if (confirm('This will erase all localStorage and DB storage. May have detrimental effects!')) {
 						localStorage.clear();
 						nckma.opts.ui_restore();

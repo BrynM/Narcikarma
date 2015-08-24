@@ -7,15 +7,7 @@
 <body class="nckOptions">
 	<div class="nckContent">
 
-		<h1 id="nck_title">Narcikarma Options</h1>
-
-		<div class="nckButtonRow nckButtonRowHelp">
-			<button id="nck_btn_graphs">Graphs</button>
-			<button id="nck_btn_credits">Credits</button>
-			<button id="nck_btn_subreddit">/r/Narcikarma</button>
-			<button id="nck_btn_source">Source</button>
-			<button id="nck_btn_cws">Chrome Web Store</button>
-		</div>
+		<h1 id="nck_title"><span  class="nck-html-stat" data-stat="ext_name_full">Narcikarma</span> Options</h1>
 
 		<hr>
 
@@ -37,6 +29,7 @@
 					<div class="nckOptionsContainer" title="Interval that your karma stats will be checked.">
 						<label for="opt_interval">Refresh Interval</label>
 						<select id="opt_interval">
+							<option value="60">1 minute</option>
 							<option value="120">2 minutes</option>
 							<option value="300">5 minutes</option>
 							<option value="600">10 minutes</option>
@@ -137,6 +130,7 @@
 					<p>Color settings can be found in the <a href="#color_options_tab_radio">Color Options</a> tab.</p>
 					<p>Some extras can be found in the <a href="#tools_tab_radio">Tools</a> tab.</p>
 
+					<div class="clear"></div>
 				</div>
 			</div>
 
@@ -206,6 +200,8 @@
 						</select>&nbsp;<span id="opt_flag3_status"></span>
 
 					</div>
+
+					<div class="clear"></div>
 				</div>
 			</div>
 
@@ -218,9 +214,9 @@
 
 					<div id="color_selector_options">
 					</div>
+
 					<div class="clear"></div>
 				</div>
-				<div class="clear"></div>
 			</div>
 
 			<div id="tools_tab" class="tab-single">
@@ -248,10 +244,12 @@
 						&nbsp;<span id="opt_nck_btn_import_status"></span>
 					</div>
 
+					<div class="clear"></div>
 				</div>
 			</div>
-
 		</div>
+
+		<hr>
 
 		<!-- Alerts? -->
 		<!-- div class="nckOptionsContainer" title="When your comment karma has increased by this amount, an alert will be shown.">
@@ -262,6 +260,15 @@
 			<label for="opt_alertLinkGain">Alert Link Karma Threshold</label>
 			<input type="text" id="opt_alertLinkGain">&nbsp;<span id="opt_alertLinkGain_status"></span>
 		</div-->
+
+		<div class="nckButtonRow nckButtonRowHelp">
+			<button class="nck-btn-graphs">Graphs</button>
+			<button class="nck-btn-credits">Credits</button>
+			<button class="nck-btn-subreddit">/r/Narcikarma</button>
+			<button class="nck-btn-source">Source</button>
+			<button class="nck-btn-webstore">Chrome Web Store</button>
+			<button class="nck-btn-close">Close</button>
+		</div>
 
 		<ul id="changed_options_list">
 		</ul>
@@ -277,6 +284,7 @@
 	<script src="../nckma_scripts/narcikarma.px.js"></script>
 	<script src="../nckma_scripts/narcikarma.spark.js"></script>
 	<script src="../nckma_scripts/narcikarma.credits.js"></script>
+	<script src="../nckma_scripts/narcikarma.pages.js"></script>
 	<script src="../nckma_scripts/narcikarma.startup.js"></script>
 	<script src="../nckma_scripts/page.options.js"></script>
 

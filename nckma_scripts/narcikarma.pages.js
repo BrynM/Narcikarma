@@ -120,6 +120,11 @@
 		open_url(nckma.get_url('options'));
 	}
 
+	function open_source () {
+		nckma.track('func', 'open_source', 'nkExec');
+		open_url(nckma.get_url('source'));
+	}
+
 	function open_subreddit () {
 		nckma.track('func', 'open_subreddit', 'nkExec');
 		open_url(nckma.get_url('subreddit'));
@@ -195,6 +200,12 @@
 		'sel': '.nck-btn-credits',
 		'title': 'Credits',
 		'cb': open_credits
+	};
+
+	buttons['source'] = {
+		'sel': '.nck-btn-source',
+		'title': 'Source',
+		'cb': open_source
 	};
 
 	buttons['subreddit'] = {
@@ -317,7 +328,7 @@
 
 		if (bpmv.str(info)) {
 			var inf = JSON.parse(info);
-			return ''+inf.name+' v'+inf.version;
+			return ''+inf.name+' v'+nckma.version().str;
 		}
 	};
 

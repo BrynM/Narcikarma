@@ -12,21 +12,6 @@ function reset_stats () {
 	}
 }
 
-function go_to_subreddit () {
-	window.open('http://www.reddit.com/r/Narcikarma/');
-	nckma.track('func', 'go_to_subreddit', 'nkExec');
-}
-
-function go_to_source () {
-	window.open('https://github.com/BrynM/Narcikarma');
-	nckma.track('func', 'go_to_source', 'nkExec');
-}
-
-function go_to_cws () {
-	window.open('https://chrome.google.com/webstore/detail/narcikarma/mogaeafejjipmngijfhdjkmjomgdicdg');
-	nckma.track('func', 'go_to_cws', 'nkExec');
-}
-
 function export_settings () {
 	window.open('data:application/octet-stream;base64;charset=utf-8,' + Base64.encode(JSON.stringify(nckma.opts.get())));
 }
@@ -140,6 +125,8 @@ function kill_event (ev) {
 */
 
 nckma.start(function () {
+	nckma.pages.populate_stats(window);
+	nckma.pages.bind_btns(window);
 	populate_colors();
 	nckma.opts.ui_init();
 	nckma.opts.ui_restore();
@@ -149,17 +136,30 @@ nckma.start(function () {
 	$('#nckma_reset').click(nckma.opts.ui_restore);
 	$('#nckma_save').click(nckma.opts.save);
 	$('input[type="color"][id^="picker_opt_color_"],input[type="range"][id^="alpha_opt_color_"]').change(nckma.opts.ui_change_color);
-	$('#nck_btn_graphs').click( function () { window.open('/nckma_html/graphs.html'); } );
-	$('#nck_btn_credits').click( function () { window.open('/nckma_html/credits.html'); } );
-	$('#nck_btn_subreddit').click(go_to_subreddit);
-	$('#nck_btn_source').click(go_to_source);
-	$('#nck_btn_cws').click(go_to_cws);
-	$('#nck_btn_export').click(export_settings);
 	$('#nckma_default').click(nckma.opts.defaults_set);
 
 	$('body').on('dragover', kill_event);
 	$('body').on('dragenter', kill_event);
 	$('body').on('drop', import_settings);
+
+	// how to deal with changing tab heights?
+/*
+	$('.tab-radio').on('change', function(ev) {
+		var $targ = $(ev.target);
+		var $par = $($targ.parent());
+		var $label = $($par.find('.tab-label'));
+		var $conts = $($par.find('.tab-contents'));
+		var newHeight = parseInt($label.outerHeight(true), 10) + parseInt($conts.outerHeight(true), 10);
+
+console.log('$par', $par[0]);
+console.log('$label', $label[0]);
+console.log('$conts', $conts[0]);
+console.log('newHeight', newHeight);
+console.log('label', parseInt($label.outerHeight(true), 10));
+console.log('conts', parseInt($conts.outerHeight(true), 10));
+		$par.css('height', newHeight+'px');
+	});
+*/
 
 	/* simple tab links */
 	$('.tab-contents a').click(function (ev) {

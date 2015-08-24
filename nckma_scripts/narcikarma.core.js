@@ -28,7 +28,7 @@ if (typeof(nckma) != 'object') {
 	var nkFlags = {
 		'debug': true,
 		'ga': true,
-		'testing': true,
+		'testing': false,
 		// read configuration fallbacks...
 		'aConfFB': false
 	};
@@ -60,6 +60,7 @@ if (typeof(nckma) != 'object') {
 		'modmail': 'http://www.reddit.com/message/moderator/',
 		'modqueue': 'https://www.reddit.com/r/mod/about/modqueue',
 		'options': '/nckma_html/options.html',
+		'source': 'https://github.com/BrynM/Narcikarma',
 		'subreddit': 'https://www.reddit.com/r/Narcikarma/',
 		'user': 'https://www.reddit.com/api/me.json',
 		'userBase': 'https://www.reddit.com/user/',
