@@ -1,4 +1,5 @@
 var bgP = chrome.extension.getBackgroundPage();
+var bpmv = bgP.bpmv;
 var keez = [];
 var allD = false;
 var roxin = false;
@@ -54,7 +55,7 @@ function roxit () {
 }
 
 $(document).ready(function () {
-	$('.nckContent').append(nckma.credits.to_html());
+	$('.nckContent').append(bgP.nckma.credits.to_html());
 
 	$('ul:last').parent().find('h3, li').click(function () {
 		roxor();

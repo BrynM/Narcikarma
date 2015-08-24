@@ -31,6 +31,8 @@
 		'color_negChange': 'Negative Change Color',
 		'color_noChange': 'No Change Color',
 		'color_posChange': 'Positive Change Color',
+		'color_hasMail': 'Has mail or modmail',
+		'color_noMail': 'Empty mail or modmail inbox',
 		'color_red': 'Red Color',
 		'cumulativeKarma': 'Show Cumulative Karma',
 		'dateFormat': 'Date Format',
@@ -118,6 +120,55 @@
 		'min': 1
 	};
 
+	nkSettings['color_negChange'] = {
+		'def': '235, 0, 0, 1',
+		'type': 'color',
+		'title': 'Negative Change Color',
+		'desc': 'Color for a "Negative" change in karma.'
+	};
+
+	nkSettings['color_noChange'] = {
+		'def': '0, 0, 0, 1',
+		'type': 'color',
+		'title': 'No Change Color',
+		'desc': 'Color for no change in karma.'
+	};
+
+	nkSettings['color_posChange'] = {
+		'def': '0, 190, 0, 1',
+		'type': 'color',
+		'title': 'Positive Change Color',
+		'desc': 'Color for a "Positive" change in karma.'
+	};
+
+	nkSettings['color_hasMail'] = {
+		'def': '0, 128, 0, 1',
+		'type': 'color',
+		'title': 'Has mail color',
+		'desc': 'Has mail color.'
+	};
+
+	nkSettings['color_noMail'] = {
+		'def': '160, 160, 160, 1',
+		'type': 'color',
+		'title': 'No mail color',
+		'desc': 'Empty mail inbox color.'
+	};
+
+	nkSettings['color_hasModMail'] = {
+		'def': '0, 128, 0, 1',
+		'type': 'color',
+		'title': 'Has modmail color',
+		'desc': 'Has modmail color.'
+	};
+
+	nkSettings['color_noModMail'] = {
+		'def': '160, 160, 160, 1',
+		'type': 'color',
+		'title': 'No modmail color',
+		'desc': 'Empty modmail inbox color.'
+	};
+
 	nkSettings['color_black'] = {
 		'def': '0, 0, 0, 1',
 		'type': 'color',
@@ -158,27 +209,6 @@
 		'type': 'color',
 		'title': 'Purple Color',
 		'desc': 'Purple Color.'
-	};
-
-	nkSettings['color_negChange'] = {
-		'def': '235, 0, 0, 1',
-		'type': 'color',
-		'title': 'Negative Change Color',
-		'desc': 'Color for a "Negative" change in karma.'
-	};
-
-	nkSettings['color_noChange'] = {
-		'def': '0, 0, 0, 1',
-		'type': 'color',
-		'title': 'No Change Color',
-		'desc': 'Color for no change in karma.'
-	};
-
-	nkSettings['color_posChange'] = {
-		'def': '0, 190, 0, 1',
-		'type': 'color',
-		'title': 'Positive Change Color',
-		'desc': 'Color for a "Positive" change in karma.'
 	};
 
 	nkSettings['color_red'] = {
@@ -423,6 +453,10 @@
 		return opts;
 	};
 
+	nckma.opts.get_default_details = function (asJson) {
+		return $.extend({}, nkSettings);
+	};
+
 	// Saves options to localStorage.
 	nckma.opts.save = function () {
 		var cache = nckma._cache;
@@ -602,6 +636,7 @@
 
 				// add dev time options
 				if (bpmv.obj(ivlSel) && bpmv.num(ivlSel.length)) {
+					ivlSel.prepend('<option value="60" style="color: #fff; background: #900">test 1 min</option>');
 					ivlSel.prepend('<option value="30" style="color: #fff; background: #900">test 30 sec</option>');
 					ivlSel.prepend('<option value="15" style="color: #fff; background: #900">test 15 sec</option>');
 					ivlSel.prepend('<option value="10" style="color: #fff; background: #900">test 10 sec</option>');
