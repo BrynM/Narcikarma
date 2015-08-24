@@ -60,12 +60,14 @@ if (typeof(nckma) != 'object') {
 		'modmail': 'http://www.reddit.com/message/moderator/',
 		'modqueue': 'https://www.reddit.com/r/mod/about/modqueue',
 		'options': '/nckma_html/options.html',
+		'subreddit': 'https://www.reddit.com/r/Narcikarma/',
 		'user': 'https://www.reddit.com/api/me.json',
 		'userBase': 'https://www.reddit.com/user/',
 		//'userTest': 'chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_scripts/me.json'
 		//'userTest': 'http://narcikarma.net/test/me.php?d=1.25'
-		//'userTest': 'https://www.reddit.com/api/me.json'
-		'userTest': 'http://narcikarma.net/nckma_scripts/me.json'
+		'userTest': 'https://www.reddit.com/api/me.json',
+		//'userTest': 'http://narcikarma.net/nckma_scripts/me.json',
+		'webstore': 'https://chrome.google.com/webstore/detail/narcikarma/mogaeafejjipmngijfhdjkmjomgdicdg'
 	};
 	var nkUserData = {};
 	var nkDefaults = {

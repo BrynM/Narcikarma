@@ -18,6 +18,7 @@
 		// very lightwieght validation
 		'url': /^(http|https)\:\/\//
 	};
+	var buttons = {};
 	var sel = {
 		'btn' : {
 			'closePopup': '.nck-btn-close',
@@ -25,8 +26,11 @@
 			'graphs': '.nck-btn-graphs',
 			'options': '.nck-btn-options',
 			'user': '.nck-btn-user',
-			'credits': '.nck-btn-credits'
-		}
+			'credits': '.nck-btn-credits',
+			'subreddit': '.nck-btn-subreddit'
+		},
+		'htmlStats': '.nck-html-stat',
+		'textStats': '.nck-text-stat'
 	};
 	var status = nckma.get(true);
 	var statFakes = {};
@@ -116,9 +120,104 @@
 		open_url(nckma.get_url('options'));
 	}
 
+	function open_subreddit () {
+		nckma.track('func', 'open_subreddit', 'nkExec');
+		open_url(nckma.get_url('subreddit'));
+	}
+
+	function open_webstore () {
+		nckma.track('func', 'open_webstore', 'nkExec');
+		open_url(nckma.get_url('webstore'));
+	}
+
+	function populate_stats (win, html) {
+		var statsToFill;
+		var len;
+		var iter;
+
+		if(!bpmv.obj(win) || !bpmv.func(win.$)) {
+			return;
+		}
+
+		statsToFill = html ? win.$(sel.htmlStats) : win.$(sel.textStats);
+		len = statsToFill.length;
+
+		if (len < 1) {
+			return;
+		}
+
+		for (iter = 0; iter < len; iter++) {
+			try {
+				if (html) {
+					statsToFill[iter].innerHTML = nckma.pages.tpl(statsToFill[iter].getAttribute('data-stat'), true);
+				} else {
+					statsToFill[iter].innerText = nckma.pages.tpl(statsToFill[iter].getAttribute('data-stat'), false);
+				}
+			} catch (e) {}
+		}
+	};
+
+	/*
+	* button bindings
+	*/
+
+	buttons['closePopup'] = {
+		'sel': '.nck-btn-close',
+		'title': 'Close',
+		'cb': handle_close_win
+	};
+
+	buttons['closeX'] = {
+		'sel': '.nck-close-x',
+		'title': 'X',
+		'cb': handle_close_win
+	};
+
+	buttons['graphs'] = {
+		'sel': '.nck-btn-graphs',
+		'title': 'Graphs',
+		'cb': open_graphs
+	};
+
+	buttons['options'] = {
+		'sel': '.nck-btn-options',
+		'title': 'Options',
+		'cb': open_options
+	};
+
+	buttons['user'] = {
+		'sel': '.nck-btn-user',
+		'title': 'Open User',
+		'cb': open_current_user
+	};
+
+	buttons['credits'] = {
+		'sel': '.nck-btn-credits',
+		'title': 'Credits',
+		'cb': open_credits
+	};
+
+	buttons['subreddit'] = {
+		'sel': '.nck-btn-subreddit',
+		'title': '/r/Narcikarma',
+		'cb': open_subreddit
+	};
+
+	buttons['webstore'] = {
+		'sel': '.nck-btn-webstore',
+		'title': 'Chrome Web Store',
+		'cb': open_webstore
+	};
+
 	/*
 	* faked stats not returned in me.json
 	*/
+
+	statFakes.cake_day = function (dataSet) {
+		var data = nckma.get();
+
+		return data.start.created_utc;
+	};
 
 	statFakes.comment_delta = function (dataSet) {
 		var data = nckma.get();
@@ -151,6 +250,16 @@
 	* stat formatters (raw data)
 	*/
 
+	statFormatters.cake_day = function (val) {
+		var opts = nckma.opts.get();
+		var cDay = new Date(0);
+
+		cDay.setUTCSeconds(val);
+
+		return nckma.str_date(cDay, opts['dateFormat']);
+	};
+
+
 	statFormatters.comment_karma = function (val) {
 		return bpmv.num(val, true) ? nckma.str_num(val) : 'unknown';
 	};
@@ -162,7 +271,14 @@
 
 	/*
 	* special text templates as functions
+	* (must go before html for aliasing)
 	*/
+
+	templates.text.current_timestamp = function (stats) {
+		var opts = nckma.opts.get();
+
+		return nckma.str_date(stats.current.nkTimeStamp, opts['dateFormat']);
+	};
 
 	templates.text.has_mail = function (stats) {
 		return (stats.current.has_mail ? 'Yes ('+stats.current.inbox_count+')' : 'No');
@@ -170,6 +286,39 @@
 
 	templates.text.name = function (stats) {
 		return stats.current.name+(stats.current.has_verified_email ? '' : '(unverified)');
+	};
+
+	templates.text.start_timestamp = function (stats) {
+		var opts = nckma.opts.get();
+
+		return nckma.str_date(stats.start.nkTimeStamp, opts['dateFormat']);
+	};
+
+	templates.text.ext_description = function (stats) {
+		var info = nckma.info(true);
+
+		if (bpmv.str(info)) {
+			var inf = JSON.parse(info);
+			return ''+inf.description;
+		}
+	};
+
+	templates.text.ext_name = function (stats) {
+		var info = nckma.info(true);
+
+		if (bpmv.str(info)) {
+			var inf = JSON.parse(info);
+			return ''+inf.name;
+		}
+	};
+
+	templates.text.ext_name_full = function (stats) {
+		var info = nckma.info(true);
+
+		if (bpmv.str(info)) {
+			var inf = JSON.parse(info);
+			return ''+inf.name+' v'+inf.version;
+		}
 	};
 
 	/*
@@ -305,16 +454,18 @@
 	*/
 
 	nckma.pages.bind_btns = function (win) {
+		var iter;
+
 		if(!bpmv.obj(win) || !bpmv.func(win.$)) {
 			return;
 		}
 
-		win.$(sel.btn.closePopup).click(handle_close_win);
-		win.$(sel.btn.closeX).click(handle_close_win);
-		win.$(sel.btn.credits).click(open_credits);
-		win.$(sel.btn.graphs).click(open_graphs);
-		win.$(sel.btn.options).click(open_options);
-		win.$(sel.btn.user).click(open_current_user);
+		for(iter in buttons) {
+			if(bpmv.obj(buttons[iter]) && bpmv.str(buttons[iter].sel) && bpmv.func(buttons[iter].cb)) {
+				win.$(buttons[iter].sel).text(buttons[iter].title).click(buttons[iter].cb);
+
+			}
+		}
 	};
 
 	nckma.pages.color = function (colorName) {
@@ -371,6 +522,11 @@
 		return open_current_user();
 	};
 
+	nckma.pages.populate_stats = function (win) {
+		populate_stats(win, true);
+		populate_stats(win, false);
+	};
+
 	nckma.pages.tpl = function (tplName, html) {
 		var data = {};
 		var iter;
@@ -388,6 +544,11 @@
 		}
 
 		if (!bpmv.str(tpls[tplName])) {
+			if (bpmv.func(templates['text'][tplName])) {
+				// if there's a text func version fall back to it...
+				return templates['text'][tplName](stats);
+			}
+
 			// return the value if possible
 			return nckma.pages.get_stat(tplName);
 		}

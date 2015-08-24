@@ -306,7 +306,7 @@ input[type="radio"]:checked ~ label ~ .tab-contents {
 	color: green;
 }
 
-#nck_name {
+h3.nck-html-stat[data-stat="ext_name_full"] {
 	margin: 0;
 }
 
