@@ -224,7 +224,7 @@ button.nckDangerButton:active {
 	display: block;
 	clear: both;
 	position: relative;
-	min-height: 500px;
+	min-height: 410px;
 	margin: 0;
 }
 
