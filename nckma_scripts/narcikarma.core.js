@@ -64,8 +64,8 @@ if (typeof(nckma) != 'object') {
 		'userBase': 'https://www.reddit.com/user/',
 		//'userTest': 'chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_scripts/me.json'
 		//'userTest': 'http://narcikarma.net/test/me.php?d=1.25'
-		'userTest': 'https://www.reddit.com/api/me.json'
-		//'userTest': 'http://narcikarma.net/nckma_scripts/me.json'
+		//'userTest': 'https://www.reddit.com/api/me.json'
+		'userTest': 'http://narcikarma.net/nckma_scripts/me.json'
 	};
 	var nkUserData = {};
 	var nkDefaults = {
