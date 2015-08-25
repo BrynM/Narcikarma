@@ -28,7 +28,7 @@ if (typeof(nckma) != 'object') {
 	var nkFlags = {
 		'debug': true,
 		'ga': true,
-		'testing': false,
+		'testing': true,
 		// read configuration fallbacks...
 		'aConfFB': false
 	};
@@ -66,8 +66,8 @@ if (typeof(nckma) != 'object') {
 		'userBase': 'https://www.reddit.com/user/',
 		//'userTest': 'chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_scripts/me.json'
 		//'userTest': 'http://narcikarma.net/test/me.php?d=1.25'
-		'userTest': 'https://www.reddit.com/api/me.json',
-		//'userTest': 'http://narcikarma.net/nckma_scripts/me.json',
+		//'userTest': 'https://www.reddit.com/api/me.json',
+		'userTest': 'http://narcikarma.net/nckma_scripts/me.json',
 		'webstore': 'https://chrome.google.com/webstore/detail/narcikarma/mogaeafejjipmngijfhdjkmjomgdicdg'
 	};
 	var nkUserData = {};

@@ -283,7 +283,7 @@ input[type="radio"]:checked ~ label ~ .tab-contents {
 
 .tab-contents p {
 	margin: 5px;
-	margin-right: 400px;
+	/* margin-right: 400px; */
 }
 
 /*
@@ -367,7 +367,7 @@ h3.nck-html-stat[data-stat="ext_name_full"] {
 }
 
 .nckOptionsContainer {
-	margin-right: 400px;
+	/* margin-right: 400px; */
 }
 
 .nckOptionsContainer span {

@@ -398,7 +398,7 @@
 		var opts = nckma.opts.get();
 		var html = '';
 
-		html += '<a href="'+nckma.get_url('inbox')+'" target="_blank" ';
+		html += '<a href="'+nckma.get_url('modmail')+'" target="_blank" ';
 		html += 'title="Open your modmail" ';
 
 		if (stats.current.has_mod_mail) {
@@ -502,9 +502,9 @@
 		}
 
 		if (starting) {
-			stats = $.extend({}, data.current);
-		} else {
 			stats = $.extend({}, data.start);
+		} else {
+			stats = $.extend({}, data.current);
 		}
 
 		if(!bpmv.obj(stats) || typeof stats[stat] === 'undefined') {

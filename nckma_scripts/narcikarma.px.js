@@ -260,17 +260,17 @@
 						break;
 					case 'has_mail':
 						if (dat.current.has_mail) {
-							nckma.px.draw_char('f1', x, y, nckma.px.color('red'));
+							nckma.px.draw_char('f1', x, y, nckma.px.color('hasMail'));
 						} else {
-							nckma.px.draw_char('f0', x, y, nckma.px.color('red'));
+							nckma.px.draw_char('f0', x, y, nckma.px.color('noMail'));
 						}
 
 						break;
 					case 'has_mod_mail':
 						if (dat.current.has_mod_mail) {
-							nckma.px.draw_char('f1', x, y, nckma.px.color('blue'));
+							nckma.px.draw_char('f1', x, y, nckma.px.color('hasModMail'));
 						} else {
-							nckma.px.draw_char('f0', x, y, nckma.px.color('blue'));
+							nckma.px.draw_char('f0', x, y, nckma.px.color('noModMail'));
 						}
 
 						break;

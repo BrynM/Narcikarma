@@ -1,6 +1,7 @@
 var bgP = chrome.extension.getBackgroundPage();
 var nckma = bgP.nckma;
 var bpmv = bgP.bpmv;
+var _ = bgP._;
 
 function populate () {
 	nckma.pages.populate_stats(window);

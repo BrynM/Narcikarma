@@ -1,6 +1,8 @@
 jQuery.event.props.push('dataTransfer');
 
 var bgP = chrome.extension.getBackgroundPage();
+var _ = bgP._;
+
 var rgx = {
 	'colorPre': /^color_/,
 };

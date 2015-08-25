@@ -1,7 +1,7 @@
 {
 	"name": "Narcikarma",
 	"short_name": "Narcikarma",
-	"version": "0.50111",
+	"version": "0.50112",
 	"manifest_version": 2,
 	"description": "A Reddit karma tracker for Google Chrome by badmonkey0001",
 	"browser_action": {
