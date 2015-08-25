@@ -219,6 +219,44 @@
 				</div>
 			</div>
 
+				<!-- fieldset>
+	                <legend>What is Your Favorite Pet?</legend>
+	                <input type="checkbox" name="animal" value="Cat" />Cats <br />
+	                <input type="checkbox" name="animal" value="Dog" />Dogs<br />
+	                <input type="checkbox" name="animal" value="Bird" />Birds<br />
+	                <input type="submit" value="Submit now" />
+	        	</fieldset -->
+
+			<div id="color_options_tab" class="tab-single">
+				<input type="radio" class="tab-radio" id="alerts_options_tab_radio" name="optionsTabs" />
+				<label for="alerts_options_tab_radio" class="tab-label">Alerts</label>
+				<div class="tab-contents">
+
+					<h3>These aren't hooked up to anything yet...</h3>
+
+					<div class="nckOptionsContainer" title="When you recieve a message, reply, or a PM, an alert will be shown.">
+						<label for="opt_alertMail">User mail</label>
+						<input type="checkbox" id="opt_alertMail">&nbsp;<span id="opt_alertMail_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer" title="When you recieve a moderator mail message, an alert will be shown.">
+						<label for="opt_alertModMail">Moderator mail</label>
+						<input type="checkbox" id="opt_alertModMail">&nbsp;<span id="opt_alertModMail_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer" title="When your comment karma has increased by this amount, an alert will be shown.">
+						<label for="opt_alertCommentGain">Alert Comment Karma Threshold</label>
+						<input type="text" id="opt_alertCommentGain">&nbsp;<span id="opt_alertCommentGain_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer" title="When your link karma has increased by this amount, an alert will be shown.">
+						<label for="opt_alertLinkGain">Alert Link Karma Threshold</label>
+						<input type="text" id="opt_alertLinkGain">&nbsp;<span id="opt_alertLinkGain_status"></span>
+					</div>
+
+				</div>
+			</div>
+
 			<div id="tools_tab" class="tab-single">
 				<input type="radio" class="tab-radio" id="tools_tab_radio" name="optionsTabs" />
 				<label for="tools_tab_radio" class="tab-label">Tools</label>
@@ -256,16 +294,6 @@
 		</div>
 
 		<hr>
-
-		<!-- Alerts? -->
-		<!-- div class="nckOptionsContainer" title="When your comment karma has increased by this amount, an alert will be shown.">
-			<label for="opt_alertCommentGain">Alert Comment Karma Threshold</label>
-			<input type="text" id="opt_alertCommentGain">&nbsp;<span id="opt_alertCommentGain_status"></span>
-		</div-->
-		<!--div class="nckOptionsContainer" title="When your link karma has increased by this amount, an alert will be shown.">
-			<label for="opt_alertLinkGain">Alert Link Karma Threshold</label>
-			<input type="text" id="opt_alertLinkGain">&nbsp;<span id="opt_alertLinkGain_status"></span>
-		</div-->
 
 		<div class="nckButtonRow nckButtonRowHelp">
 			<button class="nck-btn-graphs">Graphs</button>

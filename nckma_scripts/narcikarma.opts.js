@@ -21,6 +21,8 @@
 	var nkOptionNames = {
 		'alertCommentGain': 'Alert After Comment Karma Threshold',
 		'alertLinkGain': 'Alert After Link Karma Threshold',
+		'alertMail': 'Alert for New User Mail Message',
+		'alertModMail': 'Alert for New Moderator Mail Message',
 		'alternateTime': 'Flag Alternate Time',
 		'color_black': 'Black Color',
 		'color_blue': 'Blue Color',
@@ -94,21 +96,35 @@
 		}
 	];
 
+	nkSettings['alertMail'] = {
+		'def': 'true',
+		'type': 'bool',
+		'title': 'New User Mail Message',
+		'desc': 'When you recieve a message, reply, or a PM, an alert will be shown.'
+	};
+
+	nkSettings['alertModMail'] = {
+		'def': 'true',
+		'type': 'bool',
+		'title': 'New Moderator Mail Message',
+		'desc': 'When you recieve a moderator mail message, an alert will be shown.'
+	};
+
 	nkSettings['alertCommentGain'] = {
 		'def': '50',
 		'type': 'int',
-		'title': 'Alert After Comment Karma Threshold',
+		'title': 'After Comment Karma Threshold',
 		'desc': 'When your comment karma has increased by this amount, an alert will be shown.',
-		'min': 10,
+		'min': 5,
 		'kill0': true
 	};
 
 	nkSettings['alertLinkGain'] = {
 		'def': '50',
 		'type': 'int',
-		'title': 'Alert After Link Karma Threshold',
+		'title': 'After Link Karma Threshold',
 		'desc': 'When your link karma has increased by this amount, an alert will be shown.',
-		'min': 10,
+		'min': 5,
 		'kill0': true
 	};
 

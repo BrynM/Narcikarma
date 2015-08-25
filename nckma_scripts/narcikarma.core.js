@@ -28,7 +28,7 @@ if (typeof(nckma) != 'object') {
 	var nkFlags = {
 		'debug': true,
 		'ga': true,
-		'testing': true,
+		'testing': false,
 		// read configuration fallbacks...
 		'aConfFB': false
 	};
@@ -328,63 +328,57 @@ if (typeof(nckma) != 'object') {
 	};
 
 	nckma.get_text_status = function () {
-		var ret = '';
-		var dat = nckma.get();
-		var delt = 0;
-		var hasCurr = false;
+		var ret = nckma.pages.tpl('ext_name_full')+'\n';
 
-		if (bpmv.obj(dat)) {
-			if (bpmv.obj(dat.start) && bpmv.str(dat.start.name)) {
+		ret += 'Last Check: '+nckma.pages.tpl('current_timestamp')+'\n';
+		ret += 'Flags: ';
 
-				hasCurr = (bpmv.obj(dat.current) && bpmv.str(dat.current.name));
+		for (var f = 0; f < 4; f++) {
+			if(!bpmv.str(localStorage['flag'+f])) {
+				continue;
+			}
 
-				ret += 'User: '+ dat.start.name + (dat.current.has_mail ? ' (MAIL)' : '' ) + (dat.current.has_mod_mail ? ' (MOD MAIL)' : '') + '\n';
+			switch(localStorage['flag'+f]) {
+				case 'has_mail':
+					ret += '[Mail]';
+					break;
+				case 'has_mod_mail':
+					ret += '[Modmail]';
+					break;
+				case 'is_gold':
+					ret += '[Gold]';
+					break;
+				case 'is_mod':
+					ret += '[Mod]';
+					break;
+				case 'has_mail_both':
+					ret += '[Mail/Modmail]';
+					break;
+				default:
+					ret += '[blank]';
+					break;
+			}
 
-				delt = hasCurr ? dat.current.link_karma - dat.start.link_karma : 0;
-				delt = hasCurr ? (delt > 0 ? '+' : '' ) + nckma.str_num(delt) : '0';
-
-				ret += 'Link Karma: '+ nckma.str_num(dat.start.link_karma ) + ' to ' + (hasCurr ? nckma.str_num(dat.current.link_karma) + ' (' + delt + ')' : 'unknown') + '\n';
-
-				delt = hasCurr ? dat.current.comment_karma - dat.start.comment_karma : 0;
-				delt = hasCurr ? (delt > 0 ? '+' : '' ) + nckma.str_num(delt) : '0';
-
-				ret += 'Comment Karma: '+ nckma.str_num(dat.start.comment_karma ) + ' to ' + (hasCurr ? nckma.str_num(dat.current.comment_karma) + ' (' + delt + ')' : 'unknown') + '\n';
-				ret += 'Last Check: '+ (hasCurr ? nckma.str_date(new Date(dat.current.nkTimeStamp), localStorage['dateFormat']) : 'unknown') + '\n';
-
-				if ((localStorage['row0'] == 'flags' ) || (localStorage['row1'] == 'flags' ) || (localStorage['row0'] == 'flagsAndC' ) || (localStorage['row1'] == 'flagsAndC') || ( localStorage['row0'] == 'flagsAndL') || ( localStorage['row1'] == 'flagsAndL')) {
-					ret += 'Flags: ';
-
-					for (var f = 0; f < 4; f++) {
-						switch(localStorage['flag'+f]) {
-							case 'has_mail':
-								ret += 'Mail';
-								break;
-							case 'has_mod_mail':
-								ret += 'Mod Mail';
-								break;
-							case 'is_gold':
-								ret += 'Gold';
-								break;
-							case 'is_mod':
-								ret += 'Mod';
-								break;
-							case 'has_mail_both':
-								ret += 'Mail/Mod Mail';
-								break;
-							default:
-								ret += '(blank)';
-								break;
-						}
-
-						if (f < 3) {
-							ret += ', ';
-						}
-					}
-
-					ret += '\n';
-				}
+			if (f < 3) {
+				ret += ' ';
 			}
 		}
+
+		ret += '\n\n';
+
+		ret += 'User: '+nckma.pages.tpl('name')+'\n';
+
+		ret += 'Total Karma: '+nckma.pages.tpl('start_total_karma')+' to ';
+		ret += nckma.pages.tpl('total_karma')+'\n';
+
+		ret += 'Link Karma: '+nckma.pages.tpl('start_link_karma')+' to ';
+		ret += nckma.pages.tpl('current_link_karma')+'\n';
+
+		ret += 'Comment Karma: '+nckma.pages.tpl('start_comment_karma')+' to ';
+		ret += nckma.pages.tpl('current_comment_karma')+'\n';
+
+		ret += 'Mail: '+nckma.pages.tpl('has_mail')+'\n';
+		ret += 'Modmail: '+nckma.pages.tpl('has_mod_mail')+'\n';
 
 		return ret;
 	};
@@ -500,7 +494,9 @@ if (typeof(nckma) != 'object') {
 			}
 
 			nckma.px.draw_status('idle');
-			chrome.browserAction.setTitle({ 'title': 'Narcikarma\n' + nckma.get_text_status() });
+			chrome.browserAction.setTitle({
+				'title': nckma.get_text_status()
+			});
 		} else {
 			nckma.px.draw_line('LOG', 1, nckma.px.color('blue'));
 			nckma.px.draw_line('IN', 2, nckma.px.color('blue'));
