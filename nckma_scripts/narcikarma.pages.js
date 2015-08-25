@@ -20,15 +20,6 @@
 	};
 	var buttons = {};
 	var sel = {
-		'btn' : {
-			'closePopup': '.nck-btn-close',
-			'closeX': '.nck-close-x',
-			'graphs': '.nck-btn-graphs',
-			'options': '.nck-btn-options',
-			'user': '.nck-btn-user',
-			'credits': '.nck-btn-credits',
-			'subreddit': '.nck-btn-subreddit'
-		},
 		'htmlStats': '.nck-html-stat',
 		'textStats': '.nck-text-stat'
 	};
@@ -45,7 +36,8 @@
 			'current_link_karma': '##current.link_karma## (##link_delta##)',
 			'start_comment_karma': '##start.comment_karma##',
 			'start_link_karma': '##start.link_karma##',
-			'total_karma': '##total_karma## (##total_delta##)'
+			'total_karma': '##total_karma## (##total_delta##)',
+			'start_total_karma': '##start.total_karma##'
 		}
 	};
 
@@ -106,6 +98,17 @@
 			if (bpmv.obj(status.start, true) && bpmv.str(status.start.name)) {
 				open_url('http://www.reddit.com/user/'+status.start.name+'/');
 				nckma.track('func', 'open_current_user', 'nkExec');
+			}
+		}
+	}
+
+	function open_userSaved (ev) {
+		status = nckma.get();
+
+		if (bpmv.obj(status)) {
+			if (bpmv.obj(status.start, true) && bpmv.str(status.start.name)) {
+				open_url('http://www.reddit.com/user/'+status.start.name+'/saved');
+				nckma.track('func', 'open_userSaved', 'nkExec');
 			}
 		}
 	}
@@ -215,6 +218,12 @@
 	};
 
 	buttons['webstore'] = {
+		'sel': '.nck-btn-userSaved',
+		'title': 'Saved Links/Comments',
+		'cb': open_userSaved
+	};
+
+	buttons['webstore'] = {
 		'sel': '.nck-btn-webstore',
 		'title': 'Chrome Web Store',
 		'cb': open_webstore
@@ -234,14 +243,14 @@
 		var data = nckma.get();
 		var delt = parseInt(data.current.comment_karma, 10) - parseInt(data.start.comment_karma, 10);
 
-		return (delt > 0 ? '+' : '')+delt;
+		return (delt > 0 ? '+' : '')+nckma.str_num(delt);
 	};
 
 	statFakes.link_delta = function (dataSet) {
 		var data = nckma.get();
 		var delt = parseInt(data.current.link_karma, 10) - parseInt(data.start.link_karma, 10);
 
-		return (delt > 0 ? '+' : '')+delt;
+		return (delt > 0 ? '+' : '')+nckma.str_num(delt);
 	};
 
 	statFakes.total_delta = function (dataSet) {
@@ -250,11 +259,11 @@
 		var start = parseInt(data.start.link_karma, 10) + parseInt(data.start.comment_karma, 10);
 		var delt = parseInt(curr, 10) - parseInt(start, 10);
 
-		return (delt > 0 ? '+' : '')+delt;
+		return (delt > 0 ? '+' : '')+nckma.str_num(delt);
 	};
 
 	statFakes.total_karma = function (dataSet) {
-		return parseInt(dataSet.link_karma, 10) + parseInt(dataSet.comment_karma, 10);
+		return nckma.str_num(parseInt(dataSet.link_karma, 10) + parseInt(dataSet.comment_karma, 10));
 	};
 
 	/*
@@ -269,7 +278,6 @@
 
 		return nckma.str_date(cDay, opts['dateFormat']);
 	};
-
 
 	statFormatters.comment_karma = function (val) {
 		return bpmv.num(val, true) ? nckma.str_num(val) : 'unknown';
