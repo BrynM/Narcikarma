@@ -37,7 +37,8 @@
 			'start_comment_karma': '##start.comment_karma##',
 			'start_link_karma': '##start.link_karma##',
 			'total_karma': '##total_karma## (##total_delta##)',
-			'start_total_karma': '##start.total_karma##'
+			'start_total_karma': '##start.total_karma##',
+			'user_link': nckma.get_url('userBase')+'##name##'
 		}
 	};
 
@@ -526,6 +527,16 @@
 		}
 
 		return format_stat(stat, stats[stat]);
+	};
+
+	nckma.pages.open = function(urlKey) {
+		var url = nckma.get_url(urlKey);
+
+		if (bpmv.str(url)) {
+			open_url(url);
+		}
+
+		nckma.track('func', 'pages.open', 'nkExec');
 	};
 
 	nckma.pages.go_to_url = function (loc) {

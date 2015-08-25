@@ -114,7 +114,7 @@
 		'def': '50',
 		'type': 'int',
 		'title': 'After Comment Karma Threshold',
-		'desc': 'When your comment karma has increased by this amount, an alert will be shown.',
+		'desc': 'When your comment karma has increased by this amount, an alert will be shown. Zero will disable these alerts.',
 		'min': 5,
 		'kill0': true
 	};
@@ -123,7 +123,7 @@
 		'def': '50',
 		'type': 'int',
 		'title': 'After Link Karma Threshold',
-		'desc': 'When your link karma has increased by this amount, an alert will be shown.',
+		'desc': 'When your link karma has increased by this amount, an alert will be shown. Zero will disable these alerts.',
 		'min': 5,
 		'kill0': true
 	};
@@ -294,7 +294,7 @@
 		'def': '600',
 		'type': 'int',
 		'title': 'Refresh Interval',
-		'desc': 'Interval that your karma stats will be checked.',
+		'desc': 'Interval that your karma stats will be checked. Zero will disable checks.',
 		'min': nckma.testing() ? 4 : 59,
 		'kill0': true
 	};

@@ -23,7 +23,7 @@
 				{'title': 'Yes'},
 				{'title': 'No'}
 			],
-			'contextMessage': 'Narcikarma '+nckma.version().str
+			'contextMessage': 'Narcikarma'
 		},
 		'error': {
 			'type': 'basic',
@@ -32,7 +32,7 @@
 			'iconUrl': '../nckma_assets/img/iconErr64.png',
 			'isClickable': true,
 			'priority': 2,
-			'contextMessage': 'Narcikarma '+nckma.version().str
+			'contextMessage': 'Narcikarma'
 		},
 		'note': {
 			'type': 'basic',
@@ -41,7 +41,7 @@
 			'iconUrl': '../nckma_assets/img/icon64.png',
 			'isClickable': true,
 			'priority': 0,
-			'contextMessage': 'Narcikarma '+nckma.version().str
+			'contextMessage': 'Narcikarma'
 		},
 		'warning': {
 			'type': 'basic',
@@ -50,7 +50,7 @@
 			'iconUrl': '../nckma_assets/img/iconWarn64.png',
 			'isClickable': true,
 			'priority': 1,
-			'contextMessage': 'Narcikarma '+nckma.version().str
+			'contextMessage': 'Narcikarma'
 		}
 	};
 	var titles = {
@@ -65,6 +65,11 @@
 
 	function handle_clicked (noteId) {
 		chrome.notifications.clear(noteId);
+		nckma.ev('notifyClicked', noteId);
+	}
+
+	function handle_closed (noteId, byUser) {
+		nckma.ev('notifyClosed', arguments);
 	}
 
 	function handle_button (noteId, buttonIdx) {
@@ -86,7 +91,10 @@
 			}, wait);
 		};
 
+		config.contextMessage = '('+nckma.pages.tpl('ext_name_full')+')';
+
 		chrome.notifications.create(id, config, cb);
+		nckma.ev('notify', [id, config, wait]);
 
 		return id;
 	}
@@ -125,68 +133,121 @@
 		}
 	}
 
-	nckma.notify.confirm = function(title, msg, cbA, cbB) {
+	nckma.notify.confirm = function(title, msg, cbA, cbB, conf) {
 		var cfg = $.extend({}, presets['confirm']);
 		var id;
+
+		if(bpmv.obj(conf)) {
+			$.extend(cfg, conf);
+		}
 
 		cfg.message = ''+msg;
 		cfg.title = ''+title;
 
-		id = notify(cfg, waitError);
+		id = notify(cfg, 0);
 		confirmCallbacks[id] = [cbA, cbB];
 
 		nckma.track('func', 'notify.confirm', 'nkExec');
+
+		return id;
 	};
 
-	nckma.notify.err = function(error) {
+
+	nckma.notify.important = function(txt, conf) {
 		var cfg = $.extend({}, presets['error']);
+
+		if(bpmv.obj(conf)) {
+			$.extend(cfg, conf);
+		}
+
+		cfg.message = ''+txt;
+
+		nckma.track('func', 'notify.important', 'nkExec');
+
+		return notify(cfg, 0);
+	};
+
+	nckma.notify.err = function(error, conf) {
+		var cfg = $.extend({}, presets['error']);
+
+		if(bpmv.obj(conf)) {
+			$.extend(cfg, conf);
+		}
 
 		cfg.message = ''+error;
 
-		notify(cfg, waitError);
 		nckma.track('func', 'notify.error', 'nkExec');
+
+		return notify(cfg, waitError);
 	};
 
-	nckma.notify.err_group = function (errArr) {
+	nckma.notify.err_group = function (errArr, conf) {
 		var cfg = $.extend({}, presets['error']);
 
-		notify_group(errArr, cfg, waitError);
+		if(bpmv.obj(conf)) {
+			$.extend(cfg, conf);
+		}
+
 		nckma.track('func', 'notify.err_group', 'nkExec');
+
+		return notify_group(errArr, cfg, waitError);
 	};
 
-	nckma.notify.note = function(note) {
+	nckma.notify.note = function(note, conf) {
 		var cfg = $.extend({}, presets['note']);
 
 		cfg.message = ''+note;
 
-		notify(cfg, waitNote);
+		if(bpmv.obj(conf)) {
+			$.extend(cfg, conf);
+		}
+
 		nckma.track('func', 'notify.note', 'nkExec');
+
+		return notify(cfg, waitNote);
 	};
 
-	nckma.notify.note_group = function (noteArr) {
+	nckma.notify.note_group = function (noteArr, conf) {
 		var cfg = $.extend({}, presets['note']);
 
-		notify_group(noteArr, cfg, waitNote);
+		if(bpmv.obj(conf)) {
+			$.extend(cfg, conf);
+		}
+
 		nckma.track('func', 'notify.note_group', 'nkExec');
+
+		return notify_group(noteArr, cfg, waitNote);
 	};
 
-	nckma.notify.warn = function(warning) {
+	nckma.notify.warn = function(warning, conf) {
 		var cfg = $.extend({}, presets['warning']);
+
+		if(bpmv.obj(conf)) {
+			$.extend(cfg, conf);
+		}
 
 		cfg.message = ''+warning;
 
-		notify(cfg, waitWarning);
 		nckma.track('func', 'notify.warn', 'nkExec');
+
+		return notify(cfg, waitWarning);
 	};
 
-	nckma.notify.warn_group = function (warnArr) {
+	nckma.notify.warn_group = function (warnArr, conf) {
 		var cfg = $.extend({}, presets['warning']);
 
-		notify_group(warnArr, cfg, waitWarning);
+		if(bpmv.obj(conf)) {
+			$.extend(cfg, conf);
+		}
+
 		nckma.track('func', 'notify.warn_group', 'nkExec');
+
+		return notify_group(warnArr, cfg, waitWarning);
 	};
 
 	chrome.notifications.onButtonClicked.addListener(handle_button);
 	chrome.notifications.onClicked.addListener(handle_clicked);
+	chrome.notifications.onClosed.addListener(handle_closed);
+
 })();
 
