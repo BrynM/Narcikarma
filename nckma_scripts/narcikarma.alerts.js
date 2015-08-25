@@ -38,7 +38,7 @@
 	};
 
 	alertHandlers['alertModMail'] = function(stats) {
-		if(stats.current.has_mail) {
+		if(stats.current.has_mod_mail) {
 			if(bpmv.str(activeAlerts['alertModMail'])) {
 				return;
 			}
