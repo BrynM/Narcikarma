@@ -12,6 +12,19 @@
 	nckma.notify = {};
 
 	var presets = {
+		'confirm': {
+			'type': 'basic',
+			'title': 'Confirmation',
+			'message': 'Narcikarma unknown error!!!',
+			'iconUrl': '../nckma_assets/img/iconErr64.png',
+			'isClickable': false,
+			'priority': 2,
+			'buttons': [
+				{'title': 'Yes'},
+				{'title': 'No'}
+			],
+			'contextMessage': 'Narcikarma '+nckma.version().str
+		},
 		'error': {
 			'type': 'basic',
 			'title': 'ERROR!!!',
@@ -48,9 +61,19 @@
 	var waitNote = 5000;
 	var waitError = 0;
 	var waitWarning = 10000;
+	var confirmCallbacks = {};
 
 	function handle_clicked (noteId) {
 		chrome.notifications.clear(noteId);
+	}
+
+	function handle_button (noteId, buttonIdx) {
+		if (bpmv.obj(confirmCallbacks[noteId])) {
+			if (bpmv.func(confirmCallbacks[noteId][buttonIdx])) {
+				confirmCallbacks[noteId][buttonIdx](noteId, buttonIdx);
+			}
+			delete(confirmCallbacks[noteId]);
+		}
 	}
 
 	function notify (config, wait) {
@@ -64,6 +87,8 @@
 		};
 
 		chrome.notifications.create(id, config, cb);
+
+		return id;
 	}
 
 	function notify_group (arr, config, wait) {
@@ -96,9 +121,22 @@
 			config.items = items;
 			config.type = 'list';
 
-			notify(config, wait);
+			return notify(config, wait);
 		}
 	}
+
+	nckma.notify.confirm = function(title, msg, cbA, cbB) {
+		var cfg = $.extend({}, presets['confirm']);
+		var id;
+
+		cfg.message = ''+msg;
+		cfg.title = ''+title;
+
+		id = notify(cfg, waitError);
+		confirmCallbacks[id] = [cbA, cbB];
+
+		nckma.track('func', 'notify.confirm', 'nkExec');
+	};
 
 	nckma.notify.err = function(error) {
 		var cfg = $.extend({}, presets['error']);
@@ -148,6 +186,7 @@
 		nckma.track('func', 'notify.warn_group', 'nkExec');
 	};
 
-	chrome.notifications.onClicked.addListener(handle_clicked)
+	chrome.notifications.onButtonClicked.addListener(handle_button);
+	chrome.notifications.onClicked.addListener(handle_clicked);
 })();
 
