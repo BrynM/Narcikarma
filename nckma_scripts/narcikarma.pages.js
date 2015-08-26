@@ -240,6 +240,12 @@
 		return data.start.created_utc;
 	};
 
+	statFakes.gold_expiration = function (dataSet) {
+		var data = nckma.get();
+
+		return data.start.created_utc;
+	};
+
 	statFakes.comment_delta = function (dataSet) {
 		var data = nckma.get();
 		var delt = parseInt(data.current.comment_karma, 10) - parseInt(data.start.comment_karma, 10);
@@ -278,6 +284,15 @@
 		cDay.setUTCSeconds(val);
 
 		return nckma.str_date(cDay, opts['dateFormat']);
+	};
+
+	statFormatters.gold_expiration = function (val) {
+		var opts = nckma.opts.get();
+		var gExp = new Date(0);
+
+		gExp.setUTCSeconds(val);
+
+		return nckma.str_date(gExp, opts['dateFormat']);
 	};
 
 	statFormatters.comment_karma = function (val) {

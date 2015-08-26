@@ -14,6 +14,7 @@
 	* vars
 	*/
 
+	var nkDebugLevel = 5; // opts
 	var nckmaNeedsSave = false;
 	var nkMaxHist = 8000;
 	var nkSettings = {};
@@ -966,8 +967,7 @@
 	*/
 
 	nckma.start(function () {
-		console.log('nkSettings', { 'curr_len': bpmv.count(nkSettings) });
-		console.log('nkSettingsKeys', nkSettingsKeys);
+		nckma.debug(nkDebugLevel, 'Base Settings', nkSettings);
 	});
 
 })();

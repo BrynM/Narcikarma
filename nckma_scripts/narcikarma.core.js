@@ -28,7 +28,7 @@ if (typeof(nckma) != 'object') {
 	var nkFlags = {
 		'debug': true,
 		'ga': true,
-		'testing': false,
+		'testing': true,
 		// read configuration fallbacks...
 		'aConfFB': false
 	};
