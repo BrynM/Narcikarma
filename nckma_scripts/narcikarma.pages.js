@@ -21,7 +21,8 @@
 	var buttons = {};
 	var sel = {
 		'htmlStats': '.nck-html-stat',
-		'textStats': '.nck-text-stat'
+		'textStats': '.nck-text-stat',
+		'zeroDisableInput': '.zeroDisableInput'
 	};
 	var status = nckma.get(true);
 	var statFakes = {};
@@ -41,6 +42,20 @@
 			'user_link': nckma.get_url('userBase')+'##name##'
 		}
 	};
+
+	function $_from_event (ev) {
+		if(!bpmv.obj(ev)) {
+			return;
+		}
+
+		if(!bpmv.obj(ev.target) || !bpmv.obj(ev.target.ownerDocument) || !bpmv.obj(ev.target.ownerDocument.defaultView)) {
+			return;
+		}
+
+		if(bpmv.func(ev.target.ownerDocument.defaultView.$)) {
+			return ev.target.ownerDocument.defaultView.$;
+		}
+	}
 
 	function format_html_delta (delt) {
 		var opts = nckma.opts.get();
@@ -81,6 +96,24 @@
 		}
 
 		return ev.view.close();
+	}
+
+	function handle_zero_disable_input (ev) {
+		var $el;
+		var jQ = $_from_event(ev);
+		var className = 'zeroIsDisabled';
+
+		if(!bpmv.obj(ev) || !bpmv.func(jQ)) {
+			return;
+		}
+
+		$el = jQ(ev.target);
+
+		if(parseInt($el.val(), 10) === 0) {
+			$el.addClass(className);
+		} else {
+			$el.removeClass(className);
+		}
 	}
 
 	function open_url(url) {
@@ -175,55 +208,46 @@
 		'title': 'Close',
 		'cb': handle_close_win
 	};
-
 	buttons['closeX'] = {
 		'sel': '.nck-close-x',
 		'title': 'X',
 		'cb': handle_close_win
 	};
-
 	buttons['graphs'] = {
 		'sel': '.nck-btn-graphs',
 		'title': 'Graphs',
 		'cb': open_graphs
 	};
-
 	buttons['options'] = {
 		'sel': '.nck-btn-options',
 		'title': 'Options',
 		'cb': open_options
 	};
-
 	buttons['user'] = {
 		'sel': '.nck-btn-user',
 		'title': 'Open User',
 		'cb': open_current_user
 	};
-
 	buttons['credits'] = {
 		'sel': '.nck-btn-credits',
 		'title': 'Credits',
 		'cb': open_credits
 	};
-
 	buttons['source'] = {
 		'sel': '.nck-btn-source',
 		'title': 'Source',
 		'cb': open_source
 	};
-
 	buttons['subreddit'] = {
 		'sel': '.nck-btn-subreddit',
 		'title': '/r/Narcikarma',
 		'cb': open_subreddit
 	};
-
-	buttons['webstore'] = {
+	buttons['userSaved'] = {
 		'sel': '.nck-btn-userSaved',
-		'title': 'Saved Links/Comments',
+		'title': 'Saved Items',
 		'cb': open_userSaved
 	};
-
 	buttons['webstore'] = {
 		'sel': '.nck-btn-webstore',
 		'title': 'Chrome Web Store',
@@ -240,18 +264,24 @@
 		return data.start.created_utc;
 	};
 
+	statFakes.gold_expiration = function (dataSet) {
+		var data = nckma.get();
+
+		return data.start.gold_expiration;
+	};
+
 	statFakes.comment_delta = function (dataSet) {
 		var data = nckma.get();
 		var delt = parseInt(data.current.comment_karma, 10) - parseInt(data.start.comment_karma, 10);
 
-		return (delt > 0 ? '+' : '')+nckma.str_num(delt);
+		return parseInt(delt, 10);
 	};
 
 	statFakes.link_delta = function (dataSet) {
 		var data = nckma.get();
 		var delt = parseInt(data.current.link_karma, 10) - parseInt(data.start.link_karma, 10);
 
-		return (delt > 0 ? '+' : '')+nckma.str_num(delt);
+		return parseInt(delt, 10);
 	};
 
 	statFakes.total_delta = function (dataSet) {
@@ -260,7 +290,7 @@
 		var start = parseInt(data.start.link_karma, 10) + parseInt(data.start.comment_karma, 10);
 		var delt = parseInt(curr, 10) - parseInt(start, 10);
 
-		return (delt > 0 ? '+' : '')+nckma.str_num(delt);
+		return parseInt(delt, 10);
 	};
 
 	statFakes.total_karma = function (dataSet) {
@@ -280,8 +310,10 @@
 		return nckma.str_date(cDay, opts['dateFormat']);
 	};
 
+	statFormatters.gold_expiration = statFormatters.cake_day;
+
 	statFormatters.comment_karma = function (val) {
-		return bpmv.num(val, true) ? nckma.str_num(val) : 'unknown';
+		return bpmv.num(val, true) ? val : 'unknown';
 	};
 
 	// aliased to catch other booleans as well
@@ -293,6 +325,24 @@
 	* special text templates as functions
 	* (must go before html for aliasing)
 	*/
+
+	templates.text.comment_delta = function (stats) {
+		var delt = nckma.pages.get_stat('comment_delta');
+
+		return (delt > 0 ? '+' : '')+nckma.str_num(delt);
+	};
+
+	templates.text.link_delta = function (stats) {
+		var delt = nckma.pages.get_stat('link_delta');
+
+		return (delt > 0 ? '+' : '')+nckma.str_num(delt);
+	};
+
+	templates.text.total_delta = function (stats) {
+		var delt = nckma.pages.get_stat('total_delta');
+
+		return (delt > 0 ? '+' : '')+nckma.str_num(delt);
+	};
 
 	templates.text.current_timestamp = function (stats) {
 		var opts = nckma.opts.get();
@@ -383,6 +433,18 @@
 		return '<a href="'+nckma.get_url('getGoldCredits')+'" target="_blank" title="Get gold credits">None</a>';
 	};
 
+	templates.html.gold_expiration = function (stats) {
+		var opts = nckma.opts.get();
+		var exp = nckma.pages.get_stat('gold_expiration');
+		var has = nckma.get().current.is_gold;
+
+		if (has) {
+			return '<span style="color: rgba( ' + opts['color_gold'] + ' );">'+exp+'</span>';
+		}
+
+		return 'pleb';
+	};
+
 	templates.html.has_mail = function (stats) {
 		var opts = nckma.opts.get();
 		var html = '';
@@ -459,7 +521,7 @@
 		var opts;
 		var delt;
 
-		if(!bpmv.obj(stats) || !bpmv.num(bpmv.dive(stats, 'current.link_karma'), true)) {
+		if (!bpmv.obj(stats) || !bpmv.num(bpmv.dive(stats, 'current.link_karma'), true)) {
 			return 'unknown';
 		}
 
@@ -480,11 +542,30 @@
 			return;
 		}
 
-		for(iter in buttons) {
+		for (iter in buttons) {
 			if(bpmv.obj(buttons[iter]) && bpmv.str(buttons[iter].sel) && bpmv.func(buttons[iter].cb)) {
-				win.$(buttons[iter].sel).text(buttons[iter].title).click(buttons[iter].cb);
-
+				win.$(buttons[iter].sel).text(buttons[iter].title).off('click', buttons[iter].cb).on('click', buttons[iter].cb);
 			}
+		}
+	};
+
+	nckma.pages.bind_zero_disable = function (win) {
+		var $el;
+		var len;
+		var iter;
+		var $single;
+
+		if (!bpmv.obj(win) || !bpmv.func(win.$)) {
+			return;
+		}
+
+		$el = win.$(sel.zeroDisableInput);
+		len = $el.length;
+
+		for (iter = 0; iter < len; iter++) {
+			$single = win.$($el[iter]);
+
+			$single.off('change focusout focus', handle_zero_disable_input).on('change focusout focus', handle_zero_disable_input).change();
 		}
 	};
 
@@ -492,7 +573,7 @@
 
 		var color = rgx['colorPre'].test(colorName) ? colorName : 'color_'+colorName;
 
-		if(bpmv.str(localStorage[color])) {
+		if (bpmv.str(localStorage[color])) {
 			return ''+localStorage[color];
 		}
 
@@ -553,8 +634,8 @@
 	};
 
 	nckma.pages.populate_stats = function (win) {
-		populate_stats(win, true);
 		populate_stats(win, false);
+		populate_stats(win, true);
 	};
 
 	nckma.pages.tpl = function (tplName, html) {

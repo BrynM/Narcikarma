@@ -14,39 +14,19 @@
 	* vars
 	*/
 
+	nckResetVersions = [
+		'0.50112',
+		'0.51',
+		'0.51.T',
+		'0.51.TD',
+		'0.51.D'
+	];
+
+	var nkDebugLevel = 5; // opts
 	var nckmaNeedsSave = false;
 	var nkMaxHist = 8000;
 	var nkSettings = {};
 	var nkSettingsKeys = [];
-	var nkOptionNames = {
-		'alertCommentGain': 'Alert After Comment Karma Threshold',
-		'alertLinkGain': 'Alert After Link Karma Threshold',
-		'alertMail': 'Alert for New User Mail Message',
-		'alertModMail': 'Alert for New Moderator Mail Message',
-		'alternateTime': 'Flag Alternate Time',
-		'color_black': 'Black Color',
-		'color_blue': 'Blue Color',
-		'color_gold': 'Gold Color',
-		'color_gray': 'Gray Color',
-		'color_green': 'Green Color',
-		'color_purple': 'Purple Color',
-		'color_negChange': 'Negative Change Color',
-		'color_noChange': 'No Change Color',
-		'color_posChange': 'Positive Change Color',
-		'color_hasMail': 'Has mail or modmail',
-		'color_noMail': 'Empty mail or modmail inbox',
-		'color_red': 'Red Color',
-		'cumulativeKarma': 'Show Cumulative Karma',
-		'dateFormat': 'Date Format',
-		'flag0': 'First Flag',
-		'flag1': 'Second Flag',
-		'flag2': 'Third Flag',
-		'flag3': 'Fourth Flag',
-		'interval': 'Refresh Interval',
-		'row0': 'First Row Contents',
-		'row1': 'Second Row Contents',
-		'savedRefreshes': 'Number of Saved Refreshes'
-	};
 	var nckFlagEnum = [
 		{
 			'v': 'blank',
@@ -102,32 +82,36 @@
 		'title': 'New User Mail Message',
 		'desc': 'When you recieve a message, reply, or a PM, an alert will be shown.'
 	};
-
 	nkSettings['alertModMail'] = {
 		'def': 'true',
 		'type': 'bool',
 		'title': 'New Moderator Mail Message',
 		'desc': 'When you recieve a moderator mail message, an alert will be shown.'
 	};
-
 	nkSettings['alertCommentGain'] = {
-		'def': '50',
+		'def': 0,
 		'type': 'int',
 		'title': 'After Comment Karma Threshold',
 		'desc': 'When your comment karma has increased by this amount, an alert will be shown. Zero will disable these alerts.',
 		'min': 5,
 		'kill0': true
 	};
-
 	nkSettings['alertLinkGain'] = {
-		'def': '50',
+		'def': 0,
 		'type': 'int',
 		'title': 'After Link Karma Threshold',
 		'desc': 'When your link karma has increased by this amount, an alert will be shown. Zero will disable these alerts.',
 		'min': 5,
 		'kill0': true
 	};
-
+	nkSettings['alertTotalGain'] = {
+		'def': 50,
+		'type': 'int',
+		'title': 'After total Karma Threshold',
+		'desc': 'When your total Karma has increased by this amount, an alert will be shown. Zero will disable these alerts.',
+		'min': 5,
+		'kill0': true
+	};
 	nkSettings['alternateTime'] = {
 		'def': '2',
 		'type': 'int',
@@ -135,112 +119,96 @@
 		'desc': 'The time for a row to alternate between flags and other information, if used.',
 		'min': 1
 	};
-
 	nkSettings['color_negChange'] = {
 		'def': '235, 0, 0, 1',
 		'type': 'color',
 		'title': 'Negative Change Color',
 		'desc': 'Color for a "Negative" change in karma.'
 	};
-
 	nkSettings['color_noChange'] = {
 		'def': '0, 0, 0, 1',
 		'type': 'color',
 		'title': 'No Change Color',
 		'desc': 'Color for no change in karma.'
 	};
-
 	nkSettings['color_posChange'] = {
 		'def': '0, 190, 0, 1',
 		'type': 'color',
 		'title': 'Positive Change Color',
 		'desc': 'Color for a "Positive" change in karma.'
 	};
-
 	nkSettings['color_hasMail'] = {
 		'def': '0, 128, 0, 1',
 		'type': 'color',
 		'title': 'Has mail color',
 		'desc': 'Has mail color.'
 	};
-
 	nkSettings['color_noMail'] = {
 		'def': '160, 160, 160, 1',
 		'type': 'color',
 		'title': 'No mail color',
 		'desc': 'Empty mail inbox color.'
 	};
-
 	nkSettings['color_hasModMail'] = {
 		'def': '0, 128, 0, 1',
 		'type': 'color',
 		'title': 'Has modmail color',
 		'desc': 'Has modmail color.'
 	};
-
 	nkSettings['color_noModMail'] = {
 		'def': '160, 160, 160, 1',
 		'type': 'color',
 		'title': 'No modmail color',
 		'desc': 'Empty modmail inbox color.'
 	};
-
 	nkSettings['color_black'] = {
 		'def': '0, 0, 0, 1',
 		'type': 'color',
 		'title': 'Black Color',
 		'desc': 'Black Color.'
 	};
-
 	nkSettings['color_blue'] = {
 		'def': '0, 0, 235, 1',
 		'type': 'color',
 		'title': 'Blue Color',
 		'desc': 'Blue Color.'
 	};
-
 	nkSettings['color_gold'] = {
 		'def': '176, 176, 21, 1',
 		'type': 'color',
 		'title': 'Gold Color',
 		'desc': 'Gold Color.'
 	};
-
 	nkSettings['color_gray'] = {
 		'def': '128, 128, 128, 1',
 		'type': 'color',
 		'title': 'Grey Color',
 		'desc': 'Grey Color.'
 	};
-
 	nkSettings['color_green'] = {
 		'def': '0, 190, 0, 1',
 		'type': 'color',
 		'title': 'Green Color',
 		'desc': 'Green Color.'
 	};
-
 	nkSettings['color_purple'] = {
 		'def': '215, 0, 215, 1',
 		'type': 'color',
 		'title': 'Purple Color',
 		'desc': 'Purple Color.'
 	};
-
 	nkSettings['color_red'] = {
 		'def': '235, 0, 0, 1',
 		'type': 'color',
 		'title': 'Red Color',
 		'desc': 'Red Color.'
 	};
-
 	nkSettings['cumulativeKarma'] = {
 		'def': 'true',
 		'type': 'bool',
 		'title': 'Show Cumulative Karma',
 		'desc': 'Show the karma change for all of the history, not just this browser session.'
 	};
-
 	nkSettings['dateFormat'] = {
 		'def': 'US',
 		'type': 'enum',
@@ -257,7 +225,6 @@
 			},
 		]
 	};
-
 	nkSettings['flag0'] = {
 		'def': 'has_mail',
 		'type': 'enum',
@@ -265,31 +232,27 @@
 		'desc': 'First flag shown on a flag row.',
 		'enum': $.extend([], nckFlagEnum)
 	};
-
 	nkSettings['flag1'] = {
-		'def': 'is_mod',
+		'def': 'blank',
 		'type': 'enum',
 		'title': 'Second Flag',
 		'desc': 'Second flag shown on a flag row.',
 		'enum': $.extend([], nckFlagEnum)
 	};
-
 	nkSettings['flag2'] = {
-		'def': 'has_mod_mail',
+		'def': 'blank',
 		'type': 'enum',
 		'title': 'Third Flag',
 		'desc': 'Third flag shown on a flag row.',
 		'enum': $.extend([], nckFlagEnum)
 	};
-
 	nkSettings['flag3'] = {
-		'def': 'is_gold',
+		'def': 'has_mod_mail',
 		'type': 'enum',
 		'title': 'Last Flag',
 		'desc': 'Last flag shown on a flag row.',
 		'enum': $.extend([], nckFlagEnum)
 	};
-
 	nkSettings['interval'] = {
 		'def': '600',
 		'type': 'int',
@@ -298,7 +261,6 @@
 		'min': nckma.testing() ? 4 : 59,
 		'kill0': true
 	};
-
 	nkSettings['row0'] = {
 		'def': 'lKarma',
 		'type': 'enum',
@@ -306,7 +268,6 @@
 		'desc': 'Contents of top icon row.',
 		'enum': $.extend([], nckRowEnum)
 	};
-
 	nkSettings['row1'] = {
 		'def': 'cKarma',
 		'type': 'enum',
@@ -314,7 +275,6 @@
 		'desc': 'Contents of bottom icon row.',
 		'enum': $.extend([], nckRowEnum)
 	};
-
 	nkSettings['savedRefreshes'] = {
 		'def': '5000',
 		'type': 'int',
@@ -327,17 +287,7 @@
 
 	nkSettingsKeys = bpmv.keys(nkSettings, true);
 
-	nckma.opts.valid_color = function (val, setting) {
-		return nckma.px.color_test(val) ? true : 'Color needs to be in the format "0-255, 0-255, 0-255, 0.0-1.0".';
-	};
-
-	nckma.opts.valid = {
-		'alertCommentGain': function (val) {
-			return parseInt(val) > 10 ? true : nkOptionNames['alertCommentGain'] + ' must be greater than 10.';
-		},
-		'alertLinkGain': function (val) {
-			return parseInt(val) > 10 ? true : nkOptionNames['alertLinkGain'] + ' must be greater than 10.';
-		},
+	nkValidators = {
 		'color_black': nckma.opts.valid_color,
 		'color_blue': nckma.opts.valid_color,
 		'color_gold': nckma.opts.valid_color,
@@ -349,17 +299,33 @@
 		'color_noChange': nckma.opts.valid_color,
 		'color_posChange': nckma.opts.valid_color,
 		'interval': function (val) {
-			return (parseInt(val) > (nckma.testing() ? 4 : 59)) || (parseInt(val) === 0) ? true : nkOptionNames['interval'] + ' must be 1 minute or more.';
+			return (parseInt(val) > (nckma.testing() ? 4 : 59)) || (parseInt(val) === 0) ? true : nkSettings['interval'].title + ' must be 1 minute or more.';
 		},
 		'savedRefreshes': function (val) {
 			val = parseInt(val, 10);
 
-			return (( val >= 0) && ( val <= nkMaxHist) ? true : nkOptionNames['savedRefreshes'] + ' must be a number between 0 and '+nkMaxHist+'.');
+			return (( val >= 0) && ( val <= nkMaxHist) ? true : nkSettings['savedRefreshes'].title + ' must be a number between 0 and '+nkMaxHist+'.');
 		}
 	};
 
 	/*
 	* functions
+	*/
+
+	function local_obj (key, val) {
+		if(!bpmv.str(key)) {
+			return 
+		}
+
+		if(bpmv.obj(val)) {
+			localStorage[key] = JSON.stringify(val);
+		}
+
+		return localStorage[key] ? JSON.parse(localStorage[key]) : undefined;
+	}
+
+	/*
+	* nckma.opts functions
 	*/
 
 	nckma.opts.bad_setting = function (type, setting, args) {
@@ -369,6 +335,26 @@
 
 		return 'Setting "'+setting+'" is invalid in source. Please report a bug. Type: "'+type+'"; Arguments: '+(bpmv.obj(args) || bpmv.arr(args) ? JSON.stringify(args) : args)+';';
 	};
+
+	nckma.opts.check_reset_version = function () {
+		var ver = nckma.version().str;
+		var loc = local_obj('nckResetVersions');
+
+		nckma.debug(nkDebugLevel, 'opts.check_reset_version', nckResetVersions);
+
+		if(nckResetVersions.indexOf(ver) > -1 && (!bpmv.arr(loc) || loc.indexOf(ver) < 0)) {
+			local_obj('nckResetVersions', nckResetVersions);
+
+			nckma.notify.confirm(
+				'Recommended options reset?',
+				'It is strongly recommended that you reset your options when first running this version of Narcikarma. Would you like to reset the Narcikarma options now?',
+				function(){
+					nckma.opts.defaults_set(false);
+				});
+
+		}
+	};
+
 
 	/*
 	// this is still unused...
@@ -423,13 +409,12 @@
 		var defs = nckma.opts.defaults_get();
 		var statText = false;
 
-		if ((bpmv.bool(preserve) && preserve ) || confirm('Restore default Narcikarma options?')) {
+		if(bpmv.trueish(preserve)) {
 			for (var aC in defs) {
 				if (defs.hasOwnProperty(aC) && bpmv.str(aC)) {
-					if (bpmv.bool(preserve) && preserve  && (typeof(localStorage[aC]) != 'undefined' ) && (localStorage[aC]) != null) {
-						statText = bpmv.func(nckma.opts.valid[aC]) ? nckma.opts.valid[aC](localStorage[aC]) : false;
+					if (typeof localStorage[aC] !== 'undefined' && localStorage[aC] !== null) {
 
-						if (!bpmv.str(statText)) {
+						if (!bpmv.str(nckma.opts.valid(localStorage[aC], aC))) {
 							continue;
 						} else {
 							nckma.warn('Previous value of '+aC+' was invalid!', localStorage[aC]);
@@ -446,10 +431,22 @@
 				nckma.opts.ui_restore() && nckma.opts.save();
 			}
 
-			if (!bpmv.bool(preserve) || !preserve) {
-				nckma.track('func', 'nckma.opts.ui_restore DEFAULTS', 'nkExec');
-			}
+			nckma.track('func', 'nckma.opts.defaults_set (preserved)', 'nkExec');
+
+			return;
 		}
+
+		nckma.notify.confirm('Restore default Narcikarma options?', '', function() {
+			for (var aC in defs) {
+				localStorage[aC] = defs[aC];
+			}
+
+			if ($('body.nckOptions').is(':visible')) {
+				nckma.opts.ui_restore() && nckma.opts.save();
+			}
+
+			nckma.track('func', 'nckma.opts.defaults_set (clean)', 'nkExec');
+		});
 	};
 
 	nckma.opts.get = function (asJson) {
@@ -503,7 +500,7 @@
 					cache[aC+'_status'] = $('#opt_'+aC+'_status');
 				}
 
-				statText = bpmv.func(nckma.opts.valid[aC]) ? nckma.opts.valid[aC](cache[aC].val()) : false;
+				statText = nckma.opts.valid(cache[aC].val(), aC);
 
 				if (bpmv.obj(cache[aC]) && bpmv.num(cache[aC].length)) {
 					if (bpmv.bool(statText)) {
@@ -522,16 +519,16 @@
 							newTxt = cache[aC].val();
 						}
 
-						nckma.opts.ui_status(aC, nkOptionNames[aC]+' set to ' + newTxt + '.');
+						nckma.opts.ui_status(aC, nkSettings[aC].title+' set to ' + newTxt + '.');
 
 						if (jlGood) {
-							jL.append('<li style="color: rgba( ' + localStorage['color_green'] + ');">'+nkOptionNames[aC]+' set to &quot;'+newTxt+'&quot;</li>');
+							jL.append('<li style="color: rgba( ' + localStorage['color_green'] + ');">'+nkSettings[aC].title+' set to &quot;'+newTxt+'&quot;</li>');
 						}
 					} else if (bpmv.str(statText)) {
-						nckma.opts.ui_status(aC, 'Failed saving &quot;'+nkOptionNames[aC]+'&quot;. ' + statText + '.', true);
+						nckma.opts.ui_status(aC, 'Failed saving &quot;'+nkSettings[aC].title+'&quot;. ' + statText + '.', true);
 
 						if (jlGood) {
-							jL.append('<li style="color: rgba( ' + localStorage['color_red'] + ');">'+nkOptionNames[aC]+' failed to save. '+statText+'</li>');
+							jL.append('<li style="color: rgba( ' + localStorage['color_red'] + ');">'+nkSettings[aC].title+' failed to save. '+statText+'</li>');
 						}
 					}
 				}
@@ -588,7 +585,7 @@
 						addClass = true;
 
 						if (!noList) {
-							jL.append('<li>'+nkOptionNames[aC]+' changed from &quot;'+localStorage[aC]+'&quot; to &quot;'+newVal+'&quot;</li>');
+							jL.append('<li>'+nkSettings[aC].title+' changed from &quot;'+localStorage[aC]+'&quot; to &quot;'+newVal+'&quot;</li>');
 						}
 					}
 				} else if (newVal != localStorage[aC]) {
@@ -596,7 +593,7 @@
 					addClass = true;
 
 					if (!noList) {
-						jL.append('<li>'+nkOptionNames[aC]+' changed from &quot;'+localStorage[aC]+'&quot; to &quot;'+newVal+'&quot;</li>');
+						jL.append('<li>'+nkSettings[aC].title+' changed from &quot;'+localStorage[aC]+'&quot; to &quot;'+newVal+'&quot;</li>');
 					}
 				}
 
@@ -784,7 +781,7 @@
 					cache[aC+'_status'] = $('#opt_'+aC+'_status');
 				}
 
-				statText = bpmv.func(nckma.opts.valid[aC]) ? nckma.opts.valid[aC](cache[aC].val()) : false;
+				statText = bpmv.func(nkValidators[aC]) ? nkValidators[aC](cache[aC].val()) : false;
 
 				if (bpmv.obj(cache[aC]) && bpmv.num(cache[aC].length)) {
 					if (bpmv.bool(statText)) {
@@ -803,16 +800,16 @@
 							newTxt = cache[aC].val();
 						}
 
-						nckma.opts.ui_status(aC, nkOptionNames[aC]+'set to ' + newTxt + '.');
+						nckma.opts.ui_status(aC, nkSettings[aC].title+'set to ' + newTxt + '.');
 
 						if (jlGood) {
-							jL.append('<li style="color: rgba( ' + localStorage['color_green'] + ');">'+nkOptionNames[aC]+' set to &quot;'+newTxt+'&quot;</li>');
+							jL.append('<li style="color: rgba( ' + localStorage['color_green'] + ');">'+nkSettings[aC].title+' set to &quot;'+newTxt+'&quot;</li>');
 						}
 					} else if (bpmv.str(statText)) {
-						nckma.opts.ui_status(aC, 'Failed saving &quot;'+nkOptionNames[aC]+'&quot;. ' + statText + '.', true);
+						nckma.opts.ui_status(aC, 'Failed saving &quot;'+nkSettings[aC].title+'&quot;. ' + statText + '.', true);
 
 						if (jlGood) {
-							jL.append('<li style="color: rgba( ' + localStorage['color_red'] + ');">'+nkOptionNames[aC]+' failed to save. '+statText+'</li>');
+							jL.append('<li style="color: rgba( ' + localStorage['color_red'] + ');">'+nkSettings[aC].title+' failed to save. '+statText+'</li>');
 						}
 					}
 				}
@@ -863,6 +860,25 @@
 				});
 			}
 		}
+	};
+
+	nckma.opts.valid = function(val, setting) {
+		var tester;
+		var setup;
+
+		if(bpmv.func(nkValidators[setting])) {
+			return nkValidators[setting](val);
+		}
+
+		setup = nkSettings[setting];
+
+		if(bpmv.obj(setup) && bpmv.str(setup.type)) {
+			if(bpmv.func(nckma.opts['valid_'+setup.type])) {
+				return nckma.opts['valid_'+setup.type](val, setting);
+			}
+		}
+
+		return 'Setting '+setting+' does not exist.';
 	};
 
 	nckma.opts.valid_bool = function (val, setting) {
@@ -932,6 +948,11 @@
 		var setTit = '';
 
 		if (bpmv.obj(set, true) && (set.type === 'int')) {
+			if(bpmv.trueish(set.kill0) && v === 0) {
+				// allow separate min from 0 to disable
+				return true;
+			}
+
 			setTit = bpmv.str(set.title) ? set.title : setting;
 			ret += 'Setting "'+setTit+'" must be a number';
 			ret += (bpmv.num(set.min, true) ? ' higher than '+set.min : '');
@@ -966,8 +987,8 @@
 	*/
 
 	nckma.start(function () {
-		console.log('nkSettings', { 'curr_len': bpmv.count(nkSettings) });
-		console.log('nkSettingsKeys', nkSettingsKeys);
+		nckma.debug(nkDebugLevel, 'Base Settings', nkSettings);
+		nckma.opts.check_reset_version();
 	});
 
 })();

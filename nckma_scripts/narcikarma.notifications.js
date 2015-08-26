@@ -16,7 +16,7 @@
 			'type': 'basic',
 			'title': 'Confirmation',
 			'message': 'Narcikarma unknown error!!!',
-			'iconUrl': '../nckma_assets/img/iconErr64.png',
+			'iconUrl': '../nckma_assets/img/iconConfirm64.png',
 			'isClickable': false,
 			'priority': 2,
 			'buttons': [
