@@ -19,35 +19,6 @@
 	var nkMaxHist = 8000;
 	var nkSettings = {};
 	var nkSettingsKeys = [];
-	var nkOptionNames = {
-		'alertCommentGain': 'Alert After Comment Karma Threshold',
-		'alertLinkGain': 'Alert After Link Karma Threshold',
-		'alertMail': 'Alert for New User Mail Message',
-		'alertModMail': 'Alert for New Moderator Mail Message',
-		'alternateTime': 'Flag Alternate Time',
-		'color_black': 'Black Color',
-		'color_blue': 'Blue Color',
-		'color_gold': 'Gold Color',
-		'color_gray': 'Gray Color',
-		'color_green': 'Green Color',
-		'color_purple': 'Purple Color',
-		'color_negChange': 'Negative Change Color',
-		'color_noChange': 'No Change Color',
-		'color_posChange': 'Positive Change Color',
-		'color_hasMail': 'Has mail or modmail',
-		'color_noMail': 'Empty mail or modmail inbox',
-		'color_red': 'Red Color',
-		'cumulativeKarma': 'Show Cumulative Karma',
-		'dateFormat': 'Date Format',
-		'flag0': 'First Flag',
-		'flag1': 'Second Flag',
-		'flag2': 'Third Flag',
-		'flag3': 'Fourth Flag',
-		'interval': 'Refresh Interval',
-		'row0': 'First Row Contents',
-		'row1': 'Second Row Contents',
-		'savedRefreshes': 'Number of Saved Refreshes'
-	};
 	var nckFlagEnum = [
 		{
 			'v': 'blank',
@@ -116,7 +87,7 @@
 		'type': 'int',
 		'title': 'After Comment Karma Threshold',
 		'desc': 'When your comment karma has increased by this amount, an alert will be shown. Zero will disable these alerts.',
-		'min': 5,
+		'min': 1,
 		'kill0': true
 	};
 
@@ -125,7 +96,7 @@
 		'type': 'int',
 		'title': 'After Link Karma Threshold',
 		'desc': 'When your link karma has increased by this amount, an alert will be shown. Zero will disable these alerts.',
-		'min': 5,
+		'min': 1,
 		'kill0': true
 	};
 
@@ -334,10 +305,10 @@
 
 	nckma.opts.valid = {
 		'alertCommentGain': function (val) {
-			return parseInt(val) > 10 ? true : nkOptionNames['alertCommentGain'] + ' must be greater than 10.';
+			return parseInt(val) > nkSettings['alertCommentGain'].min ? true : nkSettings['alertCommentGain'].title + ' must be greater than '+nkSettings['alertCommentGain'].min+'.';
 		},
 		'alertLinkGain': function (val) {
-			return parseInt(val) > 10 ? true : nkOptionNames['alertLinkGain'] + ' must be greater than 10.';
+			return parseInt(val) > nkSettings['alertLinkGain'].min ? true : nkSettings['alertLinkGain'].title + ' must be greater than '+nkSettings['alertLinkGain'].min+'.';
 		},
 		'color_black': nckma.opts.valid_color,
 		'color_blue': nckma.opts.valid_color,
@@ -350,12 +321,12 @@
 		'color_noChange': nckma.opts.valid_color,
 		'color_posChange': nckma.opts.valid_color,
 		'interval': function (val) {
-			return (parseInt(val) > (nckma.testing() ? 4 : 59)) || (parseInt(val) === 0) ? true : nkOptionNames['interval'] + ' must be 1 minute or more.';
+			return (parseInt(val) > (nckma.testing() ? 4 : 59)) || (parseInt(val) === 0) ? true : nkSettings['interval'].title + ' must be 1 minute or more.';
 		},
 		'savedRefreshes': function (val) {
 			val = parseInt(val, 10);
 
-			return (( val >= 0) && ( val <= nkMaxHist) ? true : nkOptionNames['savedRefreshes'] + ' must be a number between 0 and '+nkMaxHist+'.');
+			return (( val >= 0) && ( val <= nkMaxHist) ? true : nkSettings['savedRefreshes'].title + ' must be a number between 0 and '+nkMaxHist+'.');
 		}
 	};
 
@@ -523,16 +494,16 @@
 							newTxt = cache[aC].val();
 						}
 
-						nckma.opts.ui_status(aC, nkOptionNames[aC]+' set to ' + newTxt + '.');
+						nckma.opts.ui_status(aC, nkSettings[aC].title+' set to ' + newTxt + '.');
 
 						if (jlGood) {
-							jL.append('<li style="color: rgba( ' + localStorage['color_green'] + ');">'+nkOptionNames[aC]+' set to &quot;'+newTxt+'&quot;</li>');
+							jL.append('<li style="color: rgba( ' + localStorage['color_green'] + ');">'+nkSettings[aC].title+' set to &quot;'+newTxt+'&quot;</li>');
 						}
 					} else if (bpmv.str(statText)) {
-						nckma.opts.ui_status(aC, 'Failed saving &quot;'+nkOptionNames[aC]+'&quot;. ' + statText + '.', true);
+						nckma.opts.ui_status(aC, 'Failed saving &quot;'+nkSettings[aC].title+'&quot;. ' + statText + '.', true);
 
 						if (jlGood) {
-							jL.append('<li style="color: rgba( ' + localStorage['color_red'] + ');">'+nkOptionNames[aC]+' failed to save. '+statText+'</li>');
+							jL.append('<li style="color: rgba( ' + localStorage['color_red'] + ');">'+nkSettings[aC].title+' failed to save. '+statText+'</li>');
 						}
 					}
 				}
@@ -589,7 +560,7 @@
 						addClass = true;
 
 						if (!noList) {
-							jL.append('<li>'+nkOptionNames[aC]+' changed from &quot;'+localStorage[aC]+'&quot; to &quot;'+newVal+'&quot;</li>');
+							jL.append('<li>'+nkSettings[aC].title+' changed from &quot;'+localStorage[aC]+'&quot; to &quot;'+newVal+'&quot;</li>');
 						}
 					}
 				} else if (newVal != localStorage[aC]) {
@@ -597,7 +568,7 @@
 					addClass = true;
 
 					if (!noList) {
-						jL.append('<li>'+nkOptionNames[aC]+' changed from &quot;'+localStorage[aC]+'&quot; to &quot;'+newVal+'&quot;</li>');
+						jL.append('<li>'+nkSettings[aC].title+' changed from &quot;'+localStorage[aC]+'&quot; to &quot;'+newVal+'&quot;</li>');
 					}
 				}
 
@@ -804,16 +775,16 @@
 							newTxt = cache[aC].val();
 						}
 
-						nckma.opts.ui_status(aC, nkOptionNames[aC]+'set to ' + newTxt + '.');
+						nckma.opts.ui_status(aC, nkSettings[aC].title+'set to ' + newTxt + '.');
 
 						if (jlGood) {
-							jL.append('<li style="color: rgba( ' + localStorage['color_green'] + ');">'+nkOptionNames[aC]+' set to &quot;'+newTxt+'&quot;</li>');
+							jL.append('<li style="color: rgba( ' + localStorage['color_green'] + ');">'+nkSettings[aC].title+' set to &quot;'+newTxt+'&quot;</li>');
 						}
 					} else if (bpmv.str(statText)) {
-						nckma.opts.ui_status(aC, 'Failed saving &quot;'+nkOptionNames[aC]+'&quot;. ' + statText + '.', true);
+						nckma.opts.ui_status(aC, 'Failed saving &quot;'+nkSettings[aC].title+'&quot;. ' + statText + '.', true);
 
 						if (jlGood) {
-							jL.append('<li style="color: rgba( ' + localStorage['color_red'] + ');">'+nkOptionNames[aC]+' failed to save. '+statText+'</li>');
+							jL.append('<li style="color: rgba( ' + localStorage['color_red'] + ');">'+nkSettings[aC].title+' failed to save. '+statText+'</li>');
 						}
 					}
 				}
