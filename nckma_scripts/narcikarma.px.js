@@ -130,8 +130,6 @@
 		var cont = true;
 		var locColor = 'color_' + color;
 
-		nckma.opts.defaults_set(true);
-
 		if (bpmv.str(color) && bpmv.str(localStorage[locColor]) && /^\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9\.]+/.test(localStorage[locColor])) {
 			cA = localStorage[locColor].split(/\s*,\s*/);
 

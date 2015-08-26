@@ -129,6 +129,7 @@ function kill_event (ev) {
 nckma.start(function () {
 	nckma.pages.populate_stats(window);
 	nckma.pages.bind_btns(window);
+	nckma.pages.bind_zero_disable(window);
 	populate_colors();
 	nckma.opts.ui_init();
 	nckma.opts.ui_restore();
@@ -138,7 +139,9 @@ nckma.start(function () {
 	$('#nckma_reset').click(nckma.opts.ui_restore);
 	$('#nckma_save').click(nckma.opts.save);
 	$('input[type="color"][id^="picker_opt_color_"],input[type="range"][id^="alpha_opt_color_"]').change(nckma.opts.ui_change_color);
-	$('#nckma_default').click(nckma.opts.defaults_set);
+	$('#nckma_default').click(function() {
+		nckma.opts.defaults_set(false);
+	});
 
 	$('body').on('dragover', kill_event);
 	$('body').on('dragenter', kill_event);

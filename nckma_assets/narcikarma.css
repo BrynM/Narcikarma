@@ -32,6 +32,10 @@ hr {
 ****************************************
 */
 
+.zeroIsDisabled {
+	color: #aaa;
+}
+
 input[type="button"],
 input[type="color"],
 button {
@@ -151,6 +155,10 @@ button.nckDangerButton:active {
 	text-align: center;
 	padding: 0;
 	margin: 10px;
+}
+
+.mainOptionsNote {
+	margin: 20px 0;
 }
 
 /*

@@ -16,7 +16,7 @@
 			'type': 'basic',
 			'title': 'Confirmation',
 			'message': 'Narcikarma unknown error!!!',
-			'iconUrl': '../nckma_assets/img/iconErr64.png',
+			'iconUrl': '../nckma_assets/img/iconConfirm64.png',
 			'isClickable': false,
 			'priority': 2,
 			'buttons': [
@@ -91,11 +91,7 @@
 			}, wait);
 		};
 
-		if(bpmv.str(config.contextMessage)) {
-			config.contextMessage = config.contextMessage+'\n('+nckma.pages.tpl('ext_name_full')+')';
-		} else {
-			config.contextMessage = '('+nckma.pages.tpl('ext_name_full')+')';
-		}
+		config.contextMessage = '('+nckma.pages.tpl('ext_name_full')+')';
 
 		chrome.notifications.create(id, config, cb);
 		nckma.ev('notify', [id, config, wait]);

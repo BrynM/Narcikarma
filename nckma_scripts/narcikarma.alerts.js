@@ -16,6 +16,8 @@
 	var alertHandlers = {};
 	var alertClickHandlers = {};
 	var rgxAlertConf = /^alert[A-Z]/;
+	var lastAlertCommentKarma = 0;
+	var lastAlertLinkKarma = 0;
 
 	alertHandlers['alertMail'] = function(stats) {
 		if(stats.current.has_mail) {
@@ -58,16 +60,20 @@
 	};
 
 	alertHandlers['alertCommentGain'] = function(stats) {
-		var cDelt = parseInt(nckma.pages.get_stat('comment_delta'), 10);
+		var cDelt = parseInt(nckma.pages.get_stat('comment_delta'), 10) - lastAlertCommentKarma;
 		var gainz = parseInt(nckma.opts.get().alertCommentGain, 10);
+		var niceDelt;
 
 		if(gainz > 0 && cDelt >= gainz) {
 			if(bpmv.str(activeAlerts['alertCommentGain'])) {
 				return;
 			}
 
-			activeAlerts['alertCommentGain'] = nckma.notify.important('You\'ve gained '+nckma.str_num(cDelt)+' Comment Karma! Click to open your user page.', {
-				'title': 'Reddit Comment Karma gained!',
+			lastAlertCommentKarma = cDelt;
+			niceDelt = nckma.str_num(cDelt);
+
+			activeAlerts['alertCommentGain'] = nckma.notify.important('You\'ve gained '+niceDelt+' Comment Karma on Reddit! Click to open your user page. You will be alerted every '+gainz+' points.', {
+				'title': niceDelt+' Comment Karma!',
 				'iconUrl': '../nckma_assets/img/icon64.png',
 				'priority': 1
 			});
@@ -82,16 +88,20 @@
 	};
 
 	alertHandlers['alertLinkGain'] = function(stats) {
-		var lDelt = parseInt(nckma.pages.get_stat('link_delta'), 10);
+		var lDelt = parseInt(nckma.pages.get_stat('link_delta'), 10) - lastAlertLinkKarma;
 		var gainz = parseInt(nckma.opts.get().alertLinkGain, 10);
+		var niceDelt;
 
 		if(gainz > 0 && lDelt >= gainz) {
 			if(bpmv.str(activeAlerts['alertLinkGain'])) {
 				return;
 			}
 
-			activeAlerts['alertLinkGain'] = nckma.notify.important('You\'ve gained '+nckma.str_num(cDelt)+' Comment Karma! Click to open your user page.', {
-				'title': 'Reddit Comment Karma gained!',
+			lastAlertLinkKarma = lDelt;
+			niceDelt = nckma.str_num(lDelt);
+
+			activeAlerts['alertLinkGain'] = nckma.notify.important('You\'ve gained '+niceDelt+' Link Karma on Reddit! Click to open your user page. You will be alerted every '+gainz+' points.', {
+				'title': niceDelt+' Link Karma!',
 				'iconUrl': '../nckma_assets/img/icon64.png',
 				'priority': 1
 			});
@@ -102,6 +112,34 @@
 
 	alertClickHandlers['alertLinkGain'] = function () {
 		activeAlerts['alertLinkGain'] = null;
+		nckma.pages.go_to_user();
+	};
+
+	alertHandlers['alertTotalGain'] = function(stats) {
+		var lDelt = parseInt(nckma.pages.get_stat('link_delta'), 10) - lastAlertLinkKarma;
+		var gainz = parseInt(nckma.opts.get().alertTotalGain, 10);
+		var niceDelt;
+
+		if(gainz > 0 && lDelt >= gainz) {
+			if(bpmv.str(activeAlerts['alertTotalGain'])) {
+				return;
+			}
+
+			lastAlertLinkKarma = lDelt;
+			niceDelt = nckma.str_num(lDelt);
+
+			activeAlerts['alertTotalGain'] = nckma.notify.important('You\'ve gained '+niceDelt+' total Karma on Reddit! Click to open your user page. You will be alerted every '+gainz+' points.', {
+				'title': niceDelt+' more precious Karma!',
+				'iconUrl': '../nckma_assets/img/icon64.png',
+				'priority': 1
+			});
+		} else {
+			activeAlerts['alertTotalGain'] = null;
+		}
+	};
+
+	alertClickHandlers['alertTotalGain'] = function () {
+		activeAlerts['alertTotalGain'] = null;
 		nckma.pages.go_to_user();
 	};
 
@@ -131,8 +169,8 @@
 		}
 	}
 
-	nckma.alerts.data = function () {
-		var hist = nckma.get().history;
+	nckma.alerts.test = function () {
+		alertHandlers['alertCommentGain'](nckma.get());
 	};
 
 	nckma.ev('parse', handle_parse);
