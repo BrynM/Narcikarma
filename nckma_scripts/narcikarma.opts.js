@@ -15,8 +15,11 @@
 	*/
 
 	nckResetVersions = [
-		'0.50112.TD',
 		'0.50112',
+		'0.51',
+		'0.51.T',
+		'0.51.TD',
+		'0.51.D'
 	];
 
 	var nkDebugLevel = 5; // opts
