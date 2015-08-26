@@ -91,7 +91,11 @@
 			}, wait);
 		};
 
-		config.contextMessage = '('+nckma.pages.tpl('ext_name_full')+')';
+		if(bpmv.str(config.contextMessage)) {
+			config.contextMessage = config.contextMessage+'\n('+nckma.pages.tpl('ext_name_full')+')';
+		} else {
+			config.contextMessage = '('+nckma.pages.tpl('ext_name_full')+')';
+		}
 
 		chrome.notifications.create(id, config, cb);
 		nckma.ev('notify', [id, config, wait]);
