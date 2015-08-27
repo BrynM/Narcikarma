@@ -1,3 +1,7 @@
+/*!
+* narcikarma.core.js
+*/
+
 // chrome.browserAction.setBadgeText(object details)
 
 if (typeof(nckma) != 'object') {

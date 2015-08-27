@@ -1,3 +1,7 @@
+/*!
+* narcikarma.db.js
+*/
+
 (function () {
 
 	/*

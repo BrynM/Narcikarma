@@ -1,3 +1,7 @@
+/*!
+* page.options.js
+*/
+
 jQuery.event.props.push('dataTransfer');
 
 var bgP = chrome.extension.getBackgroundPage();

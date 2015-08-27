@@ -1,4 +1,7 @@
-// background.js
+/*!
+* narcikarma.background.js
+*/
+
 if (typeof(nckma) != 'object') {
 	var nckma = {};
 	var nkBgScrs = [];

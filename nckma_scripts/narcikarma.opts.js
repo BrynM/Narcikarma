@@ -1,3 +1,7 @@
+/*!
+* narcikarma.opts.js
+*/
+
 (function () {
 
 	/*
@@ -14,7 +18,7 @@
 	* vars
 	*/
 
-	nckResetVersions = [
+	var nckResetVersions = [
 		'0.50112',
 		'0.51',
 		'0.51.T',
