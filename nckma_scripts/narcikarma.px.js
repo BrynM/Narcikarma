@@ -1,3 +1,7 @@
+/*!
+* narcikarma.px.js
+*/
+
 (function () {
 
 	/*

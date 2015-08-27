@@ -1,3 +1,7 @@
+/*!
+* narcikarma.notifications.js
+*/
+
 (function () {
 
 	/*

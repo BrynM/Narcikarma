@@ -1,3 +1,7 @@
+/*!
+* narcikarma.pages.js
+*/
+
 (function () {
 
 	/*

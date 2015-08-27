@@ -1,3 +1,7 @@
+/*!
+* page.popup.js
+*/
+
 var bgP = chrome.extension.getBackgroundPage();
 var nckma = bgP.nckma;
 var bpmv = bgP.bpmv;

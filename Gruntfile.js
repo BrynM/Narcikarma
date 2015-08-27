@@ -1,26 +1,47 @@
 var path = require("path");
 var sys = require('util');
 var execSync = require('child_process').execSync;
+var os = require('os');
 var _ = require('underscore')
 
 module.exports = function(grunt) {
 
 	function tpl_banner(fileName) {
-		var txt = [
+
+		var pre = [
 			'/*!',
-			'* <%= pkg.name %> <%= pkg.version %>',
+		];
+
+		if (fileName) {
+			pre.push('* '+fileName);
+			pre.push('*');
+		}
+
+		var txt = [
+			'* '+manifest.name+' '+manifest.version,
 			'* https://reddit.com/r/Narcikamra',
 			'*',
 			'* '+manifest.description,
 			'*',
-			'* Copyright Bryn Mosher (/u/badmonkey0001) <%= grunt.template.today("yyyy-mm-dd") %>',
-			'* License: GPLv3 unless otherwise noted',
-			'* Git: '+branch+' '+revision,
-			'*/\n'
+			'* Copyright '+dateObj.getFullYear()+' Bryn Mosher (/u/badmonkey0001)',
+			'* License: GPLv3'+(fileName ? 'unless otherwise noted' : ''),
+			'*',
+			'* Build:',
+			'*   '+gitUser+' on '+os.hostname(),
+			'*   '+repo,
+			'*   '+manifest.version+'-'+timestamp,
+			'*   '+branch+' '+revision,
+			'*   '+dateObj.toUTCString(),
+			'*   '+dateObj.toLocaleString(),
+			'*',
+			'*/\n',
 		];
 
-		return txt.join('\n');
+		return pre.join('\n')+'\n'+txt.join('\n');
 	}
+
+	var dateObj = new Date();
+	var timestamp = Math.floor(dateObj.valueOf()/1000);
 
 	var basepath = path.dirname(__filename);
 
@@ -31,6 +52,16 @@ module.exports = function(grunt) {
 	var branch = execSync('git rev-parse --abbrev-ref HEAD', [], {
 		cwd: basepath
 	}).toString('utf8').trim();
+
+	var gitUser = execSync('git config --get user.name', [], {
+		cwd: basepath
+	}).toString('utf8').trim();
+
+	var repo = execSync('git config --get remote.origin.url', [], {
+		cwd: basepath
+	}).toString('utf8').trim();
+
+	var rgxReplaceScripts = /\<\!\-\- nckmaJS [.\s\S]* nckmaJS end \-\-\>/im;
 
 	var manifest = grunt.file.readJSON('manifest.json');
 
@@ -57,8 +88,8 @@ module.exports = function(grunt) {
 	];
 
 	var uglifyDefaults = {
-		mangle: false,
-		compress: true,
+		mangle: true,
+		compress: false,
 		preserveComments: 'some',
 		quoteStyle: 3,
 		report: 'min'
@@ -78,37 +109,81 @@ module.exports = function(grunt) {
 				'grunt-chrome-compile': '>=0.2.2',
 				'grunt-text-replace': '>=0.4.0',
 				'grunt-contrib-cssmin': '>=0.13.0',
-				'grunt-contrib-htmlmin': '>=0.4.0'
-			}
+				'grunt-contrib-htmlmin': '>=0.4.0',
+				'maxmin': '>=1.1.0'
+			},
+		},
+		concat: {
+			options: {
+				separator: ';\n\n'
+			},
+			background: {
+				src: _.extend([], jsPrereqs).concat(jsNarcikarma),
+				dest: 'build/tmp/nckma_scripts/background.min.js'
+			},
+			credits: {
+				src: ['lib/jquery-1.8.2.min.js', 'nckma_scripts/page.credits.js'],
+				dest: 'build/tmp/nckma_scripts/credits.min.js'
+			},
+			ga: {
+				src: ['nckma_scripts/ga.js'],
+				dest: 'build/tmp/nckma_scripts/ga.js'
+			},
+			graphs: {
+				src: _.extend([], jsPrereqs).concat(['lib/jquery.sparkline.min.js']).concat(jsNarcikarma).concat(['nckma_scripts/page.graphs.js']),
+				dest: 'build/tmp/nckma_scripts/graphs.min.js'
+			},
+			optionsconcat: {
+				src: _.extend([], jsPrereqs).concat(jsNarcikarma).concat(['nckma_scripts/page.options.js']),
+				dest: 'build/tmp/nckma_scripts/options.min.js'
+			},
+			popup: {
+				src: _.extend([], jsPrereqs).concat(jsNarcikarma).concat(['nckma_scripts/page.popup.js']),
+				dest: 'build/tmp/nckma_scripts/popup.min.js'
+			},
 		},
 		uglify: {
 			background: {
-				options: _.extend({
-					banner: tpl_banner('background.min.js'),
-				}, uglifyDefaults),
+				options: _.extend({}, uglifyDefaults, {banner: tpl_banner('background.min.js')}),
 				files: {
-					'build/tmp/nckma_scripts/background.min.js': _.extend([], jsPrereqs).concat(jsNarcikarma)
-				}
+					'build/tmp/nckma_scripts/background.min.js': 'build/tmp/nckma_scripts/background.min.js'
+				},
 			},
 			credits: {
-				options: _.extend({
-					banner: tpl_banner('credits.min.js'),
-				}, uglifyDefaults),
+				options: _.extend({banner: tpl_banner('credits.min.js')}, uglifyDefaults),
 				files: {
-					'build/tmp/nckma_scripts/credits.min.js': ['lib/jquery-1.8.2.min.js', 'nckma_scripts/page.credits.js']
-				}
-			}
+					'build/tmp/nckma_scripts/credits.min.js': 'build/tmp/nckma_scripts/credits.min.js'
+				},
+			},
+			graphs: {
+				options: _.extend({banner: tpl_banner('graphs.min.js')}, uglifyDefaults),
+				files: {
+					'build/tmp/nckma_scripts/graphs.min.js': 'build/tmp/nckma_scripts/graphs.min.js'
+				},
+			},
+			optionsugly: {
+				options: _.extend({banner: tpl_banner('options.min.js')}, uglifyDefaults),
+				files: {
+					'build/tmp/nckma_scripts/options.min.js': 'build/tmp/nckma_scripts/options.min.js'
+				},
+			},
+			popup: {
+				options: _.extend({banner: tpl_banner('popup.min.js')}, uglifyDefaults),
+				files: {
+					'build/tmp/nckma_scripts/popup.min.js': 'build/tmp/nckma_scripts/popup.min.js'
+				},
+			},
 		},
 		cssmin: {
 			dist: {
 				options: {
 					banner: tpl_banner('narcikarma.min.css'),
-					report: 'min'
+					report: 'min',
 				},
 				files: {
-					'build/tmp/nckma_assets/narcikarma.min.css': ['nckma_assets/narcikarma.css']
-				}
-			}
+					'build/tmp/nckma_assets/narcikarma.min.css': ['nckma_assets/narcikarma.css'],
+				},
+			},
 		},
 		htmlmin: {
 			main: {
@@ -118,93 +193,124 @@ module.exports = function(grunt) {
 				},
 				files: {
 					// dest: src
-//					'build/tmp/nckma_html/background.html': 'nckma_html/background.html'
-					'build/tmp/nckma_html/background.html': 'build/tmp/nckma_html/background.html'
-				}
-			}
+					'build/tmp/nckma_html/background.html': 'build/tmp/nckma_html/background.html',
+					'build/tmp/nckma_html/credits.html': 'build/tmp/nckma_html/credits.html',
+					'build/tmp/nckma_html/graphs.html': 'build/tmp/nckma_html/graphs.html',
+					'build/tmp/nckma_html/options.html': 'build/tmp/nckma_html/options.html',
+					'build/tmp/nckma_html/popup.html': 'build/tmp/nckma_html/popup.html',
+				},
+			},
 		},
 		replace: {
 			background: {
 				src: ['nckma_html/background.html'],
 				dest: 'build/tmp/nckma_html/',
 				replacements: [{
-					from: /\<\!\-\- nckmaJS [.\s\S]* nckmaJS end \-\-\>/im,
+					from: rgxReplaceScripts,
 					to: '<script src="../nckma_scripts/background.min.js"></script>'
-				}]
+				}],
 			},
-			background: {
+			credits: {
 				src: ['nckma_html/credits.html'],
 				dest: 'build/tmp/nckma_html/',
 				replacements: [{
-					from: /\<\!\-\- nckmaJS [.\s\S]* nckmaJS end \-\-\>/im,
+					from: rgxReplaceScripts,
 					to: '<script src="../nckma_scripts/credits.min.js"></script>'
-				}]
-			}
+				}],
+			},
+			graphs: {
+				src: ['nckma_html/graphs.html'],
+				dest: 'build/tmp/nckma_html/',
+				replacements: [{
+					from: rgxReplaceScripts,
+					to: '<script src="../nckma_scripts/graphs.min.js"></script>'
+				}],
+			},
+			optionsreplace: {
+				src: ['nckma_html/options.html'],
+				dest: 'build/tmp/nckma_html/',
+				replacements: [{
+					from: rgxReplaceScripts,
+					to: '<script src="../nckma_scripts/options.min.js"></script>'
+				}],
+			},
+			popup: {
+				src: ['nckma_html/popup.html'],
+				dest: 'build/tmp/nckma_html/',
+				replacements: [{
+					from: rgxReplaceScripts,
+					to: '<script src="../nckma_scripts/popup.min.js"></script>'
+				}],
+			},
 		},
 		compress: {
 			main: {
 				options: {
 					mode: 'zip',
-					archive: 'build/'+manifest.name+'.'+manifest.version+'.crx',
+					archive: 'build/'+manifest.name+'-'+manifest.version+'.zip',
 					level: 9,
-					pretty: true
+					pretty: true,
 				},
 				files: [
 					{
 						src: ['manifest.json', 'gplv3.txt', 'readme.md'],
 						dest: '',
-						filter: 'isFile'
+						filter: 'isFile',
 					},
 					{
 						src: ['nckma_assets/*.ico'],
 						dest: '',
-						filter: 'isFile'
+						filter: 'isFile',
 					},
 					{
 						expand:true,
 						src: ['**/*.png', '**/*.jpg', '**/*.gif'],
 						cwd: 'nckma_assets/img/',
 						dest: 'nckma_assets/img/',
-						filter: 'isFile'
+						filter: 'isFile',
 					},
 					{
 						expand:true,
 						src: ['**/*.css'],
 						cwd: 'build/tmp/nckma_assets/',
 						dest: 'nckma_assets/',
-						filter: 'isFile'
+						filter: 'isFile',
 					},
 					{
 						expand:true,
 						src: ['**/*'],
 						cwd: 'build/tmp/nckma_html/',
 						dest: 'nckma_html/',
-						filter: 'isFile'
+						filter: 'isFile',
 					},
 					{
 						expand:true,
 						src: ['**/*'],
 						cwd: 'build/tmp/nckma_scripts/',
 						dest: 'nckma_scripts/',
-						filter: 'isFile'
-					}
-				]
-			}
-	    }
+						filter: 'isFile',
+					},
+				],
+			},
+		},
 	};
+
+	console.log(tpl_banner());
 
 	// set config
 	grunt.initConfig(gruntCfg);
 
 	// Load tasks
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-cssmin');
-	grunt.loadNpmTasks('grunt-text-replace');
-	grunt.loadNpmTasks('grunt-contrib-htmlmin');
 	grunt.loadNpmTasks('grunt-contrib-compress');
+	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-cssmin');
+	grunt.loadNpmTasks('grunt-contrib-htmlmin');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-text-replace');
 
 	// Default task(s).
 	grunt.registerTask('default', [
+		'concat',
 		'uglify',
 		'cssmin',
 		'replace',

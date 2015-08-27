@@ -1,3 +1,7 @@
+/*!
+* page.credits.js
+*/
+
 var bgP = chrome.extension.getBackgroundPage();
 var bpmv = bgP.bpmv;
 var _ = bgP._;

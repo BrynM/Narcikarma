@@ -1,3 +1,7 @@
+/*!
+* narcikarma.startup.js
+*/
+
 (function () {
 
 	/*
