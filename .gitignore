@@ -1,2 +1,5 @@
 *.sublime-project
 *.sublime-workspace
+build/tmp/*
+build/package/*
+node_modules/*
