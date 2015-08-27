@@ -62,6 +62,12 @@ module.exports = function(grunt) {
 	}).toString('utf8').trim();
 
 	var rgxReplaceScripts = /\<\!\-\- nckmaJS [.\s\S]* nckmaJS end \-\-\>/im;
+	var rgxReplaceCss = /\/narcikarma\.css/;
+
+	var replaceCss = {
+		from: rgxReplaceCss,
+		to: '/narcikarma.min.css'
+	}
 
 	var manifest = grunt.file.readJSON('manifest.json');
 
@@ -208,7 +214,7 @@ module.exports = function(grunt) {
 				replacements: [{
 					from: rgxReplaceScripts,
 					to: '<script src="../nckma_scripts/background.min.js"></script>'
-				}],
+				}, replaceCss],
 			},
 			credits: {
 				src: ['nckma_html/credits.html'],
@@ -216,7 +222,7 @@ module.exports = function(grunt) {
 				replacements: [{
 					from: rgxReplaceScripts,
 					to: '<script src="../nckma_scripts/credits.min.js"></script>'
-				}],
+				}, replaceCss],
 			},
 			graphs: {
 				src: ['nckma_html/graphs.html'],
@@ -224,7 +230,7 @@ module.exports = function(grunt) {
 				replacements: [{
 					from: rgxReplaceScripts,
 					to: '<script src="../nckma_scripts/graphs.min.js"></script>'
-				}],
+				}, replaceCss],
 			},
 			optionsreplace: {
 				src: ['nckma_html/options.html'],
@@ -232,7 +238,7 @@ module.exports = function(grunt) {
 				replacements: [{
 					from: rgxReplaceScripts,
 					to: '<script src="../nckma_scripts/options.min.js"></script>'
-				}],
+				}, replaceCss],
 			},
 			popup: {
 				src: ['nckma_html/popup.html'],
@@ -240,7 +246,7 @@ module.exports = function(grunt) {
 				replacements: [{
 					from: rgxReplaceScripts,
 					to: '<script src="../nckma_scripts/popup.min.js"></script>'
-				}],
+				}, replaceCss],
 			},
 		},
 		compress: {
