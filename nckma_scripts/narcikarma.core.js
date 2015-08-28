@@ -309,7 +309,7 @@ if (typeof(nckma) != 'object') {
 		var plug = '[EVENT] ';
 		var quietEvent = bpmv.num(bpmv.find(evName, nkQuietEvents), true);;
 
-		nckma.debug((quietEvent ? nckma._dL.evQuiet : nckma._dL.ev), plug+'removing '+evName, [cbOrData, custEv]);
+		nckma.debug((quietEvent ? nckma._dL.evQuiet : nckma._dL.ev), plug+'removing '+evName, cb);
 		
 		return document.removeEventListener(evName, cb);
 	};
