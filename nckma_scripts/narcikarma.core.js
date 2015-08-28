@@ -96,14 +96,14 @@ if (typeof(nckma) != 'object') {
 		'cumulativeKarma': 'true',
 		'dateFormat': 'US',
 		'flag0': 'has_mail',
-		'flag1': 'is_mod',
-		'flag2': 'has_mod_mail',
-		'flag3': 'is_gold',
+		'flag1': 'blank',
+		'flag2': 'blank',
+		'flag3': 'has_mod_mail',
 		// in seconds
 		'interval': '600',
-		// one of cKarma, lKarma, flags
-		'row0': 'lKarma',
-		'row1': 'cKarma',
+		// one of cKarma, lKarma, tKarma, or flags
+		'row0': 'flags',
+		'row1': 'tKarma',
 		'savedRefreshes': '1000'
 	};
 	var nkPages = {
@@ -116,7 +116,6 @@ if (typeof(nckma) != 'object') {
 	* load GA
 	*/
 	if (nkFlags['ga'] && bpmv.func(load_nckma_ga)) {
-		nkFlags['debug'] && console.log('[Narcikarma Debug] loading GA');
 		load_nckma_ga();
 	}
 
@@ -147,33 +146,7 @@ if (typeof(nckma) != 'object') {
 	* functions
 	*/
 
-	nckma.abbrev_int = function (num) {
-		var iNum = parseInt(num, 10);
-		var suffs = ['', '', 'k', 'm', 'b', 't', 'q', 's', 'o', 'n', 'd', 'u'];
-		var key = 0;
-		var sgn = '';
-		var retNum = '';
-
-		if (iNum < 0) {
-			sgn = '-';
-			iNum = 0 - iNum;
-		}
-
-		retNum = iNum+'';
-		key = Math.ceil((''+iNum).length/3);
-
-		if (!bpmv.str(suffs[key], true)) {
-			return sgn+'range';
-		}
-
-		if (key > 1) {
-			var retNum = Math.floor(iNum / Math.pow(1000, key-1))+suffs[key];
-		}
-
-		return sgn+retNum;
-	};
-
-	nckma.begin = function (cb) {
+	function begin_background (cb) {
 		var ver = nckma.version();
 		var plug = '[BEGIN] ';
 
@@ -213,6 +186,36 @@ if (typeof(nckma) != 'object') {
 		}
 	};
 
+	/*
+	* nckma functions
+	*/
+
+	nckma.abbrev_int = function (num) {
+		var iNum = parseInt(num, 10);
+		var suffs = ['', '', 'k', 'm', 'b', 't', 'q', 's', 'o', 'n', 'd', 'u'];
+		var key = 0;
+		var sgn = '';
+		var retNum = '';
+
+		if (iNum < 0) {
+			sgn = '-';
+			iNum = 0 - iNum;
+		}
+
+		retNum = iNum+'';
+		key = Math.ceil((''+iNum).length/3);
+
+		if (!bpmv.str(suffs[key], true)) {
+			return sgn+'range';
+		}
+
+		if (key > 1) {
+			var retNum = Math.floor(iNum / Math.pow(1000, key-1))+suffs[key];
+		}
+
+		return sgn+retNum;
+	};
+
 	nckma.debug = function (lvl, msg, etc) {
 		var args = null;
 
@@ -248,6 +251,8 @@ if (typeof(nckma) != 'object') {
 		}
 
 		console.error.apply(console, arguments);
+
+		throw(msg);
 	};
 
 	nckma.ev = function (evName, cbOrData) {
@@ -304,7 +309,7 @@ if (typeof(nckma) != 'object') {
 		var plug = '[EVENT] ';
 		var quietEvent = bpmv.num(bpmv.find(evName, nkQuietEvents), true);;
 
-		nckma.debug((quietEvent ? nckma._dL.evQuiet : nckma._dL.ev), plug+'removing '+evName, [cbOrData, custEv]);
+		nckma.debug((quietEvent ? nckma._dL.evQuiet : nckma._dL.ev), plug+'removing '+evName, cb);
 		
 		return document.removeEventListener(evName, cb);
 	};
@@ -340,37 +345,20 @@ if (typeof(nckma) != 'object') {
 		var ret = nckma.pages.tpl('ext_name_full')+'\n';
 
 		ret += 'Last Check: '+nckma.pages.tpl('current_timestamp')+'\n';
-		ret += 'Flags: ';
+		ret += 'Icon:\n';
 
-		for (var f = 0; f < 4; f++) {
-			if(!bpmv.str(localStorage['flag'+f])) {
-				continue;
-			}
+		if (localStorage['row0'] === 'flags') {
+			ret += '    ['+nckma.opts.get_flag_names().join('] [')+']';
+		} else {
+			ret += '    ['+nckma.opts.get_row_0_name()+']';
+		}
 
-			switch(localStorage['flag'+f]) {
-				case 'has_mail':
-					ret += '[Mail]';
-					break;
-				case 'has_mod_mail':
-					ret += '[Modmail]';
-					break;
-				case 'is_gold':
-					ret += '[Gold]';
-					break;
-				case 'is_mod':
-					ret += '[Mod]';
-					break;
-				case 'has_mail_both':
-					ret += '[Mail/Modmail]';
-					break;
-				default:
-					ret += '[blank]';
-					break;
-			}
+		ret += '\n';
 
-			if (f < 3) {
-				ret += ' ';
-			}
+		if (localStorage['row1'] === 'flags') {
+			ret += '    ['+nckma.opts.get_flag_names().join('] [')+']';
+		} else {
+			ret += '    ['+nckma.opts.get_row_1_name()+']';
 		}
 
 		ret += '\n\n';
@@ -442,6 +430,8 @@ if (typeof(nckma) != 'object') {
 		var nkDsLast = null;
 		var dbg = nckma.testing(true);
 
+		nckma.ev('polled', [dat, stat, ev]);
+
 		nkIsPolling = false;
 		nckma.px.draw_status('parse');
 
@@ -480,27 +470,37 @@ if (typeof(nckma) != 'object') {
 				switch (localStorage['row0']) {
 					case 'flags':
 						nckma.px.draw_change_flags(1);
-						break
+						break;
 					case 'cKarma':
 						nckma.px.draw_change_comment(1);
-						break
+						break;
 					case 'lKarma':
-					default:
 						nckma.px.draw_change_link(1);
-						break
+						break;
+					case 'tKarma':
+						nckma.px.draw_change_total(1);
+						break;
+					default:
+						nckma.px.draw_line('null', 1, nckma.px.color('red'));
+						break;
 				}
 
 				switch (localStorage['row1']) {
 					case 'flags':
 						nckma.px.draw_change_flags(2);
-						break
+						break;
 					case 'cKarma':
 						nckma.px.draw_change_comment(2);
-						break
+						break;
 					case 'lKarma':
-					default:
 						nckma.px.draw_change_link(2);
-						break
+						break;
+					case 'tKarma':
+						nckma.px.draw_change_total(2);
+						break;
+					default:
+						nckma.px.draw_line('null', 2, nckma.px.color('red'));
+						break;
 				}
 			}
 
@@ -781,11 +781,9 @@ if (typeof(nckma) != 'object') {
 	*/
 
 	nckma.start(function () {
-		nckma.version();
-
 		if (nckma._bgTask) {
 			nckma.ev('beat', nckma.poll);
-			nckma.begin();
+			begin_background();
 		}
 	});
 })();

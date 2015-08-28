@@ -50,7 +50,7 @@
 						</select>&nbsp;<span id="opt_dateFormat_status"></span>
 					</div>
 
-					<div class="nckOptionsContainer" title="Size of the karma gain/loss history.">
+					<!-- div class="nckOptionsContainer" title="Size of the karma gain/loss history.">
 						<label for="opt_savedRefreshes">History Size</label>
 						<select id="opt_savedRefreshes">
 							<option value="25">25</option>
@@ -98,12 +98,12 @@
 							<option value="8000">8,000</option>
 							<option value="0">disabled</option>
 						</select>&nbsp;<span id="opt_savedRefreshes_status"></span>
-					</div>
+					</div -->
 
-					<div class="nckOptionsContainer" title="Show the karma change for all of the history, not just this browser session.">
+					<!-- div class="nckOptionsContainer" title="Show the karma change for all of the history, not just this browser session.">
 						<label for="opt_cumulativeKarma">Show Cumulative Karma</label>
 						<input type="checkbox" id="opt_cumulativeKarma" />&nbsp;<span id="opt_cumulativeKarma_status"></span>
-					</div>
+					</div -->
 
 					<div class="nckOptionsContainer" title="Contents of top icon row.">
 						<label for="opt_row0">Top Row</label>
@@ -127,6 +127,17 @@
 						</select>&nbsp;<span id="opt_row1_status"></span>
 					</div>
 
+					<!-- div class="nckOptionsContainer" title="The time between a row alternating between flags and other information.">
+						<label for="opt_alternateTime">Alternation Timeout</label>
+						<select id="opt_alternateTime">
+							<option value="2">2 Seconds</option>
+							<option value="5">5 Seconds</option>
+							<option value="15">15 Seconds</option>
+							<option value="30">30 Seconds</option>
+							<option value="60">1 minute</option>
+						</select>&nbsp;(if enabled for a row)&nbsp;<span id="opt_alternateTime_status"></span>
+					</div -->
+
 					<div class="mainOptionsNote">
 						<p>Settings for Status Flags can be found in the <a href="#flags_options_tab_radio">Flag Options</a> tab.</p>
 						<p>Color settings can be found in the <a href="#color_options_tab_radio">Color Options</a> tab.</p>
@@ -143,17 +154,6 @@
 				<div class="tab-contents">
 
 					<p>If flags are shown that is... see your &quot;Top Icon Row Contents&quot; and &quot;Bottom Icon Row Contents&quot; settings in the <a href="#main_options_tab_radio">Main Options</a> tab.</p>
-
-					<div class="nckOptionsContainer" title="The time between a row alternating between flags and other information.">
-						<label for="opt_alternateTime">Alternate Flags Every</label>
-						<select id="opt_alternateTime">
-							<option value="2">2 Seconds</option>
-							<option value="5">5 Seconds</option>
-							<option value="15">15 Seconds</option>
-							<option value="30">30 Seconds</option>
-							<option value="60">1 minute</option>
-						</select>&nbsp;(if enabled for a row)&nbsp;<span id="opt_alternateTime_status"></span>
-					</div>
 
 					<div class="nckOptionsContainer" title="First flag shown on flag row.">
 						<label for="opt_flag0">First Flag</label>

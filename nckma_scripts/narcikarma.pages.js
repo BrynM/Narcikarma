@@ -239,7 +239,7 @@
 	};
 	buttons['source'] = {
 		'sel': '.nck-btn-source',
-		'title': 'Source',
+		'title': 'Source Code',
 		'cb': open_source
 	};
 	buttons['subreddit'] = {
@@ -254,7 +254,7 @@
 	};
 	buttons['webstore'] = {
 		'sel': '.nck-btn-webstore',
-		'title': 'Chrome Web Store',
+		'title': 'Extension Page',
 		'cb': open_webstore
 	};
 
