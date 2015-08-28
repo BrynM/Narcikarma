@@ -1,5 +1,7 @@
 *.sublime-project
 *.sublime-workspace
+build_gold
+build_gold/*
 build/*
 build/tmp/*
 build/package/*
