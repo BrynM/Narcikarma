@@ -28,11 +28,14 @@ if (typeof(nckma) != 'object') {
 
 	var nkColorRgxHex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
 	var nkDebugLvl = 15;
-	var nkEvs = {};
+	var nkEvOpts = {
+		cancelable: true
+	};
+	var nkEvStore = {};
 	var nkFlags = {
 		'debug': true,
 		'ga': true,
-		'testing': false,
+		'testing': true,
 		// read configuration fallbacks...
 		'aConfFB': false
 	};
@@ -144,6 +147,32 @@ if (typeof(nckma) != 'object') {
 	* functions
 	*/
 
+	nckma.abbrev_int = function (num) {
+		var iNum = parseInt(num, 10);
+		var suffs = ['', '', 'k', 'm', 'b', 't', 'q', 's', 'o', 'n', 'd', 'u'];
+		var key = 0;
+		var sgn = '';
+		var retNum = '';
+
+		if (iNum < 0) {
+			sgn = '-';
+			iNum = 0 - iNum;
+		}
+
+		retNum = iNum+'';
+		key = Math.ceil((''+iNum).length/3);
+
+		if (!bpmv.str(suffs[key], true)) {
+			return sgn+'range';
+		}
+
+		if (key > 1) {
+			var retNum = Math.floor(iNum / Math.pow(1000, key-1))+suffs[key];
+		}
+
+		return sgn+retNum;
+	};
+
 	nckma.begin = function (cb) {
 		var ver = nckma.version();
 		var plug = '[BEGIN] ';
@@ -223,85 +252,61 @@ if (typeof(nckma) != 'object') {
 
 	nckma.ev = function (evName, cbOrData) {
 		var iter = 0;
-		var cbRes;
 		var bulkRet = {};
 		var plug = '[EVENT] ';
 		var quietEvent = true;
+		var custEv;
 
 		if (bpmv.arr(evName)) { // group of events
 			for (iter = 0; iter < evName.length; iter++) {
 				if (bpmv.str(evName[iter])) {
 					nckma.ev(evName[iter], cbOrData);
-					bulkRet[evName[iter]] = nkEvs[evName[iter]];
+					bulkRet[evName[iter]] = nkEvStore[evName[iter]];
 				}
 			}
 
 			return bulkRet;
 		} else if (bpmv.str(evName)) {
-			if (!bpmv.obj(nkEvs[evName])) {
-				nkEvs[evName] = [];
+
+			if(!bpmv.obj(nkEvStore[evName])) {
+				nkEvStore[evName] = new Event(evName, {
+					cancelable: true
+				});
 			}
 
+			if(!bpmv.obj(nkEvStore[evName])) {
+				nkEvStore[evName] = _.extend({}, nkEvOpts)
+				return nkEvStore[evName];
+			}
+
+
 			if (bpmv.func(cbOrData)) {
-				nkEvs[evName].push(cbOrData);
-				nckma.debug(nckma._dL.ev, plug+'callback added '+evName, [cbOrData, nkEvs[evName]]);
-				bulkRet[evName] = nkEvs[evName];
+				nckma.debug(nckma._dL.ev, plug+'callback added '+evName, [cbOrData, nkEvStore[evName]]);
 
-				return bulkRet;
+				return document.addEventListener(evName, cbOrData);
 			} else {
-				quietEvent = bpmv.num(bpmv.find(evName, nkQuietEvents), true);
+				quietEvent = nkQuietEvents.indexOf(evName) > -1;
 
-				if(!quietEvent) {
-					nckma.debug(nckma._dL.ev, plug+'firing '+evName, [cbOrData, nkEvs[evName]]);
-				} else {
-					nckma.debug(nckma._dL.evQuiet, plug+'firing '+evName, [cbOrData, nkEvs[evName]]);
-				}
+				custEv = new Event(evName, nkEvStore[evName]);
+				custEv.data = cbOrData;
 
-				if (bpmv.arr(nkEvs[evName])) {
-					for (iter = 0; iter < nkEvs[evName].length; iter++) {
-						if (bpmv.func(nkEvs[evName][iter])) {
-							cbRes = nkEvs[evName][iter].apply(nckma, arguments);
-						}
+				nckma.debug((quietEvent ? nckma._dL.evQuiet : nckma._dL.ev), plug+'firing '+evName, [cbOrData, custEv]);
 
-						if (cbRes === false) {
-							break;
-						}
-					}
-				}
-
-				bulkRet[evName] = nkEvs[evName];
-
-				nckma.debug(nckma._dL.evQuiet, plug+'fired '+evName, cbRes);
-
-				return bulkRet;
-			}	
+				return document.dispatchEvent(custEv, cbOrData);
+			}
 		}
+
 		nckma.debug(nckma._dL.ev, plug+'FAILED', [arguments]);
 	};
 
-	// kill a cb event bind or for all events
+	// kill a cb event
 	nckma.ev_kill = function (evName, cb) {
-		var iter;
-		var cbS = '';
-		var ret = {};
+		var plug = '[EVENT] ';
+		var quietEvent = bpmv.num(bpmv.find(evName, nkQuietEvents), true);;
 
-		if (bpmv.str(evName) && bpmv.arr(nkEvs[evName]) && bpmv.func(cb)) {
-			cbS = cb.toString();
-
-			for (iter in nkEvs[evName]) {
-				if (nkEvs[evName].hasOwnProperty(iter) && bpmv.func(nkEvs[evName][iter]) && (cbS === nkEvs[evName][iter].toString())) {
-					nkEvs[evName].splice (iter, 1);
-				}
-			}
-		} else if (bpmv.func(cb)) {
-			for (iter in nkEvs) {
-				if (nkEvs.hasOwnProperty(iter) && bpmv.str(iter)) {
-					ret[iter] = nckma.ev_kill(iter, cb);
-				}
-			}
-		}
-
-		return $.extend({}, nkEvs);
+		nckma.debug((quietEvent ? nckma._dL.evQuiet : nckma._dL.ev), plug+'removing '+evName, [cbOrData, custEv]);
+		
+		return document.removeEventListener(evName, cb);
 	};
 
 	nckma.get = function (asJson) {
@@ -457,6 +462,7 @@ if (typeof(nckma) != 'object') {
 					nkDataFirst = d;
 				}
 
+/*
 				nckma.db.user_table(d.name, function () {
 					nckma.db.user_insert( d.name, {
 						'c': d.comment_karma,
@@ -466,6 +472,7 @@ if (typeof(nckma) != 'object') {
 						't': d.nkTimeStamp
 					});
 				});
+*/
 
 				nkDataLast = d;
 				localStorage['_lastCached'] = JSON.stringify(nkDataLast);
@@ -510,10 +517,6 @@ if (typeof(nckma) != 'object') {
 		}
 
 		nckma.ev('parse', [dat, stat, ev]);
-
-		if (dbg) {
-			nckma.debug(nckma._dL.poll, 'nckma.parse()', nckma.get());
-		}
 	};
 
 	nckma.poll = function () {
@@ -543,8 +546,6 @@ if (typeof(nckma) != 'object') {
 					}
 
 					$.ajax(jax);
-
-					nckma.debug(nckma._dL.poll, 'poll queued', jax);
 					nckma.ev('poll', jax);
 				}
 			}
@@ -562,7 +563,7 @@ if (typeof(nckma) != 'object') {
 
 		if (full) {
 			nkDataFirst = null;
-			nckma.db.user_clear(true);
+			//nckma.db.user_clear(true);
 			//localStorage['_dataSet'] = '';
 			// nkDataSet = [];
 		}
