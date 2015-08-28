@@ -196,7 +196,7 @@
 
 	nckma.px.draw_change_comment = function (line) {
 		var dat = null;
-		var delt = 0;
+		var delt = nckma.pages.get_stat('comment_delta');
 		var col = 'noChange';
 
 		if ((line != 1 ) && (line != 2)) {
@@ -204,34 +204,15 @@
 			return;
 		}
 
-		dat = nckma.get();
-
-		if (bpmv.obj(dat, true) && bpmv.obj(dat.start, true) && bpmv.obj(dat.current, true)) {
-			if (bpmv.num(dat.start.comment_karma, true) && bpmv.num(dat.current.comment_karma, true)) {
-				delt = parseInt(dat.current.comment_karma, 10) - parseInt(dat.start.comment_karma, 10);
-
-				if (delt < -999999) {
-					delt = Math.round((0 - delt) / 1000000) + 'm';
-					col = 'negChange';
-				} else if (delt < -9999) {
-					delt = Math.round((0 - delt) / 1000) + 'k';
-					col = 'negChange';
-				} else if (delt < 0) {
-					delt = (0 - delt);
-					col = 'negChange';
-				} else if (delt > 999999) {
-					delt = Math.round(delt / 1000000) + 'm';
-					col = 'posChange';
-				} else if (delt > 9999) {
-					delt = Math.round(delt / 1000) + 'k';
-					col = 'posChange';
-				} else if (delt > 0) {
-					col = 'posChange';
-				}
-
-				nckma.px.draw_line(''+delt, line, nckma.px.color(col));
-			}
+		if(delt < 0) {
+			col = 'negChange';
 		}
+
+		if(delt > 0) {
+			col = 'posChange';
+		}
+
+		nckma.px.draw_line(nckma.abbrev_int(delt), line, nckma.px.color(col));
 	};
 
 	nckma.px.draw_change_flags = function (line) {
