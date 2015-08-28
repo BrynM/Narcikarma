@@ -350,12 +350,14 @@ h3.nck-html-stat[data-stat="ext_name_full"] {
 .nckPopUserStats {
 	font-family: Arial, sans-serif;
 	font-size: 11px;
+	width: 100%;
 }
 
 .nckPopUserStats tr td:first-child {
 	color: #666666;
 	text-align: right;
 	font-style: italic;
+	width: 50%;
 }
 
 /*
