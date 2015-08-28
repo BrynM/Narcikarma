@@ -28,7 +28,7 @@ At a glance you can check your narcissistic progress, meaning you can stop using
 
 ^^link ^^only ^^works ^^for ^^testers ^^ATM
 
-**Latest Version:** [0.241](http://www.reddit.com/r/Narcikarma/comments/11tqcs/v024_up_for_testing/)
+**Latest Version:** [0.5013]()
 
 **Release Status:** Closed Alpha
 

@@ -1,3 +1,7 @@
+/*!
+* page._test_canvas.js
+*/
+
 var last = [];
 var letrs = nckma.px.chars();
 var charOut = $('#character_listing code').first();

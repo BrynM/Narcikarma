@@ -1,3 +1,7 @@
+/*!
+* narcikarma.spark.js
+*/
+
 (function () {
 
 	/*

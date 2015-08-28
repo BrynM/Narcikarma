@@ -1,4 +1,7 @@
-// background.js
+/*!
+* narcikarma.background.js
+*/
+
 if (typeof(nckma) != 'object') {
 	var nckma = {};
 	var nkBgScrs = [];
@@ -8,3 +11,4 @@ if (typeof(nckma) != 'object') {
 	throw('background.js needs to load before narcikarma.js!!!');
 }
 
+//window.open('chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_html/popup.html');

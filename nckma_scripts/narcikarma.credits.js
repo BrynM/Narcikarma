@@ -1,3 +1,7 @@
+/*!
+* narcikarma.credits.js
+*/
+
 (function () {
 
 	/*

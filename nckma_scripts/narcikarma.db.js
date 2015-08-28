@@ -1,3 +1,7 @@
+/*!
+* narcikarma.db.js
+*/
+
 (function () {
 
 	/*
@@ -9,6 +13,10 @@
 	*/
 
 	nckma.db = {};
+
+/*
+indexedDB.deleteDatabase('DB NAME')
+*/
 
 	// unlimitedStorage permission overrides size I think
 	var nkDataDb = openDatabase('nkDataDb', '2.0', 'Narcikarma Data', 20 * 1024 * 1024);
@@ -356,16 +364,18 @@
 		if (bpmv.str(ut)) {
 			nckma.db.sql('SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'user_'+ut+'_data\' ORDER BY name LIMIT 1;', function (res) {
 				if (!bpmv.arr(res)) {
-					sql += 'CREATE TABLE IF NOT EXISTS';
-					sql += ' '+ut+'(';
-					sql += ' id INTEGER PRIMARY KEY AUTOINCREMENT,';
-					sql += ' epoch INTEGER NOT NULL DEFAULT 0,';
-					sql += ' delta INTEGER NOT NULL DEFAULT 0,';
-					sql += ' cKarma INTEGER NOT NULL DEFAULT 0,';
-					sql += ' lKarma INTEGER NOT NULL DEFAULT 0';
-					sql += ');';
+					sql = [
+						'CREATE TABLE IF NOT EXISTS',
+						' '+ut+'(',
+						' id INTEGER PRIMARY KEY AUTOINCREMENT,',
+						' epoch INTEGER NOT NULL DEFAULT 0,',
+						' delta INTEGER NOT NULL DEFAULT 0,',
+						' cKarma INTEGER NOT NULL DEFAULT 0,',
+						' lKarma INTEGER NOT NULL DEFAULT 0',
+						');'
+					];
 
-					nckma.db.sql(sql, function () {
+					nckma.db.sql(sql.join(''), function () {
 						var args = $.extend([], arguments);
 
 						args.unshift(user);
@@ -385,5 +395,17 @@
 			nckma.warn('Could not check/create user table. User name invalid.', { 'orig': user, 'ut': ut });
 		}
 	};
+
+	nckma.db.user_table_list = function (tCb) {
+		nckma.db.sql('SHOW TABLES like "user_%";', function () {
+			var args = $.extend([], arguments);
+
+			nckma.ev('dbUserTablesListed', args);
+
+			if (bpmv.func(tCb)) {
+				tCb.apply(window, args);
+			}
+		});
+	};		
 
 })();

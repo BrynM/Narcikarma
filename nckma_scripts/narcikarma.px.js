@@ -1,3 +1,7 @@
+/*!
+* narcikarma.px.js
+*/
+
 (function () {
 
 	/*
@@ -69,17 +73,18 @@
 		'Z': '111000100100100010001110'
 	};
 	var nkFallbackColors = {
-		'black': [   0,   0,   0,   1 ],
-		'blue': [   0,   0, 235,   1 ],
-		'gold': [ 176, 176,  21,   1 ],
-		'gray': [ 128, 128, 128,   1 ],
-		'green': [   0, 190,   0,   1 ],
-		'purple': [ 215,   0, 215,   1 ],
-		'red': [ 235,   0,   0,   1 ],
-		'negChange': [ 235,   0,   0,   1 ],
-		'noChange': [   0,   0,   0,   1 ],
-		'posChange': [   0, 190,   0,   1 ]
+		'black':     [  0,   0,   0,   1],
+		'blue':      [  0,   0, 235,   1],
+		'gold':      [176, 176,  21,   1],
+		'gray':      [128, 128, 128,   1],
+		'green':     [  0, 190,   0,   1],
+		'purple':    [215,   0, 215,   1],
+		'red':       [235,   0,   0,   1],
+		'negChange': [235,   0,   0,   1],
+		'noChange':  [  0,   0,   0,   1],
+		'posChange': [  0, 190,   0,   1]
 	};
+	nkFallbackColors['grey'] = nkFallbackColors['gray'];
 
 	/*
 	* create
@@ -128,8 +133,6 @@
 		var cA = null;
 		var cont = true;
 		var locColor = 'color_' + color;
-
-		nckma.opts.defaults_set(true);
 
 		if (bpmv.str(color) && bpmv.str(localStorage[locColor]) && /^\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9\.]+/.test(localStorage[locColor])) {
 			cA = localStorage[locColor].split(/\s*,\s*/);
@@ -193,7 +196,7 @@
 
 	nckma.px.draw_change_comment = function (line) {
 		var dat = null;
-		var delt = 0;
+		var delt = nckma.pages.get_stat('comment_delta');
 		var col = 'noChange';
 
 		if ((line != 1 ) && (line != 2)) {
@@ -201,34 +204,15 @@
 			return;
 		}
 
-		dat = nckma.get();
-
-		if (bpmv.obj(dat, true) && bpmv.obj(dat.start, true) && bpmv.obj(dat.current, true)) {
-			if (bpmv.num(dat.start.comment_karma, true) && bpmv.num(dat.current.comment_karma, true)) {
-				delt = parseInt(dat.current.comment_karma, 10) - parseInt(dat.start.comment_karma, 10);
-
-				if (delt < -999999) {
-					delt = Math.round((0 - delt) / 1000000) + 'm';
-					col = 'negChange';
-				} else if (delt < -9999) {
-					delt = Math.round((0 - delt) / 1000) + 'k';
-					col = 'negChange';
-				} else if (delt < 0) {
-					delt = (0 - delt);
-					col = 'negChange';
-				} else if (delt > 999999) {
-					delt = Math.round(delt / 1000000) + 'm';
-					col = 'posChange';
-				} else if (delt > 9999) {
-					delt = Math.round(delt / 1000) + 'k';
-					col = 'posChange';
-				} else if (delt > 0) {
-					col = 'posChange';
-				}
-
-				nckma.px.draw_line(''+delt, line, nckma.px.color(col));
-			}
+		if(delt < 0) {
+			col = 'negChange';
 		}
+
+		if(delt > 0) {
+			col = 'posChange';
+		}
+
+		nckma.px.draw_line(nckma.abbrev_int(delt), line, nckma.px.color(col));
 	};
 
 	nckma.px.draw_change_flags = function (line) {
@@ -259,17 +243,17 @@
 						break;
 					case 'has_mail':
 						if (dat.current.has_mail) {
-							nckma.px.draw_char('f1', x, y, nckma.px.color('red'));
+							nckma.px.draw_char('f1', x, y, nckma.px.color('hasMail'));
 						} else {
-							nckma.px.draw_char('f0', x, y, nckma.px.color('red'));
+							nckma.px.draw_char('f0', x, y, nckma.px.color('noMail'));
 						}
 
 						break;
 					case 'has_mod_mail':
-						if (dat.current.has_mail) {
-							nckma.px.draw_char('f1', x, y, nckma.px.color('blue'));
+						if (dat.current.has_mod_mail) {
+							nckma.px.draw_char('f1', x, y, nckma.px.color('hasModMail'));
 						} else {
-							nckma.px.draw_char('f0', x, y, nckma.px.color('blue'));
+							nckma.px.draw_char('f0', x, y, nckma.px.color('noModMail'));
 						}
 
 						break;
@@ -305,43 +289,44 @@
 
 	nckma.px.draw_change_link = function (line) {
 		var dat = null;
-		var delt = 0;
+		var delt = nckma.pages.get_stat('link_delta');
 		var col = 'noChange';
 
 		if ((line != 1 ) && (line != 2)) {
 			nckma.warn('Bad line for nckma.px.draw_change_link()', line);
-
 			return;
 		}
 
-		dat = nckma.get();
-
-		if (bpmv.obj(dat, true) && bpmv.obj(dat.start, true) && bpmv.obj(dat.current, true)) {
-			if (bpmv.num(dat.start.link_karma, true) && bpmv.num(dat.current.link_karma, true)) {
-				delt = parseInt(dat.current.link_karma, 10) - parseInt(dat.start.link_karma, 10);
-
-				if (delt < -999999) {
-					delt = Math.round((0 - delt) / 1000000) + 'm';
-					col = 'negChange';
-				} else if (delt < -9999) {
-					delt = Math.round((0 - delt) / 1000) + 'k';
-					col = 'negChange';
-				} else if (delt < 0) {
-					delt = (0 - delt);
-					col = 'negChange';
-				} else if (delt > 999999) {
-					delt = Math.round(delt / 1000000) + 'm';
-					col = 'posChange';
-				} else if (delt > 9999) {
-					delt = Math.round(delt / 1000) + 'k';
-					col = 'posChange';
-				} else if (delt > 0) {
-					col = 'posChange';
-				}
-
-				nckma.px.draw_line(''+delt, line, nckma.px.color(col));
-			}
+		if(delt < 0) {
+			col = 'negChange';
 		}
+
+		if(delt > 0) {
+			col = 'posChange';
+		}
+
+		nckma.px.draw_line(nckma.abbrev_int(delt), line, nckma.px.color(col));
+	};
+
+	nckma.px.draw_change_total = function (line) {
+		var dat = null;
+		var delt = nckma.pages.get_stat('total_delta');
+		var col = 'noChange';
+
+		if ((line != 1 ) && (line != 2)) {
+			nckma.warn('Bad line for nckma.px.draw_change_link()', line);
+			return;
+		}
+
+		if(delt < 0) {
+			col = 'negChange';
+		}
+
+		if(delt > 0) {
+			col = 'posChange';
+		}
+
+		nckma.px.draw_line(nckma.abbrev_int(delt), line, nckma.px.color(col));
 	};
 
 	nckma.px.draw_char = function (ch, x, y, color) {
