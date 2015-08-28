@@ -289,43 +289,44 @@
 
 	nckma.px.draw_change_link = function (line) {
 		var dat = null;
-		var delt = 0;
+		var delt = nckma.pages.get_stat('link_delta');
 		var col = 'noChange';
 
 		if ((line != 1 ) && (line != 2)) {
 			nckma.warn('Bad line for nckma.px.draw_change_link()', line);
-
 			return;
 		}
 
-		dat = nckma.get();
-
-		if (bpmv.obj(dat, true) && bpmv.obj(dat.start, true) && bpmv.obj(dat.current, true)) {
-			if (bpmv.num(dat.start.link_karma, true) && bpmv.num(dat.current.link_karma, true)) {
-				delt = parseInt(dat.current.link_karma, 10) - parseInt(dat.start.link_karma, 10);
-
-				if (delt < -999999) {
-					delt = Math.round((0 - delt) / 1000000) + 'm';
-					col = 'negChange';
-				} else if (delt < -9999) {
-					delt = Math.round((0 - delt) / 1000) + 'k';
-					col = 'negChange';
-				} else if (delt < 0) {
-					delt = (0 - delt);
-					col = 'negChange';
-				} else if (delt > 999999) {
-					delt = Math.round(delt / 1000000) + 'm';
-					col = 'posChange';
-				} else if (delt > 9999) {
-					delt = Math.round(delt / 1000) + 'k';
-					col = 'posChange';
-				} else if (delt > 0) {
-					col = 'posChange';
-				}
-
-				nckma.px.draw_line(''+delt, line, nckma.px.color(col));
-			}
+		if(delt < 0) {
+			col = 'negChange';
 		}
+
+		if(delt > 0) {
+			col = 'posChange';
+		}
+
+		nckma.px.draw_line(nckma.abbrev_int(delt), line, nckma.px.color(col));
+	};
+
+	nckma.px.draw_change_total = function (line) {
+		var dat = null;
+		var delt = nckma.pages.get_stat('total_delta');
+		var col = 'noChange';
+
+		if ((line != 1 ) && (line != 2)) {
+			nckma.warn('Bad line for nckma.px.draw_change_link()', line);
+			return;
+		}
+
+		if(delt < 0) {
+			col = 'negChange';
+		}
+
+		if(delt > 0) {
+			col = 'posChange';
+		}
+
+		nckma.px.draw_line(nckma.abbrev_int(delt), line, nckma.px.color(col));
 	};
 
 	nckma.px.draw_char = function (ch, x, y, color) {

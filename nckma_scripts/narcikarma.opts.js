@@ -31,53 +31,79 @@
 	var nkMaxHist = 8000;
 	var nkOptions = {};
 	var nkOptionsKeys = [];
-	var nckFlagEnum = [
-		{
+	var nkFlagsList = {};
+	var nkFlagsList = {
+		'blank': {
 			'v': 'blank',
 			'n': 'blank'
 		},
-		{
+		'has_mail_both': {
 			'v': 'has_mail_both',
-			'n': 'Messages or Mod Mail'
+			'n': 'Inbox or Mod Mail'
 		},
-		{
+		'has_mail': {
 			'v': 'has_mail',
-			'n': 'Messages/User Mail'
+			'n': 'Inbox'
 		},
-		{
+		'has_mod_mail': {
 			'v': 'has_mod_mail',
 			'n': 'Mod Mail'
 		},
-		{
+		'is_mod': {
 			'v': 'is_mod',
 			'n': 'Moderator'
 		},
-		{
+		'is_gold': {
 			'v': 'is_gold',
 			'n': 'Reddit Gold'
-		}
+		},
+	};
+	var nckFlagEnum = [
+		nkFlagsList['blank'],
+		nkFlagsList['has_mail_both'],
+		nkFlagsList['has_mail'],
+		nkFlagsList['has_mod_mail'],
+		nkFlagsList['is_mod'],
+		nkFlagsList['is_gold'],
 	];
-	var nckRowEnum = [
-		{
+	var nckRowList = {
+		'cKarma': {
 			'v': 'cKarma',
-			'n': 'Comment Karma'
+			'n': 'Comment Karma Delta'
 		},
-		{
+		'flagsAndC': {
 			'v': 'flagsAndC',
-			'n': 'Alternate Status Flags and Comment Karma'
+			'n': 'Alternate Status Flags and Comment Karma Delta'
 		},
-		{
+		'flagsAndL': {
 			'v': 'flagsAndL',
-			'n': 'Alternate Status Flags and Link Karma'
+			'n': 'Alternate Status Flags and Link Karma Delta'
 		},
-		{
+		'flagsAndL': {
+			'v': 'flagsAndT',
+			'n': 'Alternate Status Flags and Total Karma Delta'
+		},
+		'lKarma': {
 			'v': 'lKarma',
-			'n': 'Link Karma'
+			'n': 'Link Karma Delta'
 		},
-		{
+		'tKarma': {
+			'v': 'tKarma',
+			'n': 'Total Karma Delta'
+		},
+		'flags': {
 			'v': 'flags',
 			'n': 'Status Flags'
-		}
+		},
+	};
+	var nckRowEnum = [
+		nckRowList['tKarma'],
+		nckRowList['cKarma'],
+		nckRowList['lKarma'],
+		nckRowList['flags'],
+		//nckRowList['flagsAndC'],
+		//nckRowList['flagsAndL'],
+		//nckRowList['flagsAndT'],
 	];
 
 	nkOptions['alertMail'] = {
@@ -266,14 +292,14 @@
 		'kill0': true
 	};
 	nkOptions['row0'] = {
-		'def': 'lKarma',
+		'def': 'flags',
 		'type': 'enum',
 		'title': 'Top Icon Row Contents',
 		'desc': 'Contents of top icon row.',
 		'enum': $.extend([], nckRowEnum)
 	};
 	nkOptions['row1'] = {
-		'def': 'cKarma',
+		'def': 'tKarma',
 		'type': 'enum',
 		'title': 'Bottom Icon Row Contents',
 		'desc': 'Contents of bottom icon row.',
@@ -445,6 +471,32 @@
 
 	nckma.opts.get_default_details = function (asJson) {
 		return $.extend({}, nkOptions);
+	};
+
+	nckma.opts.get_flag_names = function (asJson) {
+		ret = [];
+
+		for (var f = 0; f < 4; f++) {
+			if(!bpmv.str(localStorage['flag'+f])) {
+				continue;
+			}
+
+			ret.push(''+nkFlagsList[localStorage['flag'+f]].n);
+		}
+
+		return asJson ? JSON.stringify(ret) : ret;
+	};
+
+	nckma.opts.get_row_0_name = function (asJson) {
+		var ret = ''+nckRowList[localStorage['row0']].n;
+
+		return asJson ? JSON.stringify(ret) : ret;
+	};
+
+	nckma.opts.get_row_1_name = function (asJson) {
+		var ret = ''+nckRowList[localStorage['row1']].n;
+
+		return asJson ? JSON.stringify(ret) : ret;
 	};
 
 	// Saves options to localStorage.
