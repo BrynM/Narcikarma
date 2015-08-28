@@ -19,11 +19,8 @@
 	*/
 
 	var nckResetVersions = [
-		'0.50112',
-		'0.51',
-		'0.51.T',
-		'0.51.TD',
-		'0.51.D'
+		'0.5013',
+		'0.5013.D',
 	];
 
 	var nkDebugLevel = 5; // opts
@@ -284,7 +281,7 @@
 		'enum': $.extend([], nckFlagEnum)
 	};
 	nkOptions['interval'] = {
-		'def': '600',
+		'def': '120',
 		'type': 'int',
 		'title': 'Refresh Interval',
 		'desc': 'Interval that your karma stats will be checked. Zero will disable checks.',

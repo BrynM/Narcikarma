@@ -33,11 +33,11 @@ if (typeof(nckma) != 'object') {
 	};
 	var nkEvStore = {};
 	var nkFlags = {
-		'debug': true,
+		'debug': false,
 		'ga': true,
-		'testing': true,
+		'testing': false,
 		// read configuration fallbacks...
-		'aConfFB': false
+		'aConfFB': false,
 	};
 	var nkLastPoll = null;
 	// aslo see nkMaxHist in the options section
