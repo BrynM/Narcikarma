@@ -124,24 +124,48 @@
 	nkOptions['alertCommentGain'] = {
 		'def': 0,
 		'type': 'int',
-		'title': 'After Comment Karma Threshold',
+		'title': 'Comment Karma Gain Threshold',
 		'desc': 'When your comment karma has increased by this amount, an alert will be shown. Zero will disable these alerts.',
+		'min': 5,
+		'kill0': true
+	};
+	nkOptions['alertCommentLoss'] = {
+		'def': 0,
+		'type': 'int',
+		'title': 'Comment Karma Loss Threshold',
+		'desc': 'When your comment karma has fallen by this amount, an alert will be shown. Zero will disable these alerts.',
 		'min': 5,
 		'kill0': true
 	};
 	nkOptions['alertLinkGain'] = {
 		'def': 0,
 		'type': 'int',
-		'title': 'After Link Karma Threshold',
+		'title': 'Link Karma Gain Threshold',
 		'desc': 'When your link karma has increased by this amount, an alert will be shown. Zero will disable these alerts.',
+		'min': 5,
+		'kill0': true
+	};
+	nkOptions['alertLinkLoss'] = {
+		'def': 0,
+		'type': 'int',
+		'title': 'Link Karma Loss Threshold',
+		'desc': 'When your link karma has fallen by this amount, an alert will be shown. Zero will disable these alerts.',
 		'min': 5,
 		'kill0': true
 	};
 	nkOptions['alertTotalGain'] = {
 		'def': 50,
 		'type': 'int',
-		'title': 'After total Karma Threshold',
+		'title': 'Total Karma Gain Threshold',
 		'desc': 'When your total Karma has increased by this amount, an alert will be shown. Zero will disable these alerts.',
+		'min': 5,
+		'kill0': true
+	};
+	nkOptions['alertTotalLoss'] = {
+		'def': 50,
+		'type': 'int',
+		'title': 'Total Karma Loss Threshold',
+		'desc': 'When your total karma has fallen by this amount, an alert will be shown. Zero will disable these alerts.',
 		'min': 5,
 		'kill0': true
 	};
@@ -568,7 +592,7 @@
 						localStorage[aC] = cache[aC].val();
 
 						if (localStorage[aC] != defs[aC]) {
-							nckma.track(aC, localStorage[aC], 'nkOptionsSaved');
+							nckma.track(aC, localStorage[aC], 'option-'+aC);
 						}
 
 						if (cache[aC].is('select')) {
@@ -849,7 +873,7 @@
 						localStorage[aC] = cache[aC].val();
 
 						if (localStorage[aC] != defs[aC]) {
-							nckma.track(aC, localStorage[aC], 'nkOptionsSaved');
+							nckma.track(aC, localStorage[aC], 'option-'+aC);
 						}
 
 						if (cache[aC].is('select')) {
