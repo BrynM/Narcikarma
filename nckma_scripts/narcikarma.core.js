@@ -748,7 +748,7 @@ if (typeof(nckma) != 'object') {
 		if (bpmv.str(inf.version)) {
 			ret = {
 				'num': inf.version.replace(/[^0-9|^\.]+/g, '' ).split('.'),
-				'str': ''+inf.version + (nkFlags['testing'] || nkFlags['debug'] || nkFlags['ga'] ? '.' : '') + (nkFlags['testing'] ? 'T' : '') + (nkFlags['debug'] ? 'D' : '')
+				'str': ''+inf.version + (nkFlags['testing'] || nkFlags['debug'] ? '.' : '') + (nkFlags['testing'] ? 'T' : '') + (nkFlags['debug'] ? 'D' : '')
 			};
 
 			if (bpmv.arr(ret.num)) {
