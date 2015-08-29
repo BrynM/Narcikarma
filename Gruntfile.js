@@ -7,7 +7,7 @@ var _ = require('underscore')
 module.exports = function(grunt) {
 
 	function tpl_banner(fileName) {
-
+		var txt;
 		var pre = [
 			'/*!',
 		];
@@ -17,7 +17,7 @@ module.exports = function(grunt) {
 			pre.push('*');
 		}
 
-		var txt = [
+		txt = [
 			'* '+manifest.name+' '+manifest.version,
 			'* https://reddit.com/r/Narcikamra',
 			'*',

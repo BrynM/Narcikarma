@@ -103,6 +103,12 @@
 		//nckRowList['flagsAndT'],
 	];
 
+	nkOptions['privacyOk'] = {
+		'def': 'true',
+		'type': 'bool',
+		'title': 'Allow anonymous usage collection',
+		'desc': 'Allow anonoymous technical data collection.'
+	};
 	nkOptions['alertMail'] = {
 		'def': 'true',
 		'type': 'bool',
@@ -285,7 +291,7 @@
 		'type': 'int',
 		'title': 'Refresh Interval',
 		'desc': 'Interval that your karma stats will be checked. Zero will disable checks.',
-		'min': nckma.testing() ? 4 : 59,
+		'min': nckma.dev() ? 4 : 59,
 		'kill0': true
 	};
 	nkOptions['row0'] = {
@@ -326,7 +332,7 @@
 		'color_noChange': nckma.opts.valid_color,
 		'color_posChange': nckma.opts.valid_color,
 		'interval': function (val) {
-			return (parseInt(val) > (nckma.testing() ? 4 : 59)) || (parseInt(val) === 0) ? true : nkOptions['interval'].title + ' must be 1 minute or more.';
+			return (parseInt(val) > (nckma.dev() ? 4 : 59)) || (parseInt(val) === 0) ? true : nkOptions['interval'].title + ' must be 1 minute or more.';
 		},
 		'savedRefreshes': function (val) {
 			val = parseInt(val, 10);
@@ -338,6 +344,30 @@
 	/*
 	* functions
 	*/
+
+	function check_privacy() {
+		if (typeof localStorage['privacyOk'] !== 'undefined') {
+			return;
+		}
+
+		nckma.track('func', 'check_privacy', 'nkExec');
+		localStorage['privacyOk'] = true;
+
+		nckma.notify.confirm(
+			'Allow collection of anonymous technical usage data?',
+			'Narcikarma collects some anonymous data which is explained and can be turned off in the Privacy Options.',
+			function(){
+				nckma.pages.go_to_options('privacy');
+			},
+			undefined,
+			{
+				buttons: [
+					{'title': 'View and/or change the Privacy Options.'},
+					{'title': 'I\'m okay with that data collection.'}
+				]
+			}
+		);
+	}
 
 	function local_obj (key, val) {
 		if(!bpmv.str(key)) {
@@ -377,9 +407,12 @@
 				'It is strongly recommended that you reset your options when first running this version of Narcikarma. Would you like to reset the Narcikarma options now?',
 				function(){
 					nckma.opts.defaults_set(false);
-				});
+				}
+			);
 
+			nckma.track('func', 'nckma.opts.check_reset_version', 'nkExec');
 		}
+
 	};
 
 	nckma.opts.defaults_get = function (extended) {
@@ -410,6 +443,8 @@
 		var statText = false;
 
 		if(bpmv.trueish(preserve)) {
+			check_privacy();
+
 			for (var aC in defs) {
 				if (defs.hasOwnProperty(aC) && bpmv.str(aC)) {
 					if (typeof localStorage[aC] !== 'undefined' && localStorage[aC] !== null) {
@@ -511,7 +546,7 @@
 
 		$('.nckOptionsContainer span').hide();
 
-		if (nckma.testing() && bpmv.obj(jL) && bpmv.num(jL.length)) {
+		if (nckma.dev() && bpmv.obj(jL) && bpmv.num(jL.length)) {
 			jL.empty();
 			jlGood = true;
 		}
@@ -668,7 +703,7 @@
 		var bgP = chrome.extension.getBackgroundPage();
 
 		if ($('body.nckOptions').is(':visible')) {
-			if (nckma.testing()) {
+			if (nckma.dev()) {
 				ivlSel = $('#opt_interval');
 
 				$('<h3>DEV MODE <span class="nkNote"><a href="_test_canvas.html" target="_blank">canvas test</a></span></h3>').insertAfter('#nck_title');
@@ -792,7 +827,7 @@
 
 		$('.nckOptionsContainer span').hide();
 
-		if (nckma.testing() && bpmv.obj(jL) && bpmv.num(jL.length)) {
+		if (nckma.dev() && bpmv.obj(jL) && bpmv.num(jL.length)) {
 			jL.empty();
 			jlGood = true;
 		}
@@ -1013,6 +1048,8 @@
 	*/
 
 	nckma.start(function () {
+		check_privacy();
+
 		nckma.debug(nkDebugLevel, 'Base Settings', nkOptions);
 		nckma.opts.check_reset_version();
 	});
