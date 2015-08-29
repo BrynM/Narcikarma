@@ -105,13 +105,22 @@
 	function handle_zero_disable_input (ev) {
 		var $el;
 		var jQ = $_from_event(ev);
-		var className = 'zeroIsDisabled';
 
 		if(!bpmv.obj(ev) || !bpmv.func(jQ)) {
 			return;
 		}
 
 		$el = jQ(ev.target);
+
+		$zero_disable($el);
+	}
+
+	function $zero_disable($el) {
+		var className = 'zeroIsDisabled';
+
+//		if(!bpmv.obj($el) || !bpmv.func($el.addClass)) {
+//			return;
+//		}
 
 		if(parseInt($el.val(), 10) === 0) {
 			$el.addClass(className);
@@ -580,6 +589,7 @@
 			$single = win.$($el[iter]);
 
 			$single.off('change focusout focus', handle_zero_disable_input).on('change focusout focus', handle_zero_disable_input).change();
+			$zero_disable($single);
 		}
 	};
 
