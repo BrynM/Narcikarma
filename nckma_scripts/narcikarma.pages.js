@@ -156,9 +156,19 @@
 		open_url(nckma.get_url('graphs'));
 	}
 
-	function open_options () {
+	function open_options (hash) {
+		var withHash = '';
+
+		if (bpmv.str(hash)) {
+			withHash += '#'+hash;
+
+			if (withHash.indexOf('_tab_radio') < 0) {
+				withHash += '_tab_radio';
+			}
+		}
+
 		nckma.track('func', 'open_options', 'nkExec');
-		open_url(nckma.get_url('options'));
+		open_url(nckma.get_url('options')+withHash);
 	}
 
 	function open_source () {
@@ -614,14 +624,12 @@
 		return format_stat(stat, stats[stat]);
 	};
 
-	nckma.pages.open = function(urlKey) {
-		var url = nckma.get_url(urlKey);
+	nckma.pages.go_to_options = function (hash) {
+		return open_options(hash);
+	};
 
-		if (bpmv.str(url)) {
-			open_url(url);
-		}
-
-		nckma.track('func', 'pages.open', 'nkExec');
+	nckma.pages.go_to_user = function () {
+		return open_current_user();
 	};
 
 	nckma.pages.go_to_url = function (loc) {
@@ -633,8 +641,14 @@
 		open_url(loc);
 	};
 
-	nckma.pages.go_to_user = function () {
-		return open_current_user();
+	nckma.pages.open = function(urlKey) {
+		var url = nckma.get_url(urlKey);
+
+		if (bpmv.str(url)) {
+			open_url(url);
+		}
+
+		nckma.track('func', 'pages.open', 'nkExec');
 	};
 
 	nckma.pages.populate_stats = function (win) {

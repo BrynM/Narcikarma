@@ -2,7 +2,7 @@
 <head>
 	<title>Narcikarma Options</title>
 	<link href="../nckma_assets/narcikarma.css" rel="stylesheet" type="text/css">
-	<script src="../nckma_scripts/ga.js"></script>
+	<script src="../lib/google-analytics-bundle.js"></script>
 </head>
 <body class="nckOptions">
 	<div class="nckContent">
@@ -296,9 +296,53 @@
 						<p>
 					</div>
 
-					<div class="clear"></div>
 				</div>
 			</div>
+
+			<div id="privacy_tab" class="tab-single">
+				<input type="radio" class="tab-radio" id="privacy_tab_radio" name="optionsTabs" />
+				<label for="privacy_tab_radio" class="tab-label">Privacy</label>
+				<div class="tab-contents">
+
+					<h3>Privacy</h3>
+
+					<p>
+						Narcikarma does not interact with or alter Reddit pages in any way.
+						Only minimal json APIs are used, such as me.json.
+						No browsing data is colledted at all.
+					</p>
+
+					<p>
+						Authentication is carried out by sharing cookies with reddit.com to make the JSON API requests.
+						The cookies are not viewed, used, or stored anywhere and this functionality is completey controlled by the browser.
+						The only account data stored is locally in your browser to report to you and is never transmitted to anyone else.
+					</p>
+
+					<p>
+						In the end, I don't want to know what you do. This is meant to merely be a tool you can use.
+					</p>
+
+					<h3>Anonoymous technical data collection</h3>
+
+					<p>
+						In order to see how much of the extension is used and track how many errors are thrown, it's very helpful to collect usage data.
+						Narcikmara only collects basic anonymous Google Analytics event data and internal function call counts as Analytics events.
+						No data about your accounts - Reddit, Google, or otherwise - is collected at all.
+						By default, Google Analytics does collect some location data however.
+					</p>
+
+					<p>
+						The data collected is primarily used to evaluate which portions of the code are getting used and which options are popular so they can become new defaults.
+					<p>
+
+					<div class="nckOptionsContainer" title="Show the karma change for all of the history, not just this browser session.">
+						<label for="opt_privacyOk"><h2>Allow collection of data</h2></label>
+						<input type="checkbox" id="opt_privacyOk" />&nbsp;<span id="opt_privacyOk_status"></span>
+					</div>
+
+				</div>
+			</div>
+
 		</div>
 
 		<hr>

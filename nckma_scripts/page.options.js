@@ -170,13 +170,25 @@ console.log('conts', parseInt($conts.outerHeight(true), 10));
 	});
 */
 
-	/* simple tab links */
-	$('.tab-contents a').click(function (ev) {
-		var hash = ev.currentTarget.href.replace( /(^.*#|\?.*$)/, '' );
+	function check_hash() {
+		var hash = document.location.hash.replace(/(^.*#|\?.*$)/, '');
+
 		var jE = $('#'+hash);
 
 		if (bpmv.obj(jE) && bpmv.num(jE.length)) {
-			jE.attr( 'checked', 'checked' );
+			jE.attr('checked', 'checked');
+		}
+	}
+
+	check_hash();
+
+	/* simple tab links */
+	$('.tab-contents a').click(function (ev) {
+		var hash = ev.currentTarget.href.replace(/(^.*#|\?.*$)/, '');
+		var jE = $('#'+hash);
+
+		if (bpmv.obj(jE) && bpmv.num(jE.length)) {
+			jE.attr('checked', 'checked');
 		}
 	});
 });
