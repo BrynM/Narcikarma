@@ -147,11 +147,15 @@
 		nckma.pages.go_to_user();
 	};
 
-	function handle_alert_clicked (evName, noteId) {
+	function handle_alert_clicked (ev) {
 		var iter;
 
+		if(!bpmv.obj(ev) || !bpmv.str(ev.data)) {
+			return;
+		}
+
 		for (iter in activeAlerts) {
-			if (!bpmv.str(activeAlerts[iter]) || noteId !== activeAlerts[iter]) {
+			if (!bpmv.str(activeAlerts[iter]) || ev.data !== activeAlerts[iter]) {
 				continue;
 			}
 
