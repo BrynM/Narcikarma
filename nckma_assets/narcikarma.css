@@ -279,7 +279,7 @@ input[type="radio"]:checked ~ label {
 	border: 1px solid #ccc;
 	display: none;
 	background: rgba( 255, 255, 255, 0.65 );
-	background-image: url( "img/nk_logo_bg.png" );
+	background-image: url( "img/nk_logo_bg_slight.png" );
 	background-repeat: no-repeat;
 	background-position: center right;
 }
@@ -337,9 +337,9 @@ h3.nck-html-stat[data-stat="ext_name_full"] {
 ****************************************
 */
 
-.nckPopup {
-	width: 310px;
-	font-size: 80%;
+.nckPopup, .nckPopup .nckContent {
+	width: 320px;
+	font-size: .8em;
 }
 
 .nckPopup hr {
@@ -351,6 +351,15 @@ h3.nck-html-stat[data-stat="ext_name_full"] {
 	font-family: Arial, sans-serif;
 	font-size: 11px;
 	width: 100%;
+	border: none;
+	border-top: 5px solid rgba( 255, 139, 96, 0.2 );
+	border-image: linear-gradient( right, rgba( 148, 148, 255, 0.2 ) 0%, rgba( 255, 139, 96, 0.2 ) 100%);
+/*
+	background: -webkit-linear-gradient( right, rgba( 148, 148, 255, 0.2 ) 0%, rgba( 255, 139, 96, 0.2 ) 100%);
+	background: linear-gradient(to right,  #rgba( 148, 148, 255, 0.2 ) 0%, rgba( 255, 139, 96, 0.2 ) 100%);
+	box-shadow:  1px 1px 1px 0px rgba(0, 0, 0, .15);
+	-webkit-box-shadow:  1px 1px 1px 0px rgba(0, 0, 0, .15);
+*/
 }
 
 .nckPopUserStats tr td:first-child {
