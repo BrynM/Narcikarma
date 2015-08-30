@@ -338,7 +338,7 @@ h3.nck-html-stat[data-stat="ext_name_full"] {
 */
 
 .nckPopup {
-	width: 320px;
+	width: 340px;
 	font-size: .6em;
 }
 
@@ -354,15 +354,6 @@ h3.nck-html-stat[data-stat="ext_name_full"] {
 	font-family: Arial, sans-serif;
 	font-size: 11px;
 	width: 100%;
-	border: none;
-/*
-	border-top: 5px solid rgba( 255, 139, 96, 0.2 );
-	border-image: linear-gradient( right, rgba( 148, 148, 255, 0.2 ) 0%, rgba( 255, 139, 96, 0.2 ) 100%);
-	background: -webkit-linear-gradient( right, rgba( 148, 148, 255, 0.2 ) 0%, rgba( 255, 139, 96, 0.2 ) 100%);
-	background: linear-gradient(to right,  #rgba( 148, 148, 255, 0.2 ) 0%, rgba( 255, 139, 96, 0.2 ) 100%);
-	box-shadow:  1px 1px 1px 0px rgba(0, 0, 0, .15);
-	-webkit-box-shadow:  1px 1px 1px 0px rgba(0, 0, 0, .15);
-*/
 }
 
 .nckPopUserStats tr td:first-child {
@@ -370,6 +361,11 @@ h3.nck-html-stat[data-stat="ext_name_full"] {
 	text-align: right;
 	font-style: italic;
 	width: 50%;
+}
+
+.nckPopUserStats tr .nck-html-stat[data-stat="name"]{
+	word-wrap: break-word;
+	word-break: break-all;
 }
 
 /*
