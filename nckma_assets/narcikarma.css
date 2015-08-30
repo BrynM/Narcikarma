@@ -337,14 +337,17 @@ h3.nck-html-stat[data-stat="ext_name_full"] {
 ****************************************
 */
 
-.nckPopup, .nckPopup .nckContent {
+.nckPopup {
 	width: 320px;
-	font-size: .8em;
+	font-size: .6em;
+}
+
+.nckPopup .nckButtonRow {
+	text-align: center;
 }
 
 .nckPopup hr {
 	margin-right: 20px;
-
 }
 
 .nckPopUserStats {
@@ -352,9 +355,9 @@ h3.nck-html-stat[data-stat="ext_name_full"] {
 	font-size: 11px;
 	width: 100%;
 	border: none;
+/*
 	border-top: 5px solid rgba( 255, 139, 96, 0.2 );
 	border-image: linear-gradient( right, rgba( 148, 148, 255, 0.2 ) 0%, rgba( 255, 139, 96, 0.2 ) 100%);
-/*
 	background: -webkit-linear-gradient( right, rgba( 148, 148, 255, 0.2 ) 0%, rgba( 255, 139, 96, 0.2 ) 100%);
 	background: linear-gradient(to right,  #rgba( 148, 148, 255, 0.2 ) 0%, rgba( 255, 139, 96, 0.2 ) 100%);
 	box-shadow:  1px 1px 1px 0px rgba(0, 0, 0, .15);
