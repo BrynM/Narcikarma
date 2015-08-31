@@ -232,7 +232,7 @@ button.nckDangerButton:active {
 	display: block;
 	clear: both;
 	position: relative;
-	min-height: 410px;
+	min-height: 550px;
 	margin: 0;
 }
 
@@ -279,7 +279,7 @@ input[type="radio"]:checked ~ label {
 	border: 1px solid #ccc;
 	display: none;
 	background: rgba( 255, 255, 255, 0.65 );
-	background-image: url( "img/nk_logo_bg.png" );
+	background-image: url( "img/nk_logo_bg_slight.png" );
 	background-repeat: no-repeat;
 	background-position: center right;
 }
@@ -338,13 +338,16 @@ h3.nck-html-stat[data-stat="ext_name_full"] {
 */
 
 .nckPopup {
-	width: 310px;
-	font-size: 80%;
+	width: 340px;
+	font-size: .6em;
+}
+
+.nckPopup .nckButtonRow {
+	text-align: center;
 }
 
 .nckPopup hr {
 	margin-right: 20px;
-
 }
 
 .nckPopUserStats {
@@ -358,6 +361,11 @@ h3.nck-html-stat[data-stat="ext_name_full"] {
 	text-align: right;
 	font-style: italic;
 	width: 50%;
+}
+
+.nckPopUserStats tr .nck-html-stat[data-stat="name"]{
+	word-wrap: break-word;
+	word-break: break-all;
 }
 
 /*

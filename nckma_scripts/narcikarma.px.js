@@ -180,6 +180,10 @@
 	};
 
 	nckma.px.cx = function (type) {
+		if(!nckma._bgTask) {
+			return;
+		}
+
 		if (!bpmv.obj(nkCanvas.icon) || !bpmv.num(nkCanvas.icon.length) || !bpmv.obj(nkCx)) {
 			nkCanvas.icon = $('#nck_canvas_icon_16');
 
@@ -197,7 +201,11 @@
 	nckma.px.draw_change_comment = function (line) {
 		var dat = null;
 		var delt = nckma.pages.get_stat('comment_delta');
-		var col = 'noChange';
+		var col = 'noCommentChange';
+
+		if(!nckma._bgTask) {
+			return;
+		}
 
 		if ((line != 1 ) && (line != 2)) {
 			nckma.warn('Bad line for nckma.px.draw_change_comment()', line);
@@ -205,11 +213,11 @@
 		}
 
 		if(delt < 0) {
-			col = 'negChange';
+			col = 'negCommentChange';
 		}
 
 		if(delt > 0) {
-			col = 'posChange';
+			col = 'posCommentChange';
 		}
 
 		nckma.px.draw_line(nckma.abbrev_int(delt), line, nckma.px.color(col));
@@ -221,6 +229,10 @@
 		var ch = '';
 		var x = 0;
 		var y = line > 1 ? line1y : line0y;
+
+		if(!nckma._bgTask) {
+			return;
+		}
 
 		if ((line != 1 ) && (line != 2)) {
 			nckma.warn('Bad line for nckma.px.draw_change_link()', line);
@@ -290,7 +302,11 @@
 	nckma.px.draw_change_link = function (line) {
 		var dat = null;
 		var delt = nckma.pages.get_stat('link_delta');
-		var col = 'noChange';
+		var col = 'noLinkChange';
+
+		if(!nckma._bgTask) {
+			return;
+		}
 
 		if ((line != 1 ) && (line != 2)) {
 			nckma.warn('Bad line for nckma.px.draw_change_link()', line);
@@ -298,11 +314,11 @@
 		}
 
 		if(delt < 0) {
-			col = 'negChange';
+			col = 'negLinkChange';
 		}
 
 		if(delt > 0) {
-			col = 'posChange';
+			col = 'posLinkChange';
 		}
 
 		nckma.px.draw_line(nckma.abbrev_int(delt), line, nckma.px.color(col));
@@ -312,6 +328,10 @@
 		var dat = null;
 		var delt = nckma.pages.get_stat('total_delta');
 		var col = 'noChange';
+
+		if(!nckma._bgTask) {
+			return;
+		}
 
 		if ((line != 1 ) && (line != 2)) {
 			nckma.warn('Bad line for nckma.px.draw_change_link()', line);
@@ -339,6 +359,10 @@
 		var draw = false;
 		var comp = null;
 		var cChar = '';
+
+		if(!nckma._bgTask) {
+			return;
+		}
 
 		if (bpmv.obj(cx) && bpmv.str(ch, true)) {
 			cChar = cChar.length === 1 ? ''+ch.toUpperCase() : ''+ch;
@@ -414,6 +438,10 @@
 		var dY = line0y;
 		var dS = ''; // last char first
 
+		if(!nckma._bgTask) {
+			return;
+		}
+
 		if (typeof(line) === 'undefined') {
 			line = 1;
 		}
@@ -461,6 +489,10 @@
 		var cx = nckma.px.cx();
 		var comp = null;
 		var noFill = false;
+
+		if(!nckma._bgTask) {
+			return;
+		}
 
 		switch (stat) {
 			case 'err':

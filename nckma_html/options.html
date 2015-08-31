@@ -2,7 +2,6 @@
 <head>
 	<title>Narcikarma Options</title>
 	<link href="../nckma_assets/narcikarma.css" rel="stylesheet" type="text/css">
-	<script src="../nckma_scripts/ga.js"></script>
 </head>
 <body class="nckOptions">
 	<div class="nckContent">
@@ -142,6 +141,7 @@
 						<p>Settings for Status Flags can be found in the <a href="#flags_options_tab_radio">Flag Options</a> tab.</p>
 						<p>Color settings can be found in the <a href="#color_options_tab_radio">Color Options</a> tab.</p>
 						<p>Desktop notifications settings can be found in the <a href="#alerts_options_tab_radio">Alerts</a> tab.</p>
+						<p>Options for anonymous data collection can be found in the <a href="#privacy_tab_radio">Privacy</a> tab.</p>
 						<p>Some extras can be found in the <a href="#tools_tab_radio">Tools</a> tab.</p>
 					</div>
 
@@ -248,18 +248,77 @@
 					</div>
 
 					<div class="nckOptionsContainer" title="When your total Karma has increased by this amount, an alert will be shown. Zero will disable these alerts.">
-						<label for="opt_alertTotalGain">Alert Comment Karma Threshold</label>
+						<label for="opt_alertTotalGain">Total Karma Gain Threshold</label>
 						<input type="text" id="opt_alertTotalGain" class="zeroDisableInput">&nbsp;<span id="opt_alertTotalGain_status"></span>
 					</div>
 
+					<div class="nckOptionsContainer" title="When your total Karma has decreased by this amount, an alert will be shown. Zero will disable these alerts.">
+						<label for="opt_alertTotalLoss">Total Karma Loss Threshold</label>
+						<input type="text" id="opt_alertTotalLoss" class="zeroDisableInput">&nbsp;<span id="opt_alertTotalLoss_status"></span>
+					</div>
+
 					<div class="nckOptionsContainer" title="When your comment Karma has increased by this amount, an alert will be shown. Zero will disable these alerts.">
-						<label for="opt_alertCommentGain">Alert Comment Karma Threshold</label>
+						<label for="opt_alertCommentGain">Comment Karma Gain Threshold</label>
 						<input type="text" id="opt_alertCommentGain" class="zeroDisableInput">&nbsp;<span id="opt_alertCommentGain_status"></span>
 					</div>
 
+					<div class="nckOptionsContainer" title="When your comment Karma has decreased by this amount, an alert will be shown. Zero will disable these alerts.">
+						<label for="opt_alertCommentLoss">Comment Karma Loss Threshold</label>
+						<input type="text" id="opt_alertCommentLoss" class="zeroDisableInput">&nbsp;<span id="opt_alertCommentLoss_status"></span>
+					</div>
+
 					<div class="nckOptionsContainer" title="When your link Karma has increased by this amount, an alert will be shown. Zero will disable these alerts.">
-						<label for="opt_alertLinkGain">Alert Link Karma Threshold</label>
+						<label for="opt_alertLinkGain">Link Karma Gain Threshold</label>
 						<input type="text" id="opt_alertLinkGain" class="zeroDisableInput">&nbsp;<span id="opt_alertLinkGain_status"></span>
+					</div>
+
+					<div class="nckOptionsContainer" title="When your link Karma has decreased by this amount, an alert will be shown. Zero will disable these alerts.">
+						<label for="opt_alertLinkLoss">Link Karma Loss Threshold</label>
+						<input type="text" id="opt_alertLinkLoss" class="zeroDisableInput">&nbsp;<span id="opt_alertLinkLoss_status"></span>
+					</div>
+
+				</div>
+			</div>
+
+			<div id="privacy_tab" class="tab-single">
+				<input type="radio" class="tab-radio" id="privacy_tab_radio" name="optionsTabs" />
+				<label for="privacy_tab_radio" class="tab-label">Privacy</label>
+				<div class="tab-contents">
+
+					<h3>Privacy</h3>
+
+					<p>
+						Narcikarma does not interact with or alter Reddit pages in any way.
+						Only minimal json APIs are used, such as me.json.
+						No browsing data is colledted at all.
+					</p>
+
+					<p>
+						Authentication is carried out by sharing cookies with reddit.com to make the JSON API requests.
+						The cookies are not viewed, used, or stored anywhere and this functionality is completey controlled by the browser.
+						The only account data stored is locally in your browser to report to you and is never transmitted to anyone else.
+					</p>
+
+					<p>
+						In the end, I don't want to know what you do. This is meant to merely be a tool you can use.
+					</p>
+
+					<h3>Anonoymous technical data collection</h3>
+
+					<p>
+						In order to see how much of the extension is used and track how many errors are thrown, it's very helpful to collect usage data.
+						Narcikmara only collects basic anonymous Google Analytics event data and internal function call counts as Analytics events.
+						No data about your accounts - Reddit, Google, or otherwise - is collected at all.
+						By default, Google Analytics does collect some location data however.
+					</p>
+
+					<p>
+						The data collected is primarily used to evaluate which portions of the code are getting used and which options are popular so they can become new defaults.
+					<p>
+
+					<div class="nckOptionsContainer" title="Show the karma change for all of the history, not just this browser session.">
+						<label for="opt_privacyOk"><h2>Allow collection of data</h2></label>
+						<input type="checkbox" id="opt_privacyOk" />&nbsp;<span id="opt_privacyOk_status"></span>
 					</div>
 
 				</div>
@@ -296,9 +355,9 @@
 						<p>
 					</div>
 
-					<div class="clear"></div>
 				</div>
 			</div>
+
 		</div>
 
 		<hr>
@@ -317,7 +376,8 @@
 	</div>
 
 	<!-- nckmaJS begin -->
-	<script src="../lib/jquery-1.8.2.min.js"></script>
+	<script src="../lib/google-analytics-bundle.js"></script>
+	<script src="../lib/jquery-1.11.3.js"></script>
 	<script src="../lib/bpmv.js"></script>
 	<script src="../lib/base64.js"></script>
 	<script src="../nckma_scripts/narcikarma.core.js"></script>

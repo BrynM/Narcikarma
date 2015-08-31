@@ -154,29 +154,47 @@ nckma.start(function () {
 	// how to deal with changing tab heights?
 /*
 	$('.tab-radio').on('change', function(ev) {
-		var $targ = $(ev.target);
-		var $par = $($targ.parent());
-		var $label = $($par.find('.tab-label'));
-		var $conts = $($par.find('.tab-contents'));
-		var newHeight = parseInt($label.outerHeight(true), 10) + parseInt($conts.outerHeight(true), 10);
+		setTimeout(function() {
+			var $targ = $(ev.target);
+			var $par = $($targ.parent());
+			var $label = $($par.find('.tab-label'));
+			var $conts = $($par.find('.tab-contents'));
+			var $group = $('.tab-group');
+			var contsHeight = parseInt($conts.outerHeight(true), 10);
+			var newHeight = parseInt($label.outerHeight(true), 10) + contsHeight;
 
 console.log('$par', $par[0]);
 console.log('$label', $label[0]);
 console.log('$conts', $conts[0]);
+console.log('contsHeight', contsHeight);
 console.log('newHeight', newHeight);
 console.log('label', parseInt($label.outerHeight(true), 10));
 console.log('conts', parseInt($conts.outerHeight(true), 10));
-		$par.css('height', newHeight+'px');
+			$group.css('height', newHeight+'px');
+		}, 500);
 	});
+	$('#main_options_tab_radio.tab-radio').change();
 */
 
-	/* simple tab links */
-	$('.tab-contents a').click(function (ev) {
-		var hash = ev.currentTarget.href.replace( /(^.*#|\?.*$)/, '' );
+	function check_hash() {
+		var hash = document.location.hash.replace(/(^.*#|\?.*$)/, '');
+
 		var jE = $('#'+hash);
 
 		if (bpmv.obj(jE) && bpmv.num(jE.length)) {
-			jE.attr( 'checked', 'checked' );
+			jE.attr('checked', 'checked');
+		}
+	}
+
+	check_hash();
+
+	/* simple tab links */
+	$('.tab-contents a').click(function (ev) {
+		var hash = ev.currentTarget.href.replace(/(^.*#|\?.*$)/, '');
+		var jE = $('#'+hash);
+
+		if (bpmv.obj(jE) && bpmv.num(jE.length)) {
+			jE.attr('checked', 'checked');
 		}
 	});
 });

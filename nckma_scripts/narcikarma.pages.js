@@ -61,19 +61,21 @@
 		}
 	}
 
-	function format_html_delta (delt) {
+	function format_html_delta (delt, type) {
 		var opts = nckma.opts.get();
 		var deltInt = parseInt(delt, 10);
-		var pClass = 'color: rgba(' + opts['color_noChange'] + ');';
+		var chType = bpmv.str(type, 2) ? type[0].toUpperCase()+type.slice(1) : '';
+		var pClass = bpmv.str(opts['color_no'+chType+'Change']) ? opts['color_no'+chType+'Change'] : opts['color_noChange'];
 
 		if (deltInt > 0) { // positive
-			pClass = 'color: rgba(' + opts['color_posChange'] + ');';
+			pClass = bpmv.str(opts['color_pos'+chType+'Change']) ? opts['color_pos'+chType+'Change'] : opts['color_posChange'];
 		}
 
 		if (deltInt < 0) { // negative
-			pClass = 'color: rgba(' + opts['color_negChange'] + ');';
+			pClass = bpmv.str(opts['color_neg'+chType+'Change']) ? opts['color_neg'+chType+'Change'] : opts['color_negChange'];
 		}
-		return '(<span style="'+pClass+'">'+nckma.str_num(delt)+'</span>)';
+
+		return '<span style="color: rgba('+pClass+');">('+nckma.str_num(delt)+')</span>';
 	}
 
 	function format_stat (stat, val) {
@@ -105,13 +107,22 @@
 	function handle_zero_disable_input (ev) {
 		var $el;
 		var jQ = $_from_event(ev);
-		var className = 'zeroIsDisabled';
 
 		if(!bpmv.obj(ev) || !bpmv.func(jQ)) {
 			return;
 		}
 
 		$el = jQ(ev.target);
+
+		$zero_disable($el);
+	}
+
+	function $zero_disable($el) {
+		var className = 'zeroIsDisabled';
+
+		if(!bpmv.obj($el) || !bpmv.func($el.addClass)) {
+			return;
+		}
 
 		if(parseInt($el.val(), 10) === 0) {
 			$el.addClass(className);
@@ -156,9 +167,19 @@
 		open_url(nckma.get_url('graphs'));
 	}
 
-	function open_options () {
+	function open_options (hash) {
+		var withHash = '';
+
+		if (bpmv.str(hash)) {
+			withHash += '#'+hash;
+
+			if (withHash.indexOf('_tab_radio') < 0) {
+				withHash += '_tab_radio';
+			}
+		}
+
 		nckma.track('func', 'open_options', 'nkExec');
-		open_url(nckma.get_url('options'));
+		open_url(nckma.get_url('options')+withHash);
 	}
 
 	function open_source () {
@@ -410,7 +431,7 @@
 		opts = nckma.opts.get();
 		delt = nckma.pages.get_stat('comment_delta');
 
-		return nckma.str_num(nckma.pages.get_stat('comment_karma'))+' '+format_html_delta(delt);
+		return nckma.str_num(nckma.pages.get_stat('comment_karma'))+' '+format_html_delta(delt, 'comment');
 	};
 
 	templates.html.current_link_karma = function (stats) {
@@ -424,7 +445,7 @@
 		opts = nckma.opts.get();
 		delt = nckma.pages.get_stat('link_delta');
 
-		return nckma.str_num(nckma.pages.get_stat('link_karma'))+' '+format_html_delta(delt);
+		return nckma.str_num(nckma.pages.get_stat('link_karma'))+' '+format_html_delta(delt, 'link');
 	};
 
 	templates.html.gold_creddits = function (stats) {
@@ -532,7 +553,7 @@
 		opts = nckma.opts.get();
 		delt = nckma.pages.get_stat('total_delta');
 
-		return nckma.str_num(nckma.pages.get_stat('total_karma'))+' '+format_html_delta(delt);
+		return nckma.str_num(nckma.pages.get_stat('total_karma'))+' '+format_html_delta(delt, 'total');
 	};
 
 	/*
@@ -570,6 +591,7 @@
 			$single = win.$($el[iter]);
 
 			$single.off('change focusout focus', handle_zero_disable_input).on('change focusout focus', handle_zero_disable_input).change();
+			$zero_disable($single);
 		}
 	};
 
@@ -614,14 +636,12 @@
 		return format_stat(stat, stats[stat]);
 	};
 
-	nckma.pages.open = function(urlKey) {
-		var url = nckma.get_url(urlKey);
+	nckma.pages.go_to_options = function (hash) {
+		return open_options(hash);
+	};
 
-		if (bpmv.str(url)) {
-			open_url(url);
-		}
-
-		nckma.track('func', 'pages.open', 'nkExec');
+	nckma.pages.go_to_user = function () {
+		return open_current_user();
 	};
 
 	nckma.pages.go_to_url = function (loc) {
@@ -633,8 +653,14 @@
 		open_url(loc);
 	};
 
-	nckma.pages.go_to_user = function () {
-		return open_current_user();
+	nckma.pages.open = function(urlKey) {
+		var url = nckma.get_url(urlKey);
+
+		if (bpmv.str(url)) {
+			open_url(url);
+		}
+
+		nckma.track('func', 'pages.open', 'nkExec');
 	};
 
 	nckma.pages.populate_stats = function (win) {
@@ -689,6 +715,11 @@
 
 				if (varSplit.length === 2) {
 					data[varName] = nckma.pages.get_stat(varSplit[1], varSplit[0] === 'start');
+
+					if (bpmv.num(data[varName], true)) {
+						data[varName] = nckma.str_num(data[varName]);
+					}
+
 					continue;
 				}
 
@@ -696,6 +727,10 @@
 				data[varName] = bpmv.dive(stats, varName);
 			} else {
 				data[varName] = nckma.pages.get_stat(varName);
+			}
+
+			if (bpmv.num(data[varName], true)) {
+				data[varName] = nckma.str_num(data[varName]);
 			}
 		}
 

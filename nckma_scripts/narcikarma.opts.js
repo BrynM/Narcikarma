@@ -103,6 +103,12 @@
 		//nckRowList['flagsAndT'],
 	];
 
+	nkOptions['privacyOk'] = {
+		'def': 'true',
+		'type': 'bool',
+		'title': 'Allow anonymous usage collection',
+		'desc': 'Allow anonoymous technical data collection.'
+	};
 	nkOptions['alertMail'] = {
 		'def': 'true',
 		'type': 'bool',
@@ -118,24 +124,48 @@
 	nkOptions['alertCommentGain'] = {
 		'def': 0,
 		'type': 'int',
-		'title': 'After Comment Karma Threshold',
+		'title': 'Comment Karma Gain Threshold',
 		'desc': 'When your comment karma has increased by this amount, an alert will be shown. Zero will disable these alerts.',
+		'min': 5,
+		'kill0': true
+	};
+	nkOptions['alertCommentLoss'] = {
+		'def': 0,
+		'type': 'int',
+		'title': 'Comment Karma Loss Threshold',
+		'desc': 'When your comment karma has fallen by this amount, an alert will be shown. Zero will disable these alerts.',
 		'min': 5,
 		'kill0': true
 	};
 	nkOptions['alertLinkGain'] = {
 		'def': 0,
 		'type': 'int',
-		'title': 'After Link Karma Threshold',
+		'title': 'Link Karma Gain Threshold',
 		'desc': 'When your link karma has increased by this amount, an alert will be shown. Zero will disable these alerts.',
+		'min': 5,
+		'kill0': true
+	};
+	nkOptions['alertLinkLoss'] = {
+		'def': 0,
+		'type': 'int',
+		'title': 'Link Karma Loss Threshold',
+		'desc': 'When your link karma has fallen by this amount, an alert will be shown. Zero will disable these alerts.',
 		'min': 5,
 		'kill0': true
 	};
 	nkOptions['alertTotalGain'] = {
 		'def': 50,
 		'type': 'int',
-		'title': 'After total Karma Threshold',
+		'title': 'Total Karma Gain Threshold',
 		'desc': 'When your total Karma has increased by this amount, an alert will be shown. Zero will disable these alerts.',
+		'min': 5,
+		'kill0': true
+	};
+	nkOptions['alertTotalLoss'] = {
+		'def': 50,
+		'type': 'int',
+		'title': 'Total Karma Loss Threshold',
+		'desc': 'When your total karma has fallen by this amount, an alert will be shown. Zero will disable these alerts.',
 		'min': 5,
 		'kill0': true
 	};
@@ -153,7 +183,7 @@
 		'desc': 'Color for a "Negative" change in karma.'
 	};
 	nkOptions['color_noChange'] = {
-		'def': '0, 0, 0, 1',
+		'def': '0, 0, 0, 0.65',
 		'type': 'color',
 		'title': 'No Change Color',
 		'desc': 'Color for no change in karma.'
@@ -164,26 +194,62 @@
 		'title': 'Positive Change Color',
 		'desc': 'Color for a "Positive" change in karma.'
 	};
+	nkOptions['color_negCommentChange'] = {
+		'def': '235, 0, 0, 0.8',
+		'type': 'color',
+		'title': 'Negative Comment Change Color',
+		'desc': 'Color for a "Negative" change in Comment Karma.'
+	};
+	nkOptions['color_noCommentChange'] = {
+		'def': '0, 0, 0, 0.5',
+		'type': 'color',
+		'title': 'No Change Comment Color',
+		'desc': 'Color for no change in Comment Karma.'
+	};
+	nkOptions['color_posCommentChange'] = {
+		'def': '0, 190, 0, 0.8',
+		'type': 'color',
+		'title': 'Positive Comment Change Color',
+		'desc': 'Color for a "Positive" change in Comment Karma.'
+	};
+	nkOptions['color_negLinkChange'] = {
+		'def': '235, 0, 0, 0.8',
+		'type': 'color',
+		'title': 'Negative Comment Change Color',
+		'desc': 'Color for a "Negative" change in Comment Karma.'
+	};
+	nkOptions['color_noLinkChange'] = {
+		'def': '0, 0, 0, 0.5',
+		'type': 'color',
+		'title': 'No Change Comment Color',
+		'desc': 'Color for no change in Comment Karma.'
+	};
+	nkOptions['color_posLinkChange'] = {
+		'def': '0, 190, 0, 0.8',
+		'type': 'color',
+		'title': 'Positive Comment Change Color',
+		'desc': 'Color for a "Positive" change in Comment Karma.'
+	};
 	nkOptions['color_hasMail'] = {
-		'def': '0, 128, 0, 1',
+		'def': '0, 128, 255, 1',
 		'type': 'color',
 		'title': 'Has mail color',
 		'desc': 'Has mail color.'
 	};
 	nkOptions['color_noMail'] = {
-		'def': '160, 160, 160, 1',
+		'def': '160, 160, 160, 0.5',
 		'type': 'color',
 		'title': 'No mail color',
 		'desc': 'Empty mail inbox color.'
 	};
 	nkOptions['color_hasModMail'] = {
-		'def': '0, 128, 0, 1',
+		'def': '189, 132, 202, 1',
 		'type': 'color',
 		'title': 'Has modmail color',
 		'desc': 'Has modmail color.'
 	};
 	nkOptions['color_noModMail'] = {
-		'def': '160, 160, 160, 1',
+		'def': '160, 160, 160, 0.5',
 		'type': 'color',
 		'title': 'No modmail color',
 		'desc': 'Empty modmail inbox color.'
@@ -285,7 +351,7 @@
 		'type': 'int',
 		'title': 'Refresh Interval',
 		'desc': 'Interval that your karma stats will be checked. Zero will disable checks.',
-		'min': nckma.testing() ? 4 : 59,
+		'min': nckma.dev() ? 4 : 59,
 		'kill0': true
 	};
 	nkOptions['row0'] = {
@@ -326,7 +392,7 @@
 		'color_noChange': nckma.opts.valid_color,
 		'color_posChange': nckma.opts.valid_color,
 		'interval': function (val) {
-			return (parseInt(val) > (nckma.testing() ? 4 : 59)) || (parseInt(val) === 0) ? true : nkOptions['interval'].title + ' must be 1 minute or more.';
+			return (parseInt(val) > (nckma.dev() ? 4 : 59)) || (parseInt(val) === 0) ? true : nkOptions['interval'].title + ' must be 1 minute or more.';
 		},
 		'savedRefreshes': function (val) {
 			val = parseInt(val, 10);
@@ -338,6 +404,30 @@
 	/*
 	* functions
 	*/
+
+	function check_privacy() {
+		if (typeof localStorage['privacyOk'] !== 'undefined') {
+			return;
+		}
+
+		nckma.track('func', 'check_privacy', 'nkExec');
+		localStorage['privacyOk'] = true;
+
+		nckma.notify.confirm(
+			'Allow collection of anonymous technical usage data?',
+			'Narcikarma collects some anonymous data which is explained and can be turned off in the Privacy Options.',
+			function(){
+				nckma.pages.go_to_options('privacy');
+			},
+			undefined,
+			{
+				buttons: [
+					{'title': 'View and/or change the Privacy Options.'},
+					{'title': 'I\'m okay with that data collection.'}
+				]
+			}
+		);
+	}
 
 	function local_obj (key, val) {
 		if(!bpmv.str(key)) {
@@ -377,9 +467,12 @@
 				'It is strongly recommended that you reset your options when first running this version of Narcikarma. Would you like to reset the Narcikarma options now?',
 				function(){
 					nckma.opts.defaults_set(false);
-				});
+				}
+			);
 
+			nckma.track('func', 'nckma.opts.check_reset_version', 'nkExec');
 		}
+
 	};
 
 	nckma.opts.defaults_get = function (extended) {
@@ -410,6 +503,8 @@
 		var statText = false;
 
 		if(bpmv.trueish(preserve)) {
+			check_privacy();
+
 			for (var aC in defs) {
 				if (defs.hasOwnProperty(aC) && bpmv.str(aC)) {
 					if (typeof localStorage[aC] !== 'undefined' && localStorage[aC] !== null) {
@@ -511,7 +606,7 @@
 
 		$('.nckOptionsContainer span').hide();
 
-		if (nckma.testing() && bpmv.obj(jL) && bpmv.num(jL.length)) {
+		if (nckma.dev() && bpmv.obj(jL) && bpmv.num(jL.length)) {
 			jL.empty();
 			jlGood = true;
 		}
@@ -533,7 +628,7 @@
 						localStorage[aC] = cache[aC].val();
 
 						if (localStorage[aC] != defs[aC]) {
-							nckma.track(aC, localStorage[aC], 'nkOptionsSaved');
+							nckma.track(aC, localStorage[aC], 'option-'+aC);
 						}
 
 						if (cache[aC].is('select')) {
@@ -668,7 +763,7 @@
 		var bgP = chrome.extension.getBackgroundPage();
 
 		if ($('body.nckOptions').is(':visible')) {
-			if (nckma.testing()) {
+			if (nckma.dev()) {
 				ivlSel = $('#opt_interval');
 
 				$('<h3>DEV MODE <span class="nkNote"><a href="_test_canvas.html" target="_blank">canvas test</a></span></h3>').insertAfter('#nck_title');
@@ -778,6 +873,7 @@
 	};
 
 		// Saves options to localStorage.
+
 	nckma.opts.ui_save = function () {
 		var cache = nckma._cache;
 		var defs = nckma.opts.defaults_get();
@@ -792,7 +888,7 @@
 
 		$('.nckOptionsContainer span').hide();
 
-		if (nckma.testing() && bpmv.obj(jL) && bpmv.num(jL.length)) {
+		if (nckma.dev() && bpmv.obj(jL) && bpmv.num(jL.length)) {
 			jL.empty();
 			jlGood = true;
 		}
@@ -814,7 +910,7 @@
 						localStorage[aC] = cache[aC].val();
 
 						if (localStorage[aC] != defs[aC]) {
-							nckma.track(aC, localStorage[aC], 'nkOptionsSaved');
+							nckma.track(aC, localStorage[aC], 'option-'+aC);
 						}
 
 						if (cache[aC].is('select')) {
@@ -1013,6 +1109,8 @@
 	*/
 
 	nckma.start(function () {
+		check_privacy();
+
 		nckma.debug(nkDebugLevel, 'Base Settings', nkOptions);
 		nckma.opts.check_reset_version();
 	});
