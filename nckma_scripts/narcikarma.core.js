@@ -569,6 +569,10 @@ if (typeof(nckma) != 'object') {
 		var nckmaElapsed = bpmv.typeis(nkLastPoll, 'Date') ? (nckmaNow - nkLastPoll.getTime()) : -1;
 		var jax = {};
 
+		if(!nckma._bgTask) {
+			return;
+		}
+
 		if (nckmaInterval > 0) {
 			if (!bpmv.num(nckmaElapsed) || (nckmaElapsed >= nckmaInterval)) {
 				if (!nkIsPolling) {
@@ -599,6 +603,10 @@ if (typeof(nckma) != 'object') {
 
 	nckma.reset = function (full) {
 		var dat = null;
+
+		if(!nckma._bgTask) {
+			return;
+		}
 
 		nckma.px.draw_status('load');
 		nckma.px.draw_line('----', 1, nckma.px.color('blue'));
