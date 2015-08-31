@@ -39,8 +39,6 @@ if (typeof(nckma) != 'object') {
 		'debug': true,
 		'ga': true,
 		'testing': true,
-		// read configuration fallbacks...
-		'aConfFB': false,
 	};
 	var nkLastPoll = null;
 	// aslo see nkMaxHist in the options section
