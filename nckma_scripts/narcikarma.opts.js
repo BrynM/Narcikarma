@@ -183,7 +183,7 @@
 		'desc': 'Color for a "Negative" change in karma.'
 	};
 	nkOptions['color_noChange'] = {
-		'def': '0, 0, 0, 1',
+		'def': '0, 0, 0, 0.65',
 		'type': 'color',
 		'title': 'No Change Color',
 		'desc': 'Color for no change in karma.'
@@ -194,26 +194,62 @@
 		'title': 'Positive Change Color',
 		'desc': 'Color for a "Positive" change in karma.'
 	};
+	nkOptions['color_negCommentChange'] = {
+		'def': '235, 0, 0, 0.8',
+		'type': 'color',
+		'title': 'Negative Comment Change Color',
+		'desc': 'Color for a "Negative" change in Comment Karma.'
+	};
+	nkOptions['color_noCommentChange'] = {
+		'def': '0, 0, 0, 0.5',
+		'type': 'color',
+		'title': 'No Change Comment Color',
+		'desc': 'Color for no change in Comment Karma.'
+	};
+	nkOptions['color_posCommentChange'] = {
+		'def': '0, 190, 0, 0.8',
+		'type': 'color',
+		'title': 'Positive Comment Change Color',
+		'desc': 'Color for a "Positive" change in Comment Karma.'
+	};
+	nkOptions['color_negLinkChange'] = {
+		'def': '235, 0, 0, 0.8',
+		'type': 'color',
+		'title': 'Negative Comment Change Color',
+		'desc': 'Color for a "Negative" change in Comment Karma.'
+	};
+	nkOptions['color_noLinkChange'] = {
+		'def': '0, 0, 0, 0.5',
+		'type': 'color',
+		'title': 'No Change Comment Color',
+		'desc': 'Color for no change in Comment Karma.'
+	};
+	nkOptions['color_posLinkChange'] = {
+		'def': '0, 190, 0, 0.8',
+		'type': 'color',
+		'title': 'Positive Comment Change Color',
+		'desc': 'Color for a "Positive" change in Comment Karma.'
+	};
 	nkOptions['color_hasMail'] = {
-		'def': '0, 128, 0, 1',
+		'def': '0, 128, 255, 1',
 		'type': 'color',
 		'title': 'Has mail color',
 		'desc': 'Has mail color.'
 	};
 	nkOptions['color_noMail'] = {
-		'def': '160, 160, 160, 1',
+		'def': '160, 160, 160, 0.5',
 		'type': 'color',
 		'title': 'No mail color',
 		'desc': 'Empty mail inbox color.'
 	};
 	nkOptions['color_hasModMail'] = {
-		'def': '0, 128, 0, 1',
+		'def': '189, 132, 202, 1',
 		'type': 'color',
 		'title': 'Has modmail color',
 		'desc': 'Has modmail color.'
 	};
 	nkOptions['color_noModMail'] = {
-		'def': '160, 160, 160, 1',
+		'def': '160, 160, 160, 0.5',
 		'type': 'color',
 		'title': 'No modmail color',
 		'desc': 'Empty modmail inbox color.'
