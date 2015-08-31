@@ -28,6 +28,8 @@ if (typeof(nckma) != 'object') {
 
 	var nkColorRgxHex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
 	var nkDebugLvl = 15;
+	var nkEvPlug = '[EVENT] ';
+	var nkEvPrefix = 'nkEv_';
 	var nkEvOpts = {
 		cancelable: true
 	};
@@ -36,9 +38,7 @@ if (typeof(nckma) != 'object') {
 		'dev': true,
 		'debug': true,
 		'ga': true,
-		'testing': false,
-		// read configuration fallbacks...
-		'aConfFB': false,
+		'testing': true,
 	};
 	var nkLastPoll = null;
 	// aslo see nkMaxHist in the options section
@@ -112,7 +112,7 @@ if (typeof(nckma) != 'object') {
 		'notification': 'nckma_html/notification.html',
 		'options': 'nckma_html/options.html'
 	};
-	var nkGaId = 'UA-13262635-8';
+	var nkGaId = 'UA-13262635-7';
 	var nkGaService;
 	var nkGaTracker;
 	var nkGaTrackQueue = [];
@@ -132,13 +132,12 @@ if (typeof(nckma) != 'object') {
 		'poll': 1,
 		'opts': 5,
 		'ev': 10,
-		'track': 12,
+		'db': 15,
 		'evQuiet': 18,
-		'db': 20,
-		'dbOps': 23,
-		'dbSql': 25,
-		'dbDetail': 28,
-		'px': 30,
+		'dbOps': 21,
+		'dbDetail': 22,
+		'track': 30,
+		'px': 35,
 	};
 
 	/*
@@ -190,7 +189,7 @@ if (typeof(nckma) != 'object') {
 	};
 
 	function load_nckma_ga () {
-		if(!localStorage['privacyOk']) {
+		if(typeof localStorage['privacyOk'] !== 'undefined' && !localStorage['privacyOk']) {
 			nkFlags.ga = false;
 			return;
 		}
@@ -278,7 +277,7 @@ if (typeof(nckma) != 'object') {
 			args.shift();
 
 			if (bpmv.num(bpmv.count(args)) && bpmv.str(args[0])) {
-				args[0] = '[Narcikarma Debug '+lvl+','+nkDebugLvl+'] '+args[0];
+				args[0] = '[Narcikarma Debug '+bpmv.pad(lvl, 2)+','+bpmv.pad(nkDebugLvl, 2)+'] '+args[0];
 				console.log.apply(console, args);
 			} else {
 				nckma.warn('nkma.debug() does not have enough arguments', arguments);
@@ -300,14 +299,11 @@ if (typeof(nckma) != 'object') {
 
 		nckma.track('warn', bpmv.str(arguments[0]) ? arguments[0] : '', 'nkExec');
 		nckma.track('func', 'nckma.err', 'nkExec');
-
-		throw(msg);
 	};
 
 	nckma.ev = function (evName, cbOrData) {
 		var iter = 0;
 		var bulkRet = {};
-		var plug = '[EVENT] ';
 		var quietEvent = true;
 		var custEv;
 
@@ -335,32 +331,30 @@ if (typeof(nckma) != 'object') {
 
 
 			if (bpmv.func(cbOrData)) {
-				nckma.debug(nckma._dL.ev, plug+'callback added '+evName, [cbOrData, nkEvStore[evName]]);
+				nckma.debug(nckma._dL.ev, nkEvPlug+'callback added '+evName, [cbOrData, nkEvStore[evName]]);
 
-				return document.addEventListener(evName, cbOrData);
+				return document.addEventListener(nkEvPrefix+evName, cbOrData);
 			} else {
 				quietEvent = nkQuietEvents.indexOf(evName) > -1;
 
-				custEv = new Event(evName, nkEvStore[evName]);
+				custEv = new Event(nkEvPrefix+evName, nkEvStore[evName]);
 				custEv.data = cbOrData;
 
-				nckma.debug((quietEvent ? nckma._dL.evQuiet : nckma._dL.ev), plug+'firing '+evName, [cbOrData, custEv]);
+				nckma.debug((quietEvent ? nckma._dL.evQuiet : nckma._dL.ev), nkEvPlug+'firing '+evName, [cbOrData, custEv]);
 
 				return document.dispatchEvent(custEv, cbOrData);
 			}
 		}
 
-		nckma.debug(nckma._dL.ev, plug+'FAILED', [arguments]);
+		nckma.debug(nckma._dL.ev, nkEvPlug+'FAILED', [arguments]);
 	};
 
-	// kill a cb event
 	nckma.ev_kill = function (evName, cb) {
-		var plug = '[EVENT] ';
 		var quietEvent = bpmv.num(bpmv.find(evName, nkQuietEvents), true);;
 
-		nckma.debug((quietEvent ? nckma._dL.evQuiet : nckma._dL.ev), plug+'removing '+evName, cb);
+		nckma.debug((quietEvent ? nckma._dL.evQuiet : nckma._dL.ev), nkEvPlug+'removing '+evName, cb);
 		
-		return document.removeEventListener(evName, cb);
+		return document.removeEventListener(nkEvPrefix+evName, cb);
 	};
 
 	nckma.get = function (asJson) {
@@ -573,6 +567,10 @@ if (typeof(nckma) != 'object') {
 		var nckmaElapsed = bpmv.typeis(nkLastPoll, 'Date') ? (nckmaNow - nkLastPoll.getTime()) : -1;
 		var jax = {};
 
+		if(!nckma._bgTask) {
+			return;
+		}
+
 		if (nckmaInterval > 0) {
 			if (!bpmv.num(nckmaElapsed) || (nckmaElapsed >= nckmaInterval)) {
 				if (!nkIsPolling) {
@@ -603,6 +601,10 @@ if (typeof(nckma) != 'object') {
 
 	nckma.reset = function (full) {
 		var dat = null;
+
+		if(!nckma._bgTask) {
+			return;
+		}
 
 		nckma.px.draw_status('load');
 		nckma.px.draw_line('----', 1, nckma.px.color('blue'));

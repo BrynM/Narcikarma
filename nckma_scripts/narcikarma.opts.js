@@ -837,6 +837,7 @@
 	};
 
 		// Saves options to localStorage.
+
 	nckma.opts.ui_save = function () {
 		var cache = nckma._cache;
 		var defs = nckma.opts.defaults_get();

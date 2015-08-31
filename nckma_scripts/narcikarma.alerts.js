@@ -176,17 +176,17 @@
 	};
 
 	alertHandlers['alertTotalGain'] = function(stats) {
-		var lDelt = parseInt(nckma.pages.get_stat('link_delta'), 10) - lastAlertTotalGain;
+		var tDelt = parseInt(nckma.pages.get_stat('total_delta'), 10) - lastAlertTotalGain;
 		var gainz = parseInt(nckma.opts.get().alertTotalGain, 10);
 		var niceDelt;
 
-		if(gainz > 0 && lDelt >= gainz) {
+		if(gainz > 0 && tDelt >= gainz) {
 			if(bpmv.str(activeAlerts['alertTotalGain'])) {
 				return;
 			}
 
-			lastAlertTotalGain = lDelt;
-			niceDelt = nckma.str_num(lDelt);
+			lastAlertTotalGain = tDelt;
+			niceDelt = nckma.str_num(tDelt);
 
 			activeAlerts['alertTotalGain'] = nckma.notify.important('You\'ve gained '+niceDelt+' total Karma on Reddit! Click to open your user page. You will be alerted every '+gainz+' points.', {
 				'title': niceDelt+' more precious Karma!',
@@ -203,17 +203,17 @@
 	};
 
 	alertHandlers['alertTotalLoss'] = function(stats) {
-		var cDelt = parseInt(nckma.pages.get_stat('comment_delta'), 10) - lastAlertTotalLoss;
+		var tDelt = parseInt(nckma.pages.get_stat('total_delta'), 10) - lastAlertTotalLoss;
 		var gainz = 0 - parseInt(nckma.opts.get().alertTotalLoss, 10);
 		var niceDelt;
 
-		if(gainz < 0 && cDelt <= gainz) {
+		if(gainz < 0 && tDelt <= gainz) {
 			if(bpmv.str(activeAlerts['alertTotalLoss'])) {
 				return;
 			}
 
-			lastAlertTotalLoss = cDelt;
-			niceDelt = nckma.str_num(cDelt);
+			lastAlertTotalLoss = tDelt;
+			niceDelt = nckma.str_num(tDelt);
 
 			activeAlerts['alertTotalLoss'] = nckma.notify.important('You\'ve lost '+niceDelt+' total Karma on Reddit! Click to open your user page. You will be alerted every '+gainz+' lost points.', {
 				'title': niceDelt+' total Karma lost!',

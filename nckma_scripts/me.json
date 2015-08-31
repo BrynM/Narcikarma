@@ -6,7 +6,7 @@
 		"created_utc": 1286020403.0,
 		"gold_creddits": 12,
 		"gold_expiration": 1447830314,
-		"has_mail": true,
+		"has_mail": false,
 		"has_mod_mail": false,
 		"has_verified_email": true,
 		"hide_from_robots": false,
@@ -15,7 +15,7 @@
 		"is_friend": false,
 		"is_gold": true,
 		"is_mod": true,
-		"link_karma": 6457,
+		"link_karma": 5950,
 		"modhash": "f1xm",
 		"name": "Narcikarma",
 		"over_18": true

@@ -28,7 +28,7 @@ At a glance you can check your narcissistic progress, meaning you can stop using
 
 ^^link ^^only ^^works ^^for ^^testers ^^ATM
 
-**Latest Version:** [0.5014](https://github.com/BrynM/Narcikarma/releases)
+**Latest Version:** [0.5015](https://github.com/BrynM/Narcikarma/releases)
 
 **Release Status:** Closed Alpha
 
