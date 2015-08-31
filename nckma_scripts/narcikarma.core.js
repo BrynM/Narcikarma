@@ -35,10 +35,10 @@ if (typeof(nckma) != 'object') {
 	};
 	var nkEvStore = {};
 	var nkFlags = {
-		'dev': true,
+		'dev': false,
 		'debug': true,
 		'ga': true,
-		'testing': true,
+		'testing': false,
 	};
 	var nkLastPoll = null;
 	// aslo see nkMaxHist in the options section

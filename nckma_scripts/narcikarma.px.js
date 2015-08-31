@@ -201,7 +201,7 @@
 	nckma.px.draw_change_comment = function (line) {
 		var dat = null;
 		var delt = nckma.pages.get_stat('comment_delta');
-		var col = 'noChange';
+		var col = 'noCommentChange';
 
 		if(!nckma._bgTask) {
 			return;
@@ -213,11 +213,11 @@
 		}
 
 		if(delt < 0) {
-			col = 'negChange';
+			col = 'negCommentChange';
 		}
 
 		if(delt > 0) {
-			col = 'posChange';
+			col = 'posCommentChange';
 		}
 
 		nckma.px.draw_line(nckma.abbrev_int(delt), line, nckma.px.color(col));
