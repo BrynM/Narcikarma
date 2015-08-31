@@ -36,7 +36,7 @@ if (typeof(nckma) != 'object') {
 	var nkEvStore = {};
 	var nkFlags = {
 		'dev': false,
-		'debug': true,
+		'debug': false,
 		'ga': true,
 		'testing': false,
 	};
