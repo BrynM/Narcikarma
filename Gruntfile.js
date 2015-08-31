@@ -72,8 +72,7 @@ module.exports = function(grunt) {
 	var manifest = grunt.file.readJSON('manifest.json');
 
 	var jsPrereqs = [
-		//'lib/jquery-1.11.3',
-		'lib/jquery-1.8.2.min.js',
+		'lib/jquery-1.11.3',
 		'lib/underscore-min.js',
 		'lib/base64.js',
 		'lib/bpmv.js'
