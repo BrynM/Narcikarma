@@ -295,33 +295,6 @@
 		return data.start.gold_expiration;
 	};
 
-	statFakes.comment_delta = function (dataSet) {
-		var data = nckma.get();
-		var delt = parseInt(data.current.comment_karma, 10) - parseInt(data.start.comment_karma, 10);
-
-		return parseInt(delt, 10);
-	};
-
-	statFakes.link_delta = function (dataSet) {
-		var data = nckma.get();
-		var delt = parseInt(data.current.link_karma, 10) - parseInt(data.start.link_karma, 10);
-
-		return parseInt(delt, 10);
-	};
-
-	statFakes.total_delta = function (dataSet) {
-		var data = nckma.get();
-		var curr = parseInt(data.current.link_karma, 10) + parseInt(data.current.comment_karma, 10);
-		var start = parseInt(data.start.link_karma, 10) + parseInt(data.start.comment_karma, 10);
-		var delt = parseInt(curr, 10) - parseInt(start, 10);
-
-		return parseInt(delt, 10);
-	};
-
-	statFakes.total_karma = function (dataSet) {
-		return nckma.str_num(parseInt(dataSet.link_karma, 10) + parseInt(dataSet.comment_karma, 10));
-	};
-
 	/*
 	* stat formatters (raw data)
 	*/

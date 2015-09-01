@@ -23,7 +23,18 @@ if (typeof(nckma) != 'object') {
 	// http://www.reddit.com/reddits/mine/moderator.json
 
 	/*
-	* "Local" vars
+	* core flags
+	*/
+
+	var nkFlags = {};
+
+	nkFlags.dev =  true;
+	nkFlags.debug =  true;
+	nkFlags.ga = false;
+	nkFlags.testing =  true;
+
+	/*
+	* local vars
 	*/
 
 	var nkColorRgxHex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
@@ -34,12 +45,6 @@ if (typeof(nckma) != 'object') {
 		cancelable: true
 	};
 	var nkEvStore = {};
-	var nkFlags = {
-		'dev': false,
-		'debug': false,
-		'ga': true,
-		'testing': false,
-	};
 	var nkLastPoll = null;
 	// aslo see nkMaxHist in the options section
 	var nkMaxHistReal = 8000;
@@ -505,6 +510,11 @@ if (typeof(nckma) != 'object') {
 				//	});
 				//});
 
+				d.comment_delta = parseInt(d.comment_karma, 10) - parseInt(nkDataFirst.comment_karma, 10);
+				d.link_delta = parseInt(d.link_karma, 10) - parseInt(nkDataFirst.link_karma, 10);
+				d.total_karma = parseInt(d.comment_karma, 10) + parseInt(d.link_karma, 10);
+				d.total_delta = parseInt(d.total_karma, 10) - parseInt(nkDataFirst.total_karma, 10);
+
 				nkDataLast = d;
 				localStorage['_lastCached'] = JSON.stringify(nkDataLast);
 
@@ -789,7 +799,7 @@ if (typeof(nckma) != 'object') {
 
 	nckma.version = function () {
 		var inf = null;
-		var ret = { 'num': null, 'str': null };
+		var ret = {'num': '', 'str': '', 'flags': ''};
 
 		if (bpmv.obj(nckma._cache.version)) {
 			return nckma._cache.version;
@@ -797,17 +807,15 @@ if (typeof(nckma) != 'object') {
 		
 		inf = nckma.info();
 		
+		ret.flags += nkFlags['testing'] ? 'T' : '';
+		ret.flags += nkFlags['debug'] ? 'D' : '';
+		ret.flags += nkFlags['dev'] ? 'V' : '';
+
 		if (bpmv.str(inf.version)) {
-			ret = {
-				'num': inf.version.replace(/[^0-9|^\.]+/g, '' ).split('.'),
-				'str': ''
-			};
+			ret.num = inf.version.replace(/[^0-9|^\.]+/g, '' ).split('.');
 
 			ret.str += inf.version;
-			ret.str += nkFlags['testing'] || nkFlags['debug'] ? '.' : '';
-			ret.str += nkFlags['testing'] ? 'T' : '';
-			ret.str += nkFlags['debug'] ? 'D' : '';
-			ret.str += nkFlags['dev'] ? 'V' : '';
+			ret.str += bpmv.str(ret.flags) ? '.'+ret.flags : '';
 
 			if (bpmv.arr(ret.num)) {
 				ret.num = (ret.num.length < 2) ? ''+ret.num[0] : ret.num.shift()+'.'+ret.num.join('');
