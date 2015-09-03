@@ -23,7 +23,6 @@
 		'0.5013.D',
 	];
 
-	var nkDebugLevel = 5; // opts
 	var nckmaNeedsSave = false;
 	var nkMaxHist = 8000;
 	var nkOptions = {};
@@ -457,7 +456,7 @@
 		var ver = nckma.version().str;
 		var loc = local_obj('nckResetVersions');
 
-		nckma.debug(nkDebugLevel, 'opts.check_reset_version', nckResetVersions);
+		nckma.debug('opts', 'opts.check_reset_version', nckResetVersions);
 
 		if(nckResetVersions.indexOf(ver) > -1 && (!bpmv.arr(loc) || loc.indexOf(ver) < 0)) {
 			local_obj('nckResetVersions', nckResetVersions);
@@ -1111,7 +1110,7 @@
 	nckma.start(function () {
 		check_privacy();
 
-		nckma.debug(nkDebugLevel, 'Base Settings', nkOptions);
+		nckma.debug('opts', 'Base Settings', nkOptions);
 		nckma.opts.check_reset_version();
 	});
 

@@ -384,7 +384,7 @@
 					}
 
 					if (!bpmv.arr(color) || (color.length != 4)) {
-						nckma.debug(nckma._dL.px, 'Substituting color for black.', color);
+						nckma.debug('px', 'Substituting color for black.', color);
 						phil = 'rgba(0, 0, 0, 1)';
 					} else {
 						phil = 'rgba('+color[0]+', '+color[1]+', '+color[2]+', '+color[3]+')';
