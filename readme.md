@@ -32,6 +32,10 @@ The recent versions are for light testing on the path to 0.51 becoming available
 
 ## What's new:
 
+### [0.5016]()
+
+* working...
+
 ### [0.5015](https://github.com/BrynM/Narcikarma/pull/77)
 
 * better popup layout and visual fixes

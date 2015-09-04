@@ -23,23 +23,27 @@ if (typeof(nckma) != 'object') {
 	// http://www.reddit.com/reddits/mine/moderator.json
 
 	/*
-	* "Local" vars
+	* core flags
+	*/
+
+	var nkFlags = {};
+
+	nkFlags.dev =  true;
+	nkFlags.debug =  true;
+	nkFlags.ga = false;
+	nkFlags.testing =  true;
+
+	/*
+	* local vars
 	*/
 
 	var nkColorRgxHex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
 	var nkDebugLvl = 15;
-	var nkEvPlug = '[EVENT] ';
 	var nkEvPrefix = 'nkEv_';
 	var nkEvOpts = {
 		cancelable: true
 	};
 	var nkEvStore = {};
-	var nkFlags = {
-		'dev': false,
-		'debug': false,
-		'ga': true,
-		'testing': false,
-	};
 	var nkLastPoll = null;
 	// aslo see nkMaxHist in the options section
 	var nkMaxHistReal = 8000;
@@ -129,13 +133,12 @@ if (typeof(nckma) != 'object') {
 		'all': 0,
 		'any': 0,
 		'begin': 0,
+		'core': 0,
 		'poll': 1,
 		'opts': 5,
 		'ev': 10,
 		'db': 15,
 		'evQuiet': 18,
-		'dbOps': 21,
-		'dbDetail': 22,
 		'track': 30,
 		'px': 35,
 	};
@@ -146,10 +149,9 @@ if (typeof(nckma) != 'object') {
 
 	function begin_background (cb) {
 		var ver = nckma.version();
-		var plug = '[BEGIN] ';
 
 		if (nckma._bgTask) {
-			nckma.debug(nckma._dL.begin, plug+'Narcikarma v'+nckma.version().str);
+			nckma.debug('begin', 'Narcikarma v'+nckma.version().str);
 			nckma.opts.defaults_set(true);
 
 			if (!bpmv.str(localStorage['nkCurrentVer'])) {
@@ -161,25 +163,25 @@ if (typeof(nckma) != 'object') {
 				localStorage['nkCurrentVer'] = ver;
 			}
 
-			nckma.debug(nckma._dL.begin, plug+'active flags', nkFlags);
+			nckma.debug('begin', 'active flags', nkFlags);
 
 			if (nkFlags['debug']) {
-				nckma.debug(nckma._dL.begin, plug+'debug level', nkDebugLvl);
+				nckma.debug('begin', 'debug level', nkDebugLvl);
 			}
 
 			if (nkFlags['dev']) {
-				nckma.debug(nckma._dL.begin, plug+'dev mode enabled');
+				nckma.debug('begin', 'dev mode enabled');
 			}
 
 			if (nkFlags['testing']) {
-				nckma.debug(nckma._dL.begin, plug+'test mode enabled');
+				nckma.debug('begin', 'test mode enabled');
 			}
 
-			nckma.debug(nckma._dL.begin, plug+'storage interval', localStorage['interval']);
+			nckma.debug('begin', 'storage interval', localStorage['interval']);
 			nckma.reset();
 
 			if (!bpmv.num(nkSetInterval)) {
-				nckma.debug(nckma._dL.begin, plug+'running background task - starting heartbeat');
+				nckma.debug('begin', 'running background task - starting heartbeat');
 				nkSetInterval = setInterval(nckma.heartbeat, nkPollInterval);
 				// nkSetInterval = setInterval(nckma.poll, nkPollInterval);
 			}
@@ -199,7 +201,7 @@ if (typeof(nckma) != 'object') {
 		}
 
 		if(nkGaTracker) {
-			nckma.debug(nckma._dL.track, 'load_nckma_ga()', 'duplicate call');
+			nckma.debug('track', 'load_nckma_ga()', 'duplicate call');
 			return;
 		}
 
@@ -219,12 +221,12 @@ if (typeof(nckma) != 'object') {
 		var dbgVal = _.extend([], arguments).join(', ')
 
 		if(!bpmv.obj(nkGaTracker) || !bpmv.func(nkGaTracker.sendEvent) || !bpmv.str(label)) {
-			nckma.debug(nckma._dL.track, 'ga_track() fail', dbgVal);
+			nckma.debug('track', 'ga_track() fail', dbgVal);
 			return;
 		}
 
 		nkGaTracker.sendEvent(category + ' v' + nckma.version().str, val, label, 1);
-		nckma.debug(nckma._dL.track, 'ga_track() sent', dbgVal);
+		nckma.debug('track', 'ga_track() sent', dbgVal);
 	}
 
 	/*
@@ -259,17 +261,20 @@ if (typeof(nckma) != 'object') {
 
 	nckma.debug = function (lvl, msg, etc) {
 		var args = null;
+		var dbgLvl;
+		var pre = '';
 
 		if (nkFlags['debug']) {
-			if (!(/^[0-9]+$/).test(''+lvl)) {
-				nckma.warn('nkma.debug() requires the first parameter to be the intiger debug level', arguments);
-				console.trace();
-				return;
+			if (typeof lvl === 'string' && lvl in nckma._dL) {
+				dbgLvl = parseInt(nckma._dL[lvl], 10);
+				pre = '['+lvl.toUpperCase()+'] ';
+			} else {
+				dbgLvl = parseInt(lvl, 10);
 			}
 
 			nkDebugLvl = parseInt(nkDebugLvl, 10);
 
-			if (parseInt(lvl, 10) > nkDebugLvl) {
+			if (parseInt(dbgLvl, 10) > nkDebugLvl) {
 				return;
 			}
 
@@ -277,7 +282,7 @@ if (typeof(nckma) != 'object') {
 			args.shift();
 
 			if (bpmv.num(bpmv.count(args)) && bpmv.str(args[0])) {
-				args[0] = '[Narcikarma Debug '+bpmv.pad(lvl, 2)+','+bpmv.pad(nkDebugLvl, 2)+'] '+args[0];
+				args[0] = '[Narcikarma Debug '+bpmv.pad(dbgLvl, 2)+','+bpmv.pad(nkDebugLvl, 2)+'] '+pre+args[0];
 				console.log.apply(console, args);
 			} else {
 				nckma.warn('nkma.debug() does not have enough arguments', arguments);
@@ -331,7 +336,7 @@ if (typeof(nckma) != 'object') {
 
 
 			if (bpmv.func(cbOrData)) {
-				nckma.debug(nckma._dL.ev, nkEvPlug+'callback added '+evName, [cbOrData, nkEvStore[evName]]);
+				nckma.debug('ev', 'callback added '+evName, [cbOrData, nkEvStore[evName]]);
 
 				return document.addEventListener(nkEvPrefix+evName, cbOrData);
 			} else {
@@ -340,19 +345,19 @@ if (typeof(nckma) != 'object') {
 				custEv = new Event(nkEvPrefix+evName, nkEvStore[evName]);
 				custEv.data = cbOrData;
 
-				nckma.debug((quietEvent ? nckma._dL.evQuiet : nckma._dL.ev), nkEvPlug+'firing '+evName, [cbOrData, custEv]);
+				nckma.debug((quietEvent ? 'evQuiet' : 'ev'), 'firing '+evName, [cbOrData, custEv]);
 
 				return document.dispatchEvent(custEv, cbOrData);
 			}
 		}
 
-		nckma.debug(nckma._dL.ev, nkEvPlug+'FAILED', [arguments]);
+		nckma.debug('ev', 'FAILED', [arguments]);
 	};
 
 	nckma.ev_kill = function (evName, cb) {
 		var quietEvent = bpmv.num(bpmv.find(evName, nkQuietEvents), true);;
 
-		nckma.debug((quietEvent ? nckma._dL.evQuiet : nckma._dL.ev), nkEvPlug+'removing '+evName, cb);
+		nckma.debug((quietEvent ? 'evQuiet' : 'ev'), 'removing '+evName, cb);
 		
 		return document.removeEventListener(nkEvPrefix+evName, cb);
 	};
@@ -505,6 +510,11 @@ if (typeof(nckma) != 'object') {
 				//	});
 				//});
 
+				d.comment_delta = parseInt(d.comment_karma, 10) - parseInt(nkDataFirst.comment_karma, 10);
+				d.link_delta = parseInt(d.link_karma, 10) - parseInt(nkDataFirst.link_karma, 10);
+				d.total_karma = parseInt(d.comment_karma, 10) + parseInt(d.link_karma, 10);
+				d.total_delta = parseInt(d.total_karma, 10) - parseInt(nkDataFirst.total_karma, 10);
+
 				nkDataLast = d;
 				localStorage['_lastCached'] = JSON.stringify(nkDataLast);
 
@@ -644,7 +654,7 @@ if (typeof(nckma) != 'object') {
 
 			uA = info.name + ' v' + nckma.version().str + ' - ' + info.description + '; User: ' + user + '(id:' + uId + ')';
 
-			nckma.debug(nckma._dL.poll, 'Narcikarma [nckma.set_headers()] Setting X-User-Agent.', uA);
+			nckma.debug('poll', 'Narcikarma [nckma.set_headers()] Setting X-User-Agent.', uA);
 
 			// trying to set the user agent proper results in "Refused to set unsafe header 'User-Agent'" :(
 			req.setRequestHeader('X-User-Agent', uA);
@@ -656,7 +666,7 @@ if (typeof(nckma) != 'object') {
 		var cbArgs = $.extend([], arguments);
 
 		if (bpmv.bool(cb) && (cb === true)) {
-			nckma.debug(0, 'Narcikamra startup', [cbArgs, nkStartCbs.length]);
+			nckma.debug('core', 'Narcikamra startup', [cbArgs, nkStartCbs.length]);
 			nckma.ev('start', cbArgs);
 
 			nkStarted = true;
@@ -666,15 +676,15 @@ if (typeof(nckma) != 'object') {
 				cbR.apply(window, cbArgs);
 			}
 
-			nckma.debug(0, 'Narcikamra startup complete.');
+			nckma.debug('core', 'Narcikamra startup complete.');
 			nckma.track('func', 'nckma.start started', 'nkExec');
 		} else if (bpmv.func(cb)) {
 			if (nkStarted) {
 				cb.apply(window, cbArgs);
-				nckma.debug(nckma._dL.ev, 'nckma.start() run cb (already started)', [cb, cbArgs]);
+				nckma.debug('ev', 'nckma.start() run cb (already started)', [cb, cbArgs]);
 			} else {
 				nkStartCbs.push(cb);
-				nckma.debug(nckma._dL.ev, 'nckma.start() cb added', [cb, cbArgs]);
+				nckma.debug('ev', 'nckma.start() cb added', [cb, cbArgs]);
 			}
 		}
 	};
@@ -782,14 +792,14 @@ if (typeof(nckma) != 'object') {
 		}
 
 		nkGaTrackQueue.push(arguments);
-		nckma.debug(nckma._dL.track, 'nckma.track', _.extend([], arguments).join(', '));
+		nckma.debug('track', 'nckma.track', _.extend([], arguments).join(', '));
 
 		return ga_track.apply(this, arguments);
 	};
 
 	nckma.version = function () {
 		var inf = null;
-		var ret = { 'num': null, 'str': null };
+		var ret = {'num': '', 'str': '', 'flags': ''};
 
 		if (bpmv.obj(nckma._cache.version)) {
 			return nckma._cache.version;
@@ -797,17 +807,15 @@ if (typeof(nckma) != 'object') {
 		
 		inf = nckma.info();
 		
+		ret.flags += nkFlags['testing'] ? 'T' : '';
+		ret.flags += nkFlags['debug'] ? 'D' : '';
+		ret.flags += nkFlags['dev'] ? 'V' : '';
+
 		if (bpmv.str(inf.version)) {
-			ret = {
-				'num': inf.version.replace(/[^0-9|^\.]+/g, '' ).split('.'),
-				'str': ''
-			};
+			ret.num = inf.version.replace(/[^0-9|^\.]+/g, '' ).split('.');
 
 			ret.str += inf.version;
-			ret.str += nkFlags['testing'] || nkFlags['debug'] ? '.' : '';
-			ret.str += nkFlags['testing'] ? 'T' : '';
-			ret.str += nkFlags['debug'] ? 'D' : '';
-			ret.str += nkFlags['dev'] ? 'V' : '';
+			ret.str += bpmv.str(ret.flags) ? '.'+ret.flags : '';
 
 			if (bpmv.arr(ret.num)) {
 				ret.num = (ret.num.length < 2) ? ''+ret.num[0] : ret.num.shift()+'.'+ret.num.join('');
