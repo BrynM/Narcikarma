@@ -499,6 +499,7 @@ if (typeof(nckma) != 'object') {
 			nckma.px.draw_line('CON', 1, nckma.px.color('red'));
 			nckma.px.draw_line('ERR', 2, nckma.px.color('red'));
 			nckma.px.draw_status('err');
+			nckma.ev('connErr', arguments);
 
 			return;
 		}
@@ -511,16 +512,6 @@ if (typeof(nckma) != 'object') {
 					nckma.track('func', 'nckma.parse reset nkDataFirst newlogin', 'nkExec');
 					nkDataFirst = d;
 				}
-
-				//nckma.db.user_table(d.name, function () {
-				//	nckma.db.user_insert( d.name, {
-				//		'c': d.comment_karma,
-				//		// time delta since last
-				//		'd': bpmv.num(nkDsLast) ? d.nkTimeStamp - nkDsLast : 0,
-				//		'l': d.link_karma,
-				//		't': d.nkTimeStamp
-				//	});
-				//});
 
 				d.comment_delta = parseInt(d.comment_karma, 10) - parseInt(nkDataFirst.comment_karma, 10);
 				d.link_delta = parseInt(d.link_karma, 10) - parseInt(nkDataFirst.link_karma, 10);
@@ -636,9 +627,6 @@ if (typeof(nckma) != 'object') {
 
 		if (full) {
 			nkDataFirst = null;
-			//nckma.db.user_clear(true);
-			//localStorage['_dataSet'] = '';
-			// nkDataSet = [];
 		}
 
 		setTimeout(nckma.poll, 1000);
