@@ -79,7 +79,7 @@ if (typeof(nckma) != 'object') {
 		//'userTest': 'chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_scripts/me.json'
 		//'userTest': 'http://narcikarma.net/test/me.php?d=1.25'
 		//'userTest': 'https://www.reddit.com/api/me.json',
-		'userTest': 'http://narcikarma.net/nckma_scripts/me.json',
+		'userTest': 'http://narcikarma.net/data/me.json',
 		'webstore': 'https://chrome.google.com/webstore/detail/narcikarma/mogaeafejjipmngijfhdjkmjomgdicdg'
 	};
 	var nkUserData = {};
