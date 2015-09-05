@@ -496,10 +496,10 @@ if (typeof(nckma) != 'object') {
 		nckma.px.draw_status('parse');
 
 		if (stat != 'success') {
+			nckma.ev('conErr', arguments);
 			nckma.px.draw_line('CON', 1, nckma.px.color('red'));
 			nckma.px.draw_line('ERR', 2, nckma.px.color('red'));
 			nckma.px.draw_status('err');
-			nckma.ev('connErr', arguments);
 
 			return;
 		}
