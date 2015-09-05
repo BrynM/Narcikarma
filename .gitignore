@@ -7,4 +7,3 @@ build/tmp/*
 build/package/*
 node_modules/*
 npm-debug.log
-nckma_scripts/me.json
