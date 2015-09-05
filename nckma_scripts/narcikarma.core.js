@@ -295,6 +295,15 @@ if (typeof(nckma) != 'object') {
 		return true && nkFlags['dev'];
 	};
 
+	nckma.NkError = function NkError (message) {
+		this.name = "NkError";
+		this.message = (message || "");
+
+		nckma.track('NkError', this.message, 'nkExec');
+		nckma.track('obj', 'nckma.NkError', 'nkExec');
+	}
+	nckma.NkError.prototype = Error.prototype;
+
 	nckma.err = function (msg, etc) {
 		if (bpmv.num(bpmv.count(arguments)) && bpmv.str(arguments[0])) {
 			arguments[0] = '[Narcikarma] ERROR: '+arguments[0];
@@ -302,7 +311,7 @@ if (typeof(nckma) != 'object') {
 
 		console.error.apply(console, arguments);
 
-		nckma.track('warn', bpmv.str(arguments[0]) ? arguments[0] : '', 'nkExec');
+		nckma.track('err', bpmv.str(arguments[0]) ? arguments[0] : '', 'nkExec');
 		nckma.track('func', 'nckma.err', 'nkExec');
 	};
 
@@ -312,46 +321,49 @@ if (typeof(nckma) != 'object') {
 		var quietEvent = true;
 		var custEv;
 
-		if (bpmv.arr(evName)) { // group of events
-			for (iter = 0; iter < evName.length; iter++) {
-				if (bpmv.str(evName[iter])) {
-					nckma.ev(evName[iter], cbOrData);
-					bulkRet[evName[iter]] = nkEvStore[evName[iter]];
+		try {
+			if (bpmv.arr(evName)) { // group of events
+				for (iter = 0; iter < evName.length; iter++) {
+					if (bpmv.str(evName[iter])) {
+						nckma.ev(evName[iter], cbOrData);
+						bulkRet[evName[iter]] = nkEvStore[evName[iter]];
+					}
+				}
+
+				return bulkRet;
+			} else if (bpmv.str(evName)) {
+
+				if(!bpmv.obj(nkEvStore[evName])) {
+					nkEvStore[evName] = new Event(evName, {
+						cancelable: true
+					});
+				}
+
+				if(!bpmv.obj(nkEvStore[evName])) {
+					nkEvStore[evName] = _.extend({}, nkEvOpts)
+					return nkEvStore[evName];
+				}
+
+
+				if (bpmv.func(cbOrData)) {
+					nckma.debug('ev', 'callback added '+evName, [cbOrData, nkEvStore[evName]]);
+
+					return document.addEventListener(nkEvPrefix+evName, cbOrData);
+				} else {
+					quietEvent = nkQuietEvents.indexOf(evName) > -1;
+
+					custEv = new Event(nkEvPrefix+evName, nkEvStore[evName]);
+					custEv.data = cbOrData;
+
+					nckma.debug((quietEvent ? 'evQuiet' : 'ev'), 'firing '+evName, [cbOrData, custEv]);
+
+					return document.dispatchEvent(custEv, cbOrData);
 				}
 			}
-
-			return bulkRet;
-		} else if (bpmv.str(evName)) {
-
-			if(!bpmv.obj(nkEvStore[evName])) {
-				nkEvStore[evName] = new Event(evName, {
-					cancelable: true
-				});
-			}
-
-			if(!bpmv.obj(nkEvStore[evName])) {
-				nkEvStore[evName] = _.extend({}, nkEvOpts)
-				return nkEvStore[evName];
-			}
-
-
-			if (bpmv.func(cbOrData)) {
-				nckma.debug('ev', 'callback added '+evName, [cbOrData, nkEvStore[evName]]);
-
-				return document.addEventListener(nkEvPrefix+evName, cbOrData);
-			} else {
-				quietEvent = nkQuietEvents.indexOf(evName) > -1;
-
-				custEv = new Event(nkEvPrefix+evName, nkEvStore[evName]);
-				custEv.data = cbOrData;
-
-				nckma.debug((quietEvent ? 'evQuiet' : 'ev'), 'firing '+evName, [cbOrData, custEv]);
-
-				return document.dispatchEvent(custEv, cbOrData);
-			}
+		} catch (e) {
+			nckma.debug('ev', 'FAILED', [arguments]);
+			throw new nckma.NkError('Event failed.');
 		}
-
-		nckma.debug('ev', 'FAILED', [arguments]);
 	};
 
 	nckma.ev_kill = function (evName, cb) {

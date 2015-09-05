@@ -367,8 +367,8 @@
 		'desc': 'Contents of bottom icon row.',
 		'enum': $.extend([], nckRowEnum)
 	};
-	nkOptions['savedRefreshes'] = {
-		'def': '5000',
+	nkOptions['savedRecords'] = {
+		'def': '500',
 		'type': 'int',
 		'title': 'Saved History Items',
 		'desc': 'Size of the karma gain/loss history.',
@@ -393,10 +393,10 @@
 		'interval': function (val) {
 			return (parseInt(val) > (nckma.dev() ? 4 : 59)) || (parseInt(val) === 0) ? true : nkOptions['interval'].title + ' must be 1 minute or more.';
 		},
-		'savedRefreshes': function (val) {
+		'savedRecords': function (val) {
 			val = parseInt(val, 10);
 
-			return (( val >= 0) && ( val <= nkMaxHist) ? true : nkOptions['savedRefreshes'].title + ' must be a number between 0 and '+nkMaxHist+'.');
+			return (( val >= 0) && ( val <= nkMaxHist) ? true : nkOptions['savedRecords'].title + ' must be a number between 0 and '+nkMaxHist+'.');
 		}
 	};
 
