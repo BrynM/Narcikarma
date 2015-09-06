@@ -788,6 +788,7 @@
 						localStorage.clear();
 						nckma.opts.ui_restore();
 						bgP.nckma.reset(true);
+						nckma.db.kill();
 						nckma.track('func', 'nck_btn_kill_all - DEV', 'nkExec');
 					}
 				});

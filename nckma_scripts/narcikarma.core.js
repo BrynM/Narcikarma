@@ -76,10 +76,8 @@ if (typeof(nckma) != 'object') {
 		'subreddit': 'https://www.reddit.com/r/Narcikarma/',
 		'user': 'https://www.reddit.com/api/me.json',
 		'userBase': 'https://www.reddit.com/user/',
-		//'userTest': 'chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_scripts/me.json'
-		//'userTest': 'http://narcikarma.net/test/me.php?d=1.25'
 		//'userTest': 'https://www.reddit.com/api/me.json',
-		'userTest': 'http://narcikarma.net/nckma_scripts/me.json',
+		'userTest': 'http://narcikarma.net:8023/me/Narcikarma/me.json',
 		'webstore': 'https://chrome.google.com/webstore/detail/narcikarma/mogaeafejjipmngijfhdjkmjomgdicdg'
 	};
 	var nkUserData = {};
@@ -154,7 +152,7 @@ if (typeof(nckma) != 'object') {
 			nckma.debug('begin', 'Narcikarma v'+nckma.version().str);
 			nckma.opts.defaults_set(true);
 
-			if (!bpmv.str(localStorage['nkCurrentVer'])) {
+			if (!bpmv.str(localStorage['nkCurrentVer']) || ver != localStorage['nkCurrentVer']) {
 				nckma.ev('upgrade', {
 					'old': localStorage['nkCurrentVer'],
 					'new': ver
@@ -496,6 +494,7 @@ if (typeof(nckma) != 'object') {
 		nckma.px.draw_status('parse');
 
 		if (stat != 'success') {
+			nckma.ev('conErr', arguments);
 			nckma.px.draw_line('CON', 1, nckma.px.color('red'));
 			nckma.px.draw_line('ERR', 2, nckma.px.color('red'));
 			nckma.px.draw_status('err');
@@ -511,16 +510,6 @@ if (typeof(nckma) != 'object') {
 					nckma.track('func', 'nckma.parse reset nkDataFirst newlogin', 'nkExec');
 					nkDataFirst = d;
 				}
-
-				//nckma.db.user_table(d.name, function () {
-				//	nckma.db.user_insert( d.name, {
-				//		'c': d.comment_karma,
-				//		// time delta since last
-				//		'd': bpmv.num(nkDsLast) ? d.nkTimeStamp - nkDsLast : 0,
-				//		'l': d.link_karma,
-				//		't': d.nkTimeStamp
-				//	});
-				//});
 
 				d.comment_delta = parseInt(d.comment_karma, 10) - parseInt(nkDataFirst.comment_karma, 10);
 				d.link_delta = parseInt(d.link_karma, 10) - parseInt(nkDataFirst.link_karma, 10);
@@ -636,9 +625,6 @@ if (typeof(nckma) != 'object') {
 
 		if (full) {
 			nkDataFirst = null;
-			//nckma.db.user_clear(true);
-			//localStorage['_dataSet'] = '';
-			// nkDataSet = [];
 		}
 
 		setTimeout(nckma.poll, 1000);
@@ -871,3 +857,22 @@ if (typeof(nckma) != 'object') {
 		}
 	});
 })();
+
+/*
+get all event names:
+	find ./nckma_scripts/ -name \*.js -exec grep -oE "nckma\\.ev\\(\\s*'[^']+" {} \; | grep -oE "[^']+\$" | sort -u
+
+	beat
+	conErr
+	dbPruned
+	dbSavedStats
+	notify
+	notifyClicked
+	notifyClosed
+	openDb
+	parse
+	poll
+	polled
+	start
+	upgrade
+*/
