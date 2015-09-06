@@ -76,10 +76,8 @@ if (typeof(nckma) != 'object') {
 		'subreddit': 'https://www.reddit.com/r/Narcikarma/',
 		'user': 'https://www.reddit.com/api/me.json',
 		'userBase': 'https://www.reddit.com/user/',
-		//'userTest': 'chrome-extension://icceijjenpflpdbbdndflpomakbkpdgi/nckma_scripts/me.json'
-		//'userTest': 'http://narcikarma.net/test/me.php?d=1.25'
 		//'userTest': 'https://www.reddit.com/api/me.json',
-		'userTest': 'http://narcikarma.net/data/me.json',
+		'userTest': 'http://narcikarma.test:8023/me/Narcikarma/me.json',
 		'webstore': 'https://chrome.google.com/webstore/detail/narcikarma/mogaeafejjipmngijfhdjkmjomgdicdg'
 	};
 	var nkUserData = {};
@@ -154,7 +152,7 @@ if (typeof(nckma) != 'object') {
 			nckma.debug('begin', 'Narcikarma v'+nckma.version().str);
 			nckma.opts.defaults_set(true);
 
-			if (!bpmv.str(localStorage['nkCurrentVer'])) {
+			if (!bpmv.str(localStorage['nkCurrentVer']) || ver != localStorage['nkCurrentVer']) {
 				nckma.ev('upgrade', {
 					'old': localStorage['nkCurrentVer'],
 					'new': ver
@@ -859,3 +857,22 @@ if (typeof(nckma) != 'object') {
 		}
 	});
 })();
+
+/*
+get all event names:
+	find ./nckma_scripts/ -name \*.js -exec grep -oE "nckma\\.ev\\(\\s*'[^']+" {} \; | grep -oE "[^']+\$" | sort -u
+
+	beat
+	conErr
+	dbPruned
+	dbSavedStats
+	notify
+	notifyClicked
+	notifyClosed
+	openDb
+	parse
+	poll
+	polled
+	start
+	upgrade
+*/
