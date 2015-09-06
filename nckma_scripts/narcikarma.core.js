@@ -77,7 +77,7 @@ if (typeof(nckma) != 'object') {
 		'user': 'https://www.reddit.com/api/me.json',
 		'userBase': 'https://www.reddit.com/user/',
 		//'userTest': 'https://www.reddit.com/api/me.json',
-		'userTest': 'http://narcikarma.test:8023/me/Narcikarma/me.json',
+		'userTest': 'http://narcikarma.net:8023/me/Narcikarma/me.json',
 		'webstore': 'https://chrome.google.com/webstore/detail/narcikarma/mogaeafejjipmngijfhdjkmjomgdicdg'
 	};
 	var nkUserData = {};

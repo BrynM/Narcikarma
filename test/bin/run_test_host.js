@@ -252,7 +252,7 @@
 
 		request.nkId = bpmv.ego();
 
-		spit(request, 'Handling request for '+filename);
+		spit(request, 'Handling request for '+filename+' '+url.parse(request.url).path);
 
 		if (wantCustMe && me_faked(wantCustMe, request, response)) {
 			return;
