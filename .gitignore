@@ -7,4 +7,3 @@ build/tmp/*
 build/package/*
 node_modules/*
 npm-debug.log
-test/data/*
