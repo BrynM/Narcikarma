@@ -44,15 +44,40 @@
 
 	var meCache = {};
 	var meFakedFuncs = {};
-	var meNk = 'nkProcessed';
+	var meNk = 'nkAltered';
 	var rgxStrToSecs = /^([\+\-]?[0-9]+)\s*([a-z]+)$/i;
+	var rgxVerbs = {
+//		'fall': {
+//			rgx: /^([\+\-])?(fall)(,\s*([0-9]+)(,\s*([0-9]+))?)?$/,
+//			len: 
+//			keys: {verb: 1, sign: 0, },
+//		},
+//		'inc': /^([\+\-])?(inc)(,\s*([0-9]+)(,\s*([0-9]+))?)?$/,
+		'rand': {
+			rgx: /^([\+\-])?(rand)(,\s*([0-9]+)(,\s*([0-9]+))?)?$/,
+			len: 7,
+			keys: {verb: 2, sign: 1, v1: 4, v2: 6},
+		},
+		'rise': {
+			rgx: /^(rise)(,\s*([0-9]+)(,\s*([0-9]+))?)?$/,
+			len: 7,
+			keys: {verb: 2, sign: 1, v1: 4, v2: 6},
+		},
+//		'rise': /^([\+\-])?(rise)(,\s*([0-9]+)(,\s*([0-9]+))?)?$/,
+	}
 
 	meFakedFuncs['cakeday'] = function (me, change) {
+		/*
+		* &cakeday=2mins
+		* &cakeday=2days
+		* &cakeday=-2hours
+		* &cakeday=-2h
+		*/
 		var now = Math.floor(new Date().valueOf() / 1000);
 		var newNow = parseInt(now + str_to_secs(change), 10);
 
-		me_set('created', me, change, newNow);
-		me_set('created_utc', me, change, newNow);
+		me = me_set('created', me, change, newNow);
+		me = me_set('created_utc', me, change, newNow);
 
 		return me;
 	};
@@ -61,35 +86,80 @@
 		var now = Math.floor(new Date().valueOf() / 1000);
 		var newNow = parseInt(now + str_to_secs(change), 10);
 
-		me_set('gold_expiration', me, change, newNow);
-		me_set('has_gold', me, change, (me.data.gold_expiration > now));
+		me = me_set('gold_expiration', me, change, newNow);
+		me = me_set('has_gold', me, change, (me.data.gold_expiration > now));
 
 		return me;
 	};
 
 	meFakedFuncs['has_mail'] = function (me, change) {
-		var num = parseInt(change, 10);
+		/*
+		* no mail...
+		*     ?has_mail=[no|false|0|off]
+		* get a new mail...
+		*     ?has_mail
+		*     ?has_mail=[yes|true|1|on]
+		* get {N} new mail...
+		*     ?has_mail={N}
+		* {%} chance to get new mail...
+		*     ?has_mail=rand,{%}
+		* {%} chance to get {N} new mail...
+		*     ?has_mail=rand,{%},{N}
+		*/
+		var rand = is_rand(change);
+		var num = 0;
+		var mail;
 
-		if (num < 0) {
-			num = 0;
+		if (bpmv.arr(rand, 4) && bpmv.num(rand[3])) {
+			mail = str_to_bool(change, true);
+
+			if (mail) {
+				if (rand[1] === '-') {
+					num = me.data.inbox_count - rand[3];
+				} else {
+					num = me.data.inbox_count + rand[3];
+				}
+
+				if (!bpmv.num(num)) {
+					num = 0;
+					mail = false;
+				}
+			}
 		}
 
-		me_set('has_mail', me, change, str_to_bool(change));
-		me_set('inbox_count', me, change, (me.data.has_mail ? 1 : 0));
+		if (!bpmv.str(change)) {
+			num = 1;
+			mail = true;
+			change = 'implied';
+		}
+
+		if (bpmv.num(change)) {
+			num = me.data.inbox_count + parseInt(change, 10);
+			mail = num > 0;
+			change = 'number';
+		}
+
+		if (typeof mail === 'undefined') {
+			mail = str_to_bool(change, true);
+			num = mail ? me.data.inbox_count + 1 : 0;
+		}
+
+		me = me_set('has_mail', me, change, mail);
+		me = me_set('inbox_count', me, change, num);
 
 		return me;
 	};
 
 	meFakedFuncs['has_mod_mail'] = function (me, change) {
-		return faked_bool('has_mod_mail', me, change);
+		return me_set('has_mod_mail', me, change, str_to_bool(change))
 	};
 
 	meFakedFuncs['has_verified_email'] = function (me, change) {
-		return faked_bool('has_verified_email', me, change);
+		return me_set('has_verified_email', me, change, str_to_bool(change))
 	};
 
 	meFakedFuncs['hide_from_robots'] = function (me, change) {
-		return faked_bool('hide_from_robots', me, change);
+		return me_set('hide_from_robots', me, change, str_to_bool(change))
 	};
 
 	meFakedFuncs['inbox_count'] = function (me, change) {
@@ -106,22 +176,99 @@
 	};
 
 	meFakedFuncs['is_friend'] = function (me, change) {
-		return faked_bool('is_friend', me, change);
+		return me_set('is_friend', me, change, str_to_bool(change))
 	};
 
 	meFakedFuncs['is_mod'] = function (me, change) {
-		return faked_bool('is_mod', me, change);
+		return me_set('is_mod', me, change, str_to_bool(change))
 	};
 
 	meFakedFuncs['over_18'] = function (me, change) {
-		return faked_bool('over_18', me, change);
+		return me_set('over_18', me, change, str_to_bool(change))
 	};
+
+	// returns [verb, +/-, N, N]
+	function interpret_verb (verb) {
+		var matches;
+		var iter;
+		var ret = [];
+		var vSet;
+		var vKey;
+
+		if (!bpmv.str(verb)) {
+			return false;
+		}
+
+		for (iter in rgxVerbs) {
+			if(bpmv.obj(rgxVerbs[iter]) && bpmv.typeis(rgxVerbs[iter].rgx, 'RegExp') && rgxVerbs[iter].rgx.test(verb)) {
+				vSet = rgxVerbs[iter];
+				matches = verb.match(vSet.rgx);
+
+				break;
+			}
+		}
+
+		if (!vSet) {
+			return false;
+		}
+
+		if (bpmv.arr(matches, vSet.len)) {
+			if (!matches[vSet.keys.verb]) {
+				// no verb
+				return false;
+			}
+
+			ret[0] = matches[vSet.keys.verb];
+
+			if (bpmv.num(vSet.keys.sign, true)) {
+				ret[1] = matches[vSet.keys.sign];
+			}
+
+			for (iter = 0; iter < 5; iter++) {
+				vKey = 'v'+(iter + 1);
+
+				if (vSet.keys[vKey] && matches[vSet.keys[vKey]]) {
+					if (bpmv.num(matches[vSet.keys[vKey]], true)) {
+						ret[2 + iter] = parseInt(matches[vSet.keys[vKey]], 10);
+						continue;
+					}
+
+					ret[2 + iter] = matches[vSet.keys[vKey]];
+				}
+			}
+
+			return ret;
+		}
+
+		return false;
+	}
+
+	function is_rand (change) {
+		var verb = interpret_verb(change);
+
+		if (bpmv.arr(verb) && verb[0] === 'rand') {
+			return verb;
+		}
+
+		return false;
+	}
+
+	function is_increment (change) {
+		var verb = interpret_verb(change);
+
+		if (bpmv.arr(verb) && verb[0] === 'inc') {
+			return verb;
+		}
+
+		return false;
+	}
 
 	function me_set(parm, me, change, newVal) {
 		var old;
 
 		if (parm in me.data) {
 			old = me.data[parm];
+
 			me.data[parm] = newVal;
 			me[meNk][parm] = {
 				'change': change,
@@ -129,15 +276,6 @@
 				'new': me.data[parm]
 			};
 		}
-		return me;
-	}
-
-	function faked_bool (parm, me, change) {
-		var old = true && me.data[parm];
-		var ret = str_to_bool(change, true);
-
-		me.data[parm] = true && ret;
-		me[meNk][parm] = [change, old, ret];
 
 		return me;
 	}
@@ -148,46 +286,6 @@
 		}
 
 		return meFakedFuncs[parm](me, change);
-	}
-
-	// http://narcikarma.test:8023/me/Narcikarma/me.json?inbox_count=5&comment_karma=rise&link_karma=rand&cakeday=2mins
-	function me_faked (rgxResult, request, response) {
-		var me;
-		var location = url.parse(request.url, true);
-		var iter;
-
-		if (!bpmv.arr(rgxResult, 2) || !bpmv.str(rgxResult[1])) {
-			response.writeHead(400, {'Content-Type': 'text/plain'});
-			response.write('Invalid me request\n');
-			response.end();
-
-			return false;
-		}
-
-		if (!meCache[rgxResult[1]]) {
-			me = me_from_disk(rgxResult[1]);
-			meCache[rgxResult[1]] = _.extend({}, me);
-		}
-
-		me = meCache[rgxResult[1]];
-		me[meNk] = {};
-
-		if (bpmv.obj(location.query, true)) {
-			for (iter in location.query) {
-				me = me_fake_parm(iter, me, location.query[iter]);
-			}
-		}
-
-		me_to_disk(me);
-		meCache[rgxResult[1]] = _.extend({}, me);
-
-		response.writeHead(200, {
-			'Content-Type': 'application/json',
-		});
-		response.write(JSON.stringify(me), 'binary');
-		response.end();
-
-		return true;
 	}
 
 	function me_from_base(name) {
@@ -248,13 +346,12 @@
 	function handle_req (request, response) {
 		var uri = url.parse(request.url).pathname;
 		var filename = path.join(__dirname+'/../data', uri);
-		var wantCustMe = uri.match(rgxCustomMe)
 
 		request.nkId = bpmv.ego();
 
 		spit(request, 'Handling request for '+filename+' '+url.parse(request.url).path);
 
-		if (wantCustMe && me_faked(wantCustMe, request, response)) {
+		if (respond_me_faked(request, response)) {
 			return;
 		}
 
@@ -313,6 +410,65 @@
 		});
 	}
 
+	// http://narcikarma.test:8023/me/Narcikarma/me.json?inbox_count=5&comment_karma=rise&link_karma=rand&cakeday=2mins
+	function respond_me_faked (request, response) {
+		var location = url.parse(request.url, true);
+		var rgxResult = bpmv.str(location.pathname) ? location.pathname.match(rgxCustomMe) : false;
+		var iter;
+		var me;
+		var src = 'cache';
+
+		if (!rgxResult) {
+			// pass along
+			return false;
+		}
+
+		if (!bpmv.arr(rgxResult, 2) || !bpmv.str(rgxResult[1])) {
+			spit(request, 'Invalid me request.', location);
+
+			response.writeHead(400, {'Content-Type': 'text/plain'});
+			response.write('Invalid me request\n');
+			response.end();
+
+			// responded
+			return true;
+		}
+
+		if (!meCache[rgxResult[1]]) {
+			src = 'file';
+
+			me = me_from_disk(rgxResult[1]);
+			meCache[rgxResult[1]] = _.extend({}, me);
+		}
+
+		me = meCache[rgxResult[1]];
+		me[meNk] = {};
+
+		if (bpmv.obj(location.query, true)) {
+			src = 'generated '+src;
+
+			for (iter in location.query) {
+				me = me_fake_parm(iter, me, location.query[iter]);
+			}
+
+			meCache[rgxResult[1]] = _.extend({}, me);
+
+			me_to_disk(meCache[rgxResult[1]]);
+		}
+
+		me[meNk].src = src;
+
+		spit(request, 'Served '+src+' me.json for "'+rgxResult[1]+'".', JSON.stringify(me[meNk]));
+
+		response.writeHead(200, {
+			'Content-Type': 'application/json',
+		});
+		response.write(JSON.stringify(me), 'binary');
+		response.end();
+
+		return true;
+	}
+
 	function spit (request) {
 		var args = _.extend([], arguments);
 		var txt = '';
@@ -330,16 +486,22 @@
 	}
 
 	function str_to_bool (str, undef) {
+		var rand = is_rand(str);
 
-		if (!bpmv.str(str)) {
+		if (!bpmv.str(str) && !bpmv.bool(str)) {
 			return true && undef;
 		}
 
-		if (str !== 'rand' && str !== 'random') {
-			return bpmv.trueish(str);
+		if (bpmv.arr(rand) && rand.length > 2 && bpmv.num(rand[2])) {
+			// percentage chance
+			return (Math.random() * 100) < rand[2];
 		}
 
-		return ((Math.random() * 1000) > 500);
+		if (rand) {
+			return (Math.random() * 1000) > 500;
+		}
+
+		return bpmv.trueish(str);
 	}
 
 	function str_to_secs (str) {
@@ -355,16 +517,23 @@
 		type = match[2];
 
 		switch (type) {
-			case 'm':
-			case 'min':
-			case 'mins':
-				return num * 60;
-				break;
-
 			case 'd':
 			case 'day':
 			case 'days':
-				return num * 60 * 60 * 60 * 24;
+				return (60 * 60 * 60 * 24) * num;
+				break;
+
+			case 'h':
+			case 'hr':
+			case 'hour':
+			case 'hours':
+				return (60 * 60 * 60) * num;
+				break;
+
+			case 'm':
+			case 'min':
+			case 'mins':
+				return (60) * num;
 				break;
 
 			case 's':
@@ -373,11 +542,19 @@
 				return num;
 				break;
 
-			case 'h':
-			case 'hr':
-			case 'hour':
-			case 'hours':
-				return num * 60 * 60 * 60;
+			case 'w':
+			case 'wk':
+			case 'week':
+			case 'weeks':
+				return (60 * 60 * 60 * 24 * 7) * num;
+				break;
+
+			case 'y':
+			case 'yr':
+			case 'year':
+			case 'years':
+				// not a real calendar year
+				return (60 * 60 * 60 * 24 * 365) * num;
 				break;
 		}
 
