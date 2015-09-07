@@ -29,8 +29,9 @@ if (typeof(nckma) != 'object') {
 	var nkFlags = {};
 
 	nkFlags.dev =  true;
-	nkFlags.debug =  true;
-	nkFlags.ga = true;
+	nkFlags.debug = true;
+	nkFlags.debugLevel = 15;
+	nkFlags.ga = false;
 	nkFlags.testing =  true;
 
 	/*
@@ -38,7 +39,6 @@ if (typeof(nckma) != 'object') {
 	*/
 
 	var nkColorRgxHex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
-	var nkDebugLvl = 15;
 	var nkEvPrefix = 'nkEv_';
 	var nkEvOpts = {
 		cancelable: true
@@ -260,9 +260,9 @@ if (typeof(nckma) != 'object') {
 				dbgLvl = parseInt(lvl, 10);
 			}
 
-			nkDebugLvl = parseInt(nkDebugLvl, 10);
+			nkFlags.debugLevel = parseInt(nkFlags.debugLevel, 10);
 
-			if (parseInt(dbgLvl, 10) > nkDebugLvl) {
+			if (parseInt(dbgLvl, 10) > nkFlags.debugLevel) {
 				return;
 			}
 
@@ -270,7 +270,7 @@ if (typeof(nckma) != 'object') {
 			args.shift();
 
 			if (bpmv.num(bpmv.count(args)) && bpmv.str(args[0])) {
-				args[0] = '[Narcikarma Debug '+bpmv.pad(dbgLvl, 2)+','+bpmv.pad(nkDebugLvl, 2)+'] '+pre+args[0];
+				args[0] = '[Narcikarma Debug '+bpmv.pad(dbgLvl, 2)+','+bpmv.pad(nkFlags.debugLevel, 2)+'] '+pre+args[0];
 				console.log.apply(console, args);
 			} else {
 				nckma.warn('nkma.debug() does not have enough arguments', arguments);
