@@ -326,6 +326,34 @@ h3.nck-html-stat[data-stat="ext_name_full"] {
 	border: 3px solid rgba( 0, 0, 0, 0.15 );
 }
 
+#color_listing {
+	padding: 10px;
+}
+
+#color_listing h3,
+#color_listing h4{
+	margin: 0;
+}
+
+#color_listing .test_color_swatch {
+	display: block;
+	float: left;
+	margin: 0;
+	width: 150px;
+	height: 15px;
+	font-size: 10px;
+	line-height: 12px;
+	font-weight: bold;
+	text-align: right;
+}
+
+#color_listing .test_color_swatch span {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	vertical-align: middle;
+}
+
 .nkNote {
 	font-size: 9px;
 	vertical-align: middle;

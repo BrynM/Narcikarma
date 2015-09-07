@@ -24,6 +24,8 @@
 
 	nckma.db = {};
 
+	// also see nkMaxHist in the options section
+	var nkDbMaxHistReal = 5000;
 	var nkDb;
 	var nkDbCreatedStore;
 	var nkDbOpen;

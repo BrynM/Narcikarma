@@ -29,7 +29,8 @@ if (typeof(nckma) != 'object') {
 	var nkFlags = {};
 
 	nkFlags.dev =  true;
-	nkFlags.debug =  true;
+	nkFlags.debug = true;
+	nkFlags.debugLevel = 15;
 	nkFlags.ga = false;
 	nkFlags.testing =  true;
 
@@ -38,15 +39,12 @@ if (typeof(nckma) != 'object') {
 	*/
 
 	var nkColorRgxHex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
-	var nkDebugLvl = 15;
 	var nkEvPrefix = 'nkEv_';
 	var nkEvOpts = {
 		cancelable: true
 	};
 	var nkEvStore = {};
 	var nkLastPoll = null;
-	// aslo see nkMaxHist in the options section
-	var nkMaxHistReal = 8000;
 	var nkPollInterval = 1000;
 	var nkIsPolling = false;
 	var nkDataFirst = bpmv.str(localStorage['_lastCached']) ? JSON.parse(localStorage['_lastCached']) : null;
@@ -147,6 +145,7 @@ if (typeof(nckma) != 'object') {
 
 	function begin_background (cb) {
 		var ver = nckma.version();
+		var iter;
 
 		if (nckma._bgTask) {
 			nckma.debug('begin', 'Narcikarma v'+nckma.version().str);
@@ -161,25 +160,16 @@ if (typeof(nckma) != 'object') {
 				localStorage['nkCurrentVer'] = ver;
 			}
 
-			nckma.debug('begin', 'active flags', nkFlags);
-
-			if (nkFlags['debug']) {
-				nckma.debug('begin', 'debug level', nkDebugLvl);
+			for (iter in nkFlags) {
+				if (nkFlags.hasOwnProperty(iter)) {
+					nckma.debug('begin', 'Core flag '+iter, nkFlags[iter]);
+				}
 			}
 
-			if (nkFlags['dev']) {
-				nckma.debug('begin', 'dev mode enabled');
-			}
-
-			if (nkFlags['testing']) {
-				nckma.debug('begin', 'test mode enabled');
-			}
-
-			nckma.debug('begin', 'storage interval', localStorage['interval']);
 			nckma.reset();
 
 			if (!bpmv.num(nkSetInterval)) {
-				nckma.debug('begin', 'running background task - starting heartbeat');
+				nckma.debug('begin', 'Running background task - starting heartbeat');
 				nkSetInterval = setInterval(nckma.heartbeat, nkPollInterval);
 				// nkSetInterval = setInterval(nckma.poll, nkPollInterval);
 			}
@@ -270,9 +260,9 @@ if (typeof(nckma) != 'object') {
 				dbgLvl = parseInt(lvl, 10);
 			}
 
-			nkDebugLvl = parseInt(nkDebugLvl, 10);
+			nkFlags.debugLevel = parseInt(nkFlags.debugLevel, 10);
 
-			if (parseInt(dbgLvl, 10) > nkDebugLvl) {
+			if (parseInt(dbgLvl, 10) > nkFlags.debugLevel) {
 				return;
 			}
 
@@ -280,7 +270,7 @@ if (typeof(nckma) != 'object') {
 			args.shift();
 
 			if (bpmv.num(bpmv.count(args)) && bpmv.str(args[0])) {
-				args[0] = '[Narcikarma Debug '+bpmv.pad(dbgLvl, 2)+','+bpmv.pad(nkDebugLvl, 2)+'] '+pre+args[0];
+				args[0] = '[Narcikarma Debug '+bpmv.pad(dbgLvl, 2)+','+bpmv.pad(nkFlags.debugLevel, 2)+'] '+pre+args[0];
 				console.log.apply(console, args);
 			} else {
 				nckma.warn('nkma.debug() does not have enough arguments', arguments);
@@ -387,6 +377,10 @@ if (typeof(nckma) != 'object') {
 		}
 
 		return full;
+	};
+
+	nckma.get_core_flags = function () {
+		return _.extend({}, nkFlags);
 	};
 
 	nckma.get_defaults = function () {
