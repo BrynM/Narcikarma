@@ -28,7 +28,7 @@ if (typeof(nckma) != 'object') {
 
 	var nkFlags = {};
 
-	nkFlags.dev =  true;
+	nkFlags.dev = true;
 	nkFlags.debug = true;
 	nkFlags.debugLevel = 15;
 	nkFlags.ga = false;
