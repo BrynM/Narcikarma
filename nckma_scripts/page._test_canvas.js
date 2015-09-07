@@ -24,7 +24,7 @@ function print_the_bugger() {
 function nk_test () {
 	var tStr = [];
 	var lets = bpmv.keys(letrs);
-	var set = nckma.px.color_set();
+	var set = nckma.px.color_options();
 
 	for (var i = 0; i < set.length; i++) {
 		tStr = [];
@@ -69,7 +69,41 @@ function print_chars () {
 	charOut.text(txt);
 }
 
+function print_colors () {
+	var cols = nckma.px.color_list();
+	var iter;
+	var len = cols.length;
+	var html = '<h3>Click a color to change the background of the color area.</h3>\n';
+
+	html += '<div>\n';
+	html += '\t<span class="test_color_swatch">*none*';
+	html += '&nbsp;<span style="background-color: transparent;">';
+	html += '</span></span>\n';
+
+	for (iter = 0; iter < len; iter++) {
+		html += '\t<span class="test_color_swatch">'+cols[iter];
+		html += '&nbsp;<span style="background-color: '+nckma.px.color_to_str(cols[iter])+';">';
+		html += '</span></span>\n';
+	}
+
+	html += '\t<div style="clear: both;"></div>\n';
+	html += '</div>\n';
+
+	$('#color_listing').html(html);
+}
+
 $(document).ready(function () {
-	$('#run_test').click(nk_test);
-	print_chars()
+	var $colors = $('#color_listing');
+
+	$('#run_test').on('click', nk_test);
+
+	$colors.on('click', '.test_color_swatch', function (ev) {
+		var $sw = $(ev.currentTarget).find('span');
+
+		$colors.css('background-color', $sw.css('background-color'));
+	});
+
+	print_colors();
+	print_chars();
 });
+

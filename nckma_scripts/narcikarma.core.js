@@ -30,7 +30,7 @@ if (typeof(nckma) != 'object') {
 
 	nkFlags.dev =  true;
 	nkFlags.debug =  true;
-	nkFlags.ga = false;
+	nkFlags.ga = true;
 	nkFlags.testing =  true;
 
 	/*
@@ -45,8 +45,6 @@ if (typeof(nckma) != 'object') {
 	};
 	var nkEvStore = {};
 	var nkLastPoll = null;
-	// aslo see nkMaxHist in the options section
-	var nkMaxHistReal = 8000;
 	var nkPollInterval = 1000;
 	var nkIsPolling = false;
 	var nkDataFirst = bpmv.str(localStorage['_lastCached']) ? JSON.parse(localStorage['_lastCached']) : null;
@@ -147,6 +145,7 @@ if (typeof(nckma) != 'object') {
 
 	function begin_background (cb) {
 		var ver = nckma.version();
+		var iter;
 
 		if (nckma._bgTask) {
 			nckma.debug('begin', 'Narcikarma v'+nckma.version().str);
@@ -161,25 +160,16 @@ if (typeof(nckma) != 'object') {
 				localStorage['nkCurrentVer'] = ver;
 			}
 
-			nckma.debug('begin', 'active flags', nkFlags);
-
-			if (nkFlags['debug']) {
-				nckma.debug('begin', 'debug level', nkDebugLvl);
+			for (iter in nkFlags) {
+				if (nkFlags.hasOwnProperty(iter)) {
+					nckma.debug('begin', 'Core flag '+iter, nkFlags[iter]);
+				}
 			}
 
-			if (nkFlags['dev']) {
-				nckma.debug('begin', 'dev mode enabled');
-			}
-
-			if (nkFlags['testing']) {
-				nckma.debug('begin', 'test mode enabled');
-			}
-
-			nckma.debug('begin', 'storage interval', localStorage['interval']);
 			nckma.reset();
 
 			if (!bpmv.num(nkSetInterval)) {
-				nckma.debug('begin', 'running background task - starting heartbeat');
+				nckma.debug('begin', 'Running background task - starting heartbeat');
 				nkSetInterval = setInterval(nckma.heartbeat, nkPollInterval);
 				// nkSetInterval = setInterval(nckma.poll, nkPollInterval);
 			}
@@ -387,6 +377,10 @@ if (typeof(nckma) != 'object') {
 		}
 
 		return full;
+	};
+
+	nckma.get_core_flags = function () {
+		return _.extend({}, nkFlags);
 	};
 
 	nckma.get_defaults = function () {
