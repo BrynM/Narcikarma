@@ -371,7 +371,7 @@
 		}
 
 		if (uri === '/favicon.ico') {
-			filename = path.join(__dirname, '/../../nckma_assets/narcikarma.ico');
+			filename = path.join(__dirname, '/../../nckma_assets/iconConfirm.ico');
 		}
 
 		fs.exists(filename, function(exists) {
@@ -554,12 +554,11 @@
 
 		var mine = _.extend(me_from_base(me.data.name), me);
 
-		mine[meNk] = {};
 		mine.nkSrc = 'file';
 
 		fn = path.join(__dirname, '/../data/me/'+me.data.name+'.json');
 
-		fs.writeFileSync(fn, JSON.stringify(mine, null, 4));
+		fs.writeFileSync(fn, JSON.stringify(_.extend({}, mine, {nkSrc: undefined, meNk: undefined}), null, 4));
 
 		return mine;
 	}
@@ -1212,8 +1211,27 @@
 		rgx: /^\s*([\+\-])?rise\s*$/i,
 		len: 2,
 		keys: {sign: 1},
+		isRise: true,
 		proc: function () {
-			return 1;
+			return this.sign === '-' ? -1 : 1;
+		},
+	};
+
+	verbSet['riseInt'] = {
+		rgx: /^\s*([\+\-])?rise,\s*([\+\-]?[0-9]+)\s*$/i,
+		len: 3,
+		keys: {sign: 1, v1: 2},
+		isRise: true,
+		proc: function () {
+			if (bpmv.num(this.v1)) {
+				if (this.sign === '-') {
+					return 0 - parseInt(this.v1, 10);
+				}
+
+				return parseInt(this.v1, 10)
+			}
+
+			return 0;
 		},
 	};
 
