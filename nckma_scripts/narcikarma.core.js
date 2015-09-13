@@ -75,7 +75,8 @@ if (typeof(nckma) != 'object') {
 		'user': 'https://www.reddit.com/api/me.json',
 		'userBase': 'https://www.reddit.com/user/',
 		//'userTest': 'https://www.reddit.com/api/me.json',
-		'userTest': 'http://narcikarma.net:8023/me/Narcikarma/me.json',
+		//'userTest': 'http://narcikarma.net:8023/me/Narcikarma/me.json?has_mail=chance10',
+		'userTest': 'http://narcikarma.net:8023/me/Narcikarma/me.json?comment_karma=rise-2,2&link_karma=rise-2,2',
 		'webstore': 'https://chrome.google.com/webstore/detail/narcikarma/mogaeafejjipmngijfhdjkmjomgdicdg'
 	};
 	var nkUserData = {};
