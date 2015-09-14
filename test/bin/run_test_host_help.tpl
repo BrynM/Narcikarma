@@ -106,7 +106,7 @@
 			/* .get blocks */
 			.nckContent td.get,
 			.nckContent code.get {
-				background: rgba(130, 43, 43, 0.25);
+				background: rgba(43, 130, 54, 0.35);
 				color: rgb(249, 255, 0) !important;
 			}
 			.nckContent code.get {
@@ -140,12 +140,12 @@
 			.nckContent code.url,
 			.nckContent code.url a {
 				background: rgba(190, 190, 250, 0.25);
-				color: rgb(126, 111, 243) !important;
+				color: rgb(39, 39, 220) !important;
 				display: inline-block;
 				padding: 0 5px;
 			}
-			.nckContent code.var a {
-				color: rgb(183, 35, 35) !important;
+			.nckContent code.url a {
+				color: rgb(39, 39, 220) !important;
 			}
 			/* .var blocks */
 			.nckContent code.var {
@@ -211,7 +211,7 @@
 				font-weight: bold;
 				margin: 0;
 				padding: 2px 0;
-				color: rgb(119, 119, 208);
+				color: rgb(176, 176, 21);
 				letter-spacing: 2px;
 			}
 			.nckContent h3:not(.heading-clicked):after {
@@ -222,19 +222,35 @@
 				width: 25%;
 				margin-top: -2px;
 				background: linear-gradient(to right,
-					rgba(119, 119, 208, 0.4) 20%,
-					rgba(119, 119, 208, 0) 100%
+					rgba(176, 176, 21, 0.4) 20%,
+					rgba(176, 176, 21, 0) 100%
 				);
 			}
 			.nckContent h3 code {
-				color: rgb(119, 119, 208);
+				color: rgb(176, 176, 21);
 			}
 			.nckContent h4 {
+				color: rgb(176, 176, 21);
 				font-size: 100%;
 				line-height: 100%;
 				font-weight: bold;
 				margin: 0;
 				padding: 2px 0;
+			}
+			.nckContent h4 code {
+				color: rgb(176, 176, 21);
+			}
+			.nckContent h4:not(.heading-clicked):after {
+				content: " ";
+				display: block;
+				overflow: hidden;
+				height: 2px;
+				width: 15%;
+				margin-top: -2px;
+				background: linear-gradient(to right,
+					rgba(176, 176, 21, 0.4) 20%,
+					rgba(176, 176, 21, 0) 100%
+				);
 			}
 			.nckContent h5 {
 				font-size: 90%;
